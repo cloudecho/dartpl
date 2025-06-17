@@ -163,7 +163,7 @@ Dart是Flutter应用的开发语言，它专为客户端优化，支持自动内
 原生应用是指代码最终被编译为平台相关的机器码；对web而言，对应的是javascript+WebAssembly。</p>
 <p>如何你初学编程，一下子听到这么多概念，也许还没开始写一行代码就已经开始糊涂了，没有关系。
 要知道，计算机编程就像英语一样，要掌握它，除了需要兴趣之外，还需要良好的思维模式以及坚持不懈的练习。
-希望你在观看视频的同时，也打开代码编辑器，跟着一起练习，为以后编程打下坚实的基础。在你掌握了一门编程语言之后，再去学其他编程语言就容易多了。</p>
+希望你在学习本课程时，打开代码编辑器，跟着一起练习，为以后编程打下坚实的基础。在你掌握了一门编程语言之后，再去学其他编程语言就容易多了。</p>
 <h2 id="读者范围"><a class="header" href="#读者范围">读者范围</a></h2>
 <p>本课程将详细介绍Dart 3编程语言 ，从基本语法与控制结构到异步编程，从面向对象编程到编码准则；课程内容由浅入深，既有理论讲解又有代码示例 。相信无论你是编程新手还是具有一定经验的程序员，你都可以从本课程中获益。</p>
 <h2 id="课程内容简介"><a class="header" href="#课程内容简介">课程内容简介</a></h2>
@@ -320,6 +320,7 @@ Hello world: 42!
 <li>IntelliJ IDEA: <a href="https://www.jetbrains.com/idea/download/">https://www.jetbrains.com/idea/download/</a></li>
 </ul>
 <p>下载安装好IDE后，再打开IDE安装Dart扩展。</p>
+<p>另外，<a href="https://dartpad.dev/">dartpad.dev</a>是一个在线编辑器，可用于临时测试一些代码。</p>
 <p>如果你看到了这里，并且也跟着一起练习，那么恭喜你，你已经开启了Dart编程之旅。</p>
 <h2 id="附-社区镜像站点"><a class="header" href="#附-社区镜像站点">附: 社区镜像站点</a></h2>
 <pre><code class="language-sh"># 上海交通大学 *nix 用户组
@@ -339,6 +340,672 @@ export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
 <ul>
 <li><a href="https://docs.flutter.cn/community/china/">https://docs.flutter.cn/community/china/</a></li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="变量与null-safety"><a class="header" href="#变量与null-safety">变量与Null safety</a></h1>
+<h2 id="什么是变量"><a class="header" href="#什么是变量">什么是变量</a></h2>
+<p>计算机编程语言里的变量（Variable）与数学公式里的变量类似。请看下面这段Dart代码:</p>
+<pre><code class="language-dart">// ch0102-1
+void main() {
+  var x = 3;  // 1
+  var (y, z) = (4, 5); // 2
+  print('x = $x, y = $y, z = $z'); // 3 Output: x = 3, y = 4, z = 5
+  print('x + y + z = ${x + y + z}'); // 4 Output: x + y + z = 12
+}
+</code></pre>
+<p>这段简短的代码只有一个函数，那就是<code>main</code>，整个程序的入口。代码中的 <code>//</code> 是注释，是为了帮助人们阅读代码，Dart编译器会忽略它。</p>
+<ol>
+<li>使用<code>var</code>关键字，声明变量x，并给<code>x</code>赋值为 3，Dart编译器自动推断其类型为<code> int</code> （integer, 整数）;</li>
+<li>同时声明两个变量<code>x</code>和<code>y</code>，分别赋值为4和5，这里使用了record的模式匹配（第3章内容，这里看不懂也没关系）;</li>
+<li>分别将<code>x</code>，<code>y</code>，<code>z</code>的值打印（显示）到控制台（标准输出设备 stdout）；</li>
+<li>计算 <code>x + y + z</code> 并打印。</li>
+</ol>
+<p>第1句也可以写成 <code>int x = 3;</code> 也等同于</p>
+<pre><code class="language-dart">int x;
+x = 3;
+</code></pre>
+<p>第2句也可以写成</p>
+<pre><code class="language-dart">  var y= 4, z = 5;
+</code></pre>
+<p>第3、4两句中的 <code>$x</code>, <code>$y</code>, <code>$z</code> 以及 <code>${x + y + z}</code> 为 字符串插值，非常直观和方便。</p>
+<p><code>var x </code>声明了一个变量，它的标识符为<code>x</code>; 标识符，通俗地说就是给变量、函数、类、方法等起个名字，方便使用，就像我们给宠物取个名，方便呼唤。Dart语言的标识符可以是下列字符的组合：</p>
+<ul>
+<li>字母</li>
+<li>数字</li>
+<li><code>_</code> 和 <code>$</code></li>
+</ul>
+<p>但不能以数字开头。这些都是合法的标识符:  <code>practiceMakesPerfect</code>, <code>_imPrivate</code>, <code>_$GeneratedCode</code>, <code>$happy365</code>。</p>
+<p><code>var</code>修饰的变量 ，可以后续更改，比如</p>
+<pre><code class="language-dart">// ch0102-3
+void main() {
+  var x = 3;
+  x = 30;
+  print('x = $x'); // Output: x = 30
+}
+</code></pre>
+<p>变量除了可以表示数字，还可以表示文本（字符串）等.  例如</p>
+<pre><code class="language-dart">// ch0102-4
+void main(){
+  var name = 'Dart';
+  print('Hello, $name!'); // Output: Hello, Dart!
+}
+</code></pre>
+<p>这里的数字、字符串等，就是所谓的数据类型（本章第4节内容，这里不再展开）。</p>
+<h2 id="优先使用-var-声明变量"><a class="header" href="#优先使用-var-声明变量">优先使用 <code>var </code>声明变量</a></h2>
+<p>对于  <code>var x = 3;</code> 也可以写成 <code>int x = 3</code>，你可能有个疑问，哪种情况下用哪种方式呢？官方的建议是，多数情况下，我们应该使用 var (而非实际类型) 声明变量，这样做除了可以使代码更短之外，还能提高代码的可读性。</p>
+<p>如果我们仅仅声明变量（不赋值），应该写出实际的类型，因为这时候Dart无法推断出变量的数据类型，如</p>
+<pre><code class="language-dart">int x;
+</code></pre>
+<p>如果我们这样写</p>
+<pre><code class="language-dart">var x;
+</code></pre>
+<p>Dart编译器就认为 x 的类型为 <code>dynamic</code> ，这种类型可以表示任何数据，通常情况下我们应该避免这样做，因为Dart的静态类型检查对<code>dynamic</code>无效（可能暗藏bug）。</p>
+<h2 id="使用--late-延迟初始化"><a class="header" href="#使用--late-延迟初始化">使用  <code>late</code> 延迟初始化</a></h2>
+<p>有时候我们希望延迟变量的初始化（特别在Flutter的StatefulWidget中），这时就用到 <code>late</code> 关键字， 例如</p>
+<pre><code class="language-dart">// ch0102-5
+void main() {
+  late String action = 'go camping';
+  var isReady = true; // it may take some time to prepare
+  if (isReady) {
+    print("Let's $action!"); // Output: Let's go camping!
+  }
+}
+</code></pre>
+<p>这里先了解下，第4章会有更多关于 <code>late</code>  的讨论。</p>
+<h2 id="null-safety"><a class="header" href="#null-safety">Null safety</a></h2>
+<h3 id="nnbd"><a class="header" href="#nnbd">NNBD</a></h3>
+<p>从Dart 2.10 开始，变量默认非 <code>null</code>（non-nullable by defaullt, NNBD)；<code>null</code> 表示空值。 比如下面这段代码无法编译</p>
+<pre><code class="language-dart">// ch0102-6
+void main() {
+  int x;
+  print('x = $x'); 
+
+  // Error: Non-nullable variable 'x' must be assigned before it can be used.
+  // print('x = $x'); 
+  //             ^
+}
+</code></pre>
+<p>当我们尝试编译上面这段代码时，出现编译错误，告诉我们在使用变量<code>x</code>之前必须初始化它。</p>
+<p>如果要使用<code>null</code>， 可以像下面这样:</p>
+<pre><code class="language-dart">// ch0102-7
+void main() {
+  int? x;
+  print('x = $x'); // Output: x = null
+}
+</code></pre>
+<p>这里的 <code> int? x</code> 表示变量<code>x</code> 的初始值为<code>null</code>,   <code>x</code> 是一个nullable变量。</p>
+<p>注：
+熟悉Java的朋友想必对<code>NullPointerException</code> (NPE) 并不陌生，这个Exception是一个运行时异常；为了提高代码的健壮性，经常要对方法的入参进行非空检查，否则就很容易遭遇NPE（这个问题有时难以排查，尤其在大型软件项目里）。例如下面这段Java代码</p>
+<pre><code class="language-java">void doSomething(String str) {
+  if (str == null){
+    throw new IllegalArgumentException("doSomething: str cannot be null");
+  }
+  // Do something
+}
+</code></pre>
+<p>我想这便是Dart  NNBD的原因。</p>
+<h3 id="访问nullable变量"><a class="header" href="#访问nullable变量">访问nullable变量</a></h3>
+<p>有几个nullable变量相关的访问/赋值，有必要介绍一下，你以后再看到下面这些符号就不会感到陌生了。</p>
+<h3 id="----"><a class="header" href="#----"><code>??</code> 、 <code>??=</code>、  <code>!</code></a></h3>
+<pre><code class="language-dart">// ch0102-8
+void main() {
+  int? x;
+  var y = x ?? 10; // 1
+  var z = y ?? 20; // 1a
+  print('y = $y, z = $z'); // Output: y = 10, z = 10
+
+  int? y2;
+  y ??= 100; // 2
+  y2 ??= 100; // 2a
+  print('y = $y, y2 = $y2'); // Output: y = 10, y2 = 100
+
+  var a = y!; // 3
+  print('a = $a'); // Output: a = 10
+
+  var b = x!; // 3a
+  print('b = $b');
+  // Unhandled exception:
+  // Null check operator used on a null value
+}
+</code></pre>
+<ol>
+<li>如果 <code>x</code>为<code>null</code>，<code>y</code>赋值为10， 否则将<code>x</code>的值赋给<code>y</code>；</li>
+<li>如果 <code>y</code>为<code>null</code>，<code>y</code>赋值为100，否则啥也不做；</li>
+<li>断言<code>y</code>一定非空(<code>null</code>)，并将<code>y</code>的值赋给<code>a</code>；如果<code>y</code>为<code>null</code>，在程序运行时会出现一个Null check异常（见3a）。</li>
+</ol>
+<p>请对比 1和1a， 2和2a，以及3和3a的结果。</p>
+<h3 id="-"><a class="header" href="#-"><code>?.</code> 、<code>?[]</code></a></h3>
+<pre><code class="language-dart">// ch0102-9
+void main() {
+  var abc = 'ABCD';
+  String? def;
+
+  var first = abc?[0]; // 1
+  var second = def?[0]; // 1a
+  print('first = $first, second = $second'); // Output: first = A, second = null
+
+  var len1 = abc?.length; // 2
+  var len2 = def?.length; // 2a
+  print('len1 = $len1, len2 = $len2'); // Output: len1 = 4, len2 = null
+
+  var len3 = def?.length ?? 0; // 3
+  print('len3 = $len3'); // Output: len3 = 0
+}
+</code></pre>
+<ol>
+<li>如果<code>abc</code>为<code>null</code>，<code>first</code>为<code>null</code>， 否则将<code>abc[0]</code>的值赋给<code>first</code>；</li>
+<li>如果<code>abc</code>为<code>null</code>，<code>len1</code>为<code>null</code>， 否则将<code>abc.length</code>的值赋给<code>len1</code>；</li>
+<li>这是一个综合的例子，同时使用了 <code>?.</code>与 <code>??</code> 符号。</li>
+</ol>
+<p>注：本例中的 <code>abc[0]</code> 返回第0个（下标从0开始）unicode字符，<code>abc.length</code>返回<code>abc</code>的长度。</p>
+<h3 id=""><a class="header" href="#"><code>...?</code></a></h3>
+<pre><code class="language-dart">// ch0102-a
+void main() {
+  var arr = [1, 2, 3];
+  var arr2 = [...arr, 4, 5]; // 1
+  print('arr2 = $arr2'); // Output: arr2 = [1, 2, 3, 4, 5]
+
+  var arr3 = [...?arr, 6, 7]; // 1a
+  print('arr3 = $arr3'); // Output: arr3 = [1, 2, 3, 6, 7]
+
+  List&lt;int&gt;? arr4;
+  var arr5 = [...?arr4, 8, 9]; // 2
+  print('arr5 = $arr5'); // Output: arr5 = [8, 9]
+
+  List&lt;int&gt;? arr6 = []; // 3
+  var arr7 = [...arr6, -1, -2]; // 3a
+  print('arr7 = $arr7'); // Output:  arr7 = [-1, -2]
+}
+</code></pre>
+<ol>
+<li><code>arr</code>是一个列表（数组）， <code>...arr</code>将展开<code>arr</code>， 此行代码将<code>arr</code>以及 4, 5 一起组成一个新的列表，并将其赋值给<code>arr2</code>;</li>
+<li>本行代码 与 1 类似，  区别在于，这里必须使用  <code>...?arr4</code> 执行展开操作，否则无法编译通过;</li>
+<li><code>arr6</code> 跟<code>arr4</code>一样，是一个nullable变量，但其初始值为一个空的列表（不是<code>null</code>），就可以用<code>...</code>对其进行展开，可见Dart编译器非常智能。</li>
+</ol>
+<h2 id="参考资料-1"><a class="header" href="#参考资料-1">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/variables">https://dart.dev/language/variables</a></li>
+<li><a href="https://dart.dev/effective-dart/design#types">https://dart.dev/effective-dart/design#types</a></li>
+<li><a href="https://dart.dev/null-safety">https://dart.dev/null-safety</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="final-const-及wildcard"><a class="header" href="#final-const-及wildcard"><code>final</code>、 <code>const</code> 及wildcard</a></h1>
+<h2 id="final"><a class="header" href="#final"><code>final</code></a></h2>
+<p>声明为final的变量，只能被赋值一次。 如果尝试修改已经赋值过的final变量，会引起编译错误。</p>
+<pre><code class="language-dart">// ch0103_1.dart
+void main() {
+  final myPet = 'Doggy'; // 1
+  myPet = 'Kitty'; // 2
+  // Error: Can't assign to the final variable 'myPet'.
+  // myPet = 'Kitty'; // 2
+  // ^^^^^
+}
+</code></pre>
+<ol>
+<li>声明一个final变量<code>myPet</code>, 并为其赋值;</li>
+<li>尝试修改<code>myPet</code>的值，引起编译错误， 告诉我们不能给final 变量 <code>myPet</code> 赋值。</li>
+</ol>
+<h2 id="late-final"><a class="header" href="#late-final"><code>late final</code></a></h2>
+<p><code>late final</code> 这两个关键字经常一起出现，这里构建了一个简单的例子：</p>
+<pre><code class="language-dart">// ch0103_2.dart
+void main() {
+  final width = 3.0; // 1
+  final height = 4.0; // 1a
+  late final double perimeter; // 2
+  // ... (Do somehting else)
+  perimeter = 2 * (width + height); // 3
+  print('width: $width, height: $height, perimeter: $perimeter'); // 4
+  // Output: width: 3.0, height: 4.0, perimeter: 14.0
+}
+</code></pre>
+<ol>
+<li>声明final变量 <code>width</code>与 <code>height</code> ，并分别赋值为3.0与4.0，Dart自动推断其数据类型为<code>double</code> （浮点数）;</li>
+<li>使用 <code>late final</code> 声明一个变量<code>perimeter</code>，在这里它表示一个矩形的周长，同时显示指定这个变量的数据类型为<code>double</code>，所以这里有3个关键字<code>late final double</code>，它们一起修饰变量<code>perimeter</code>;</li>
+<li>计算变量 <code>perimeter</code>的值，公式为（长+宽）×2;</li>
+<li>使用字符串插值，打印相关变量。</li>
+</ol>
+<p>这个例子似乎看不出 <code>late final</code> 有什么特别之处，这里只是让你熟悉一下，在面向对象编程（OOP）的章节还会继续讨论它。</p>
+<h2 id="final-的兄弟-const"><a class="header" href="#final-的兄弟-const"><code>final</code> 的兄弟 <code>const</code></a></h2>
+<p><code>const</code>关键字用于：</p>
+<ul>
+<li>声明一个常量，常量具有编译时（compile-time)不可变性，这里的编译时是与运行时（runtime）相对应的；</li>
+<li>创建常量值（constant values）;</li>
+<li>定义const构造器，该构造器用于创建常量值。</li>
+</ul>
+<p>后面两点与OOP有关，这里提前了解下。</p>
+<h3 id="声明一个常量"><a class="header" href="#声明一个常量">声明一个常量</a></h3>
+<p>试图修改常量会引起编译错误，例如</p>
+<pre><code class="language-dart">// ch0103_3.dart
+void main(){
+  const score = 50; // 1
+  score = 80; // 2
+  // Error: Can't assign to the const variable 'score'.
+  // score = 80; // 2
+  // ^^^^^
+}
+</code></pre>
+<h3 id="创建常量值"><a class="header" href="#创建常量值">创建常量值</a></h3>
+<p>任何变量都可以有常量值。</p>
+<pre><code class="language-dart">// ch0103_4.dart
+void main() {
+  final luckyNumbers = [5, 6]; // 1
+  luckyNumbers.add(8); // 2
+  print('luckyNumbers: $luckyNumbers');
+  // Output: luckyNumbers: [5, 6, 8]
+
+  const myFriends = ['Alice', 'Bob']; // 3
+  myFriends.add('Charlie'); // 4
+  // Unhandled exception:
+  // Unsupported operation: Cannot add to an unmodifiable list;
+}
+</code></pre>
+<ol>
+<li>声明一个<code>final</code> 列表  <code>luckyNumbers</code>并对其初始化，包含5、6两个数字；</li>
+<li>向<code>luckyNumbers</code>添加数字8，然后打印出来，luckyNumbers 现在包含了5、6、8三个数字; 这说明了虽然<code>final</code>修饰的luckyNumbers本身（引用）不可更改，但它引用的列表是可以改变的;</li>
+<li>声明一个<code>const</code>列表<code>myFriends</code>，初始值包含"Alice和"Bob"两个字符串;</li>
+<li>向<code>myFriends</code>添加一个新元素"Charlie"，这引起了一个运行时异常，告诉我们不能向不可变列表添加新的元素，可见<code>const</code>比<code>final</code>具有更强的不可变性。</li>
+</ol>
+<h3 id="定义const构造器"><a class="header" href="#定义const构造器">定义const构造器</a></h3>
+<p>构造器是OOP里的概念，const构造用于创建常量值。请看下面这个示例：</p>
+<pre><code class="language-dart">// ch0103_5.dart
+class Pet { // 1
+  final String name; // 1a
+  const Pet(this.name); // 2
+}
+
+void main() {
+  var myPet = Pet('Doggy'); // 3
+  myPet = Pet('Little Doggy'); // 3a
+  const yourPet = Pet('Kitty'); // 4
+
+  print('myPet: ${myPet.name}, yourPet: ${yourPet.name}');
+  // Output: myPet: Little Doggy, yourPet: Kitty
+}
+</code></pre>
+<ol>
+<li><code>class</code>关键字用于声明一个名叫<code>Pet</code>的类 ，类封装了数据和行为（方法）（第4-5章专门讨论OOP）; class <code>Pet</code> 有一个final成员变量叫做 <code>name</code> ;</li>
+<li>这是<code>Pet</code>的const构造器;</li>
+<li>通过调用<code>Pet</code>的构造器，得到一个<code>Pet</code>的实例（对象）<code>myPet</code>，随后又将<code>myPet</code>指向另一个Pet对象（3a）;</li>
+<li>通过调用<code>Pet</code>的const构造器，创建Pet的常量对象 <code>yourPet</code>，这行代码等于</li>
+</ol>
+<pre><code class="language-dart">  const yourPet = const Pet('Kitty'); // 4
+</code></pre>
+<p>在常量上下文中，<code>Pet('Kitty')</code>之前省略了<code>const</code>关键字。</p>
+<h3 id="常量对象"><a class="header" href="#常量对象">常量对象</a></h3>
+<p><code> const Pet('Kitty')</code> 与 <code> Pet('Kitty')</code>是不一样的，前者创建（实例化）了一个常量对象，而后者创建的是非常量对象（除非是在常量上下文中）。</p>
+<pre><code class="language-dart">// ch0103_6.dart
+void main() {
+  const pet1 = Pet('Rabbit'); // 1
+  var pet2 = const Pet('Rabbit'); // 2
+  final pet3 = Pet('Rabbit'); // 3
+
+  print('${pet1 == pet2}'); // Output: true
+  print('${pet1 == pet3}'); // Ouptput: false
+}
+
+class Pet {
+  final String name;
+  const Pet(this.name); 
+}
+</code></pre>
+<p>这里的 <code>==</code> 操作符，用于测试左右两边的操作数是否相等。</p>
+<h2 id="wildcard_"><a class="header" href="#wildcard_">Wildcard（<code>_</code>）</a></h2>
+<p>自 Dart 3.7  开始，以 <code>_</code>  命名 的变量或参数，是一个通配符（wildcard ），它的值会被丢弃。同一个命名空间里多次声明 <code>_</code> 不会冲突。例如</p>
+<pre><code class="language-dart">//ch0103_7.dart
+void main() {
+  var _ = 10; // 1
+  var _ = 'Hello'; // 2
+  print('Hello, Dart! $_'); // 3
+  // Error: Undefined name '_'.
+  // print('Hello, Dart! $_');
+}
+</code></pre>
+<p>上面这段代码比较简单，不过多解释。</p>
+<p>通配符出现的地方：</p>
+<ul>
+<li>变量声明， 如 <code>var _ = 1;</code></li>
+<li>for 循环变量 如 <code>for (var _ in list) {}</code></li>
+<li>catch 语句参数, 如</li>
+</ul>
+<pre><code class="language-dart">try {
+  throw 'something bad';
+} catch (_) {
+  print('oops');
+}
+</code></pre>
+<ul>
+<li>函数参数，如 <code>list.where((_) =&gt; true);</code></li>
+<li>范型类型及函数类型参数， 如</li>
+</ul>
+<pre><code class="language-dart">class T&lt;_&gt; {}
+void genericFunction&lt;_&gt;() {}
+</code></pre>
+<p>for循环、函数、catch语句、范型等概念将在后续章节陆续介绍，这里关于通配符有个印象就行。</p>
+<p>更多的示例，可查阅<a href="https://dart.dev/language/variables#wildcard-variables">官方文档</a>。</p>
+<h2 id="参考资料-2"><a class="header" href="#参考资料-2">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/variable">https://dart.dev/language/variable</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="数据类型"><a class="header" href="#数据类型">数据类型</a></h1>
+<p>通常计算机编程语言里的数据类型可以分为基础数据类型与复合数据类型两大类。Dart的基础数据类型包括：</p>
+<ul>
+<li><a href="ch01/dartpl0104.html#%E6%95%B0%E5%AD%97">数字（int 整数，double 浮点数）</a></li>
+<li><a href="ch01/dartpl0104.html#%E5%AD%97%E7%AC%A6%E4%B8%B2string">字符串 （String）</a></li>
+<li><a href="ch01/dartpl0104.html#%E5%B8%83%E5%B0%94bool">布尔 （bool）</a></li>
+<li><a href="ch01/dartpl0104.html#%E7%AC%A6%E6%96%87rune">符文（Rune， 通常使用 <code>characters</code> API）</a></li>
+</ul>
+<p>复合数据类型是基础数据类型的组合。Dart的复合数据类型包括：</p>
+<ul>
+<li><a href="ch01/dartpl0104.html#%E8%AE%B0%E5%BD%95record">记录 (Record)</a></li>
+<li><a href="ch01/dartpl0104.html#%E6%9E%9A%E4%B8%BEenum">枚举（Enum)</a></li>
+<li>列表（List, 数组）</li>
+<li>集合（Set）</li>
+<li>映射（Map）</li>
+<li>类（class)</li>
+</ul>
+<p>Dart还有如下特殊的数据类型：</p>
+<ul>
+<li>函数（Function）</li>
+<li><a href="ch01/dartpl0104.html#%E7%AC%A6%E5%8F%B7symbol">符号（Symbol)</a></li>
+<li><code>null</code> 值 （空值，Null）</li>
+</ul>
+<p>第2章将讨论函数，第4章将讨论类，第6章将讨论列表（List）、集合（Set）、映射（Map）。</p>
+<h2 id="数字"><a class="header" href="#数字">数字</a></h2>
+<p>Dart的数字包括64-bit整数 int 和 64-bit浮点数 double。
+int的取值范围为 -2<sup>63</sup>  至 to 2<sup>63</sup> -1。
+double是双精度浮点数，遵循 IEEE 754 标准。</p>
+<p>Dart是一门OOP编程语言，int和double是num的子类，因此它们有着一些共同的方法，例如:</p>
+<ul>
+<li>parse(string)</li>
+<li>abs()</li>
+<li>ceil()</li>
+<li>toString()</li>
+</ul>
+<p>下面的代码声明了一个整数<code>radius</code> 和一个浮点数 <code>pi</code>：</p>
+<pre><code class="language-dart">// ch0104_1.dart
+void main() {
+  int radius = 5;
+  double pi = 3.1416;
+  print('area: ${radius * radius * pi}'); 
+  // Output: area=78.53999999999999
+}
+</code></pre>
+<p>除了使用十进制书写整数外，还可以用十六进制。可以使用科学计数法书写浮点数。例如：</p>
+<pre><code class="language-dart">// ch0104_2.dart
+void main() {
+  int radius = 0x10;
+  double pi = 0.31416e1;
+  print('radius=$radius area=${radius * radius * pi}');
+  // Output: radius=16 area=804.2496
+}
+</code></pre>
+<p>但是Dart并不直接支持书写八进制数。你可以用  octal 包来实现八进制的书写。</p>
+<pre><code class="language-dart">// ch0104_3.dart
+// dart pub add octal
+import 'package:octal/octal.dart'; 
+
+void main() {
+  int decimalValue = octal(123); // 83 in decimal
+  print(decimalValue); // Output: 83
+  print(decimalValue.toRadixString(8)); // Output: 123
+}
+</code></pre>
+<h2 id="字符串string"><a class="header" href="#字符串string">字符串（String）</a></h2>
+<p>Dart中的String是一个UTF-16值的有序序列，写在一对单引号或双引号里。一个非常nice的功能是字符串插值，即在字符串里使用 <code>${expr}</code>  。</p>
+<pre><code class="language-dart">// ch0104_4.dart
+void main() {
+  var str = "It's a beautiful day!";
+  var str2 = 'It\'s a beautiful day!'; 
+  print(str == str2); // Output: true
+
+  var num = 5;
+  print('There are $num apples.'); // Output: There are 5 apples.
+  print('There are ${num + 2} oranges.'); // Output: There are 7 oranges.
+}
+</code></pre>
+<p>上例中<code>str2</code> 写在一对单引号中，该行中的 <code>\</code> 为转义符，<code>\'</code>表示一个单引号。</p>
+<p>两个字符串写在一起，中间可以使用一个<code>+</code>符号（但通常予以省略）， 就表示将这两个字符串顺序拼接在一起，形成一个新的字符串。因此对于多行文本，可以这样写：</p>
+<pre><code class="language-dart">  // ch0104_5.dart
+  var str =
+      'A: Nice to meet you!\n'
+      'B: Nice to meet you, too!';
+</code></pre>
+<p>这里的<code>\n</code>是换行符。书写多行文本更方便的做法是将文本写在一对三引号（<code>'''</code>或<code>"""</code>）中，例如：</p>
+<pre><code class="language-dart">// ch0104_6.dart
+void main() {
+  var minAge = 18;
+  var query =
+      '''
+SELECT id, name, age
+FROM users
+WHERE age &gt;= $minAge
+''';
+  print(query);
+}
+</code></pre>
+<h2 id="布尔bool"><a class="header" href="#布尔bool">布尔（bool）</a></h2>
+<p>布尔类型只有2个值，<code>true</code>和<code>false</code>，且它们都是编译时常量。</p>
+<pre><code class="language-dart">// ch0104_7.dart
+void main() {
+  var isGreater = 43 &gt; 34;
+  print('isGreater: $isGreater'); // Output: isGreater: true
+  print('2 &lt; -3: ${2 &lt; -3}'); // Output: 2 &lt; -3: false
+}
+</code></pre>
+<h2 id="符文rune"><a class="header" href="#符文rune">符文（Rune）</a></h2>
+<p>符文代表unicode文字系统里的一个符号。unicode为世界上每一个文字或符号分配了一个数字，称之为code point。unicode 最多可支持 1,114,112 个code point，通过 17 个 16 位平面实现，每个平面可支持 65,536 个不同的code point。 unicode常见的编码方式（将code point映射为二进制数）有UTF-8、UTF-16和UTF-32。  Dart采用UTF-16编码，每个code unit为16位（2个字节），每个符文占用1个（0-65,535 code point）或2个code unit（65,536及以上)。对字符编码感兴趣的同学，请继续去了解下ASCII、UTF-8、UTF-16和UTF-32、GBK等。</p>
+<p>Dart的String（字符串）本质上是code unit的序列。</p>
+<pre><code class="language-dart">// ch0104_8.dart
+void main() {
+  var s = "笑\u7b11lol😆\u{1f606}"; // 1
+  print(s); // 2 Output: 笑笑lol😆😆
+  print('len: ${s.length}'); // 3 Output: len: 9
+
+  print('code units: ${s.codeUnits}'); // 4
+  // Output: code units: [31505, 31505, 108, 111, 108, 55357, 56838, 55357, 56838]
+
+  print('runes: ${s.runes}'); // 5
+  // Output: runes: (31505, 31505, 108, 111, 108, 128518, 128518)
+
+  print(31505.toRadixString(16)); // 6 Output: 7b11
+  print(128518.toRadixString(16)); // 7 Output: 1f606
+}
+</code></pre>
+<ol>
+<li>声明变量<code>s</code>，注意这里<code>\u7b11</code>就等于<code>笑</code>这个字符，<code>\uHHHH</code>表示<code>\u</code>后面是code point的十六进制表示<code>HHHH</code>；如果该十六进制数不是4位，就必须位于一堆花括号<code>{}</code>中，如<code>\u{1f606}</code>就等于😆这个emoji符号;</li>
+<li>打印 <code>s</code>，从输出结果可以看出 <code>s</code>包含了7个符文（字符);</li>
+<li>打印<code>s</code>的长度，结果为9, 可见是code unit的个数，下面一行代码印证了这一点；</li>
+<li>代码<code>s</code>的code point 序列;</li>
+<li>代码<code>s</code>的符文（字符)序列;</li>
+<li>第6-7行代码分别显示31505和128518对应的十六进制表示，以方便分析。</li>
+</ol>
+<p>请仔细查看code units 与 runes 并进行对比，这将帮助你理解Rune（符文）和String（字符串）。</p>
+<h3 id="使用-characters-包"><a class="header" href="#使用-characters-包">使用 <code>characters</code> 包</a></h3>
+<p>下面这个示例同时演示了<code>characters</code>及<code>StringBuffer</code>类的使用。<code>characters</code> 为<code>String</code>类添加了一个扩展方法（第5章内容）<code>get characters</code>。<code>StringBuffer</code>是拼接字符串的高效方式。代码中使用的 for-each 循环将在下一章节介绍，这里先了解下。</p>
+<pre><code class="language-dart">//ch0104_9.dart
+//dart pub add characters
+import 'package:characters/characters.dart';
+
+void main() {
+  const s = "笑一笑十年少😆"; // 1
+  final sb = StringBuffer(); // 2 
+  for (var ch in s.characters) { // 3
+    sb.write(ch);
+    sb.write(' ');
+  }
+  print(sb);
+}
+
+</code></pre>
+<h2 id="记录record"><a class="header" href="#记录record">记录（Record）</a></h2>
+<p>Dart 3.0 引入了记录这一数据类型。记录是匿名的、不可变的聚合类型，是异质数据的集合。</p>
+<pre><code class="language-dart">// ch0104_a.dart
+void main() {
+  var record = ('class 1', name: 'Alice', id: 1, 'good student'); // 1
+  print(record); // 2 Output: (class 1, good student, id: 1, name: Alice)
+  print(record.$1); // 3 Output: class 1
+  print(record.$2); // Output: good student
+  print(record.id); // 4 Ouput: 1
+  print(record.name); // Output: Alice
+
+  // record.id = 2; // 5
+  // Error: The setter 'id' isn't defined for the class '(String, String, {int id, String name})'.
+  // Try correcting the name to the name of an existing setter, or defining a setter or field named 'id'.
+  //   record.id = 2;
+  //          ^^
+}
+</code></pre>
+<ol>
+<li>声明一个变量<code>record</code>并赋值，如你所见，记录有位置字段和命名字段（如这里的<code>id</code>和<code>name</code>）;</li>
+<li>打印 <code>record</code>，注意观察字段的显示顺序;</li>
+<li>打印 <code>record</code> 的第1个位置字段<code>record.$1</code> ;</li>
+<li>打印 <code>record</code> 的命名字段 <code>record.id</code>;</li>
+<li>修改 <code>record</code> 的<code>id</code>，遭遇编译错误，这说明了记录是不可变的，同时从错误信息中可以看出，记录是一种特殊的匿名类。</li>
+</ol>
+<h3 id="记录类型"><a class="header" href="#记录类型">记录类型</a></h3>
+<p>记录（Record）没有明确的类型声明，因为它是匿名的，但记录是有形状（Shaple）的。本例中 <code>record</code>的形状为<code>(String, String, {int id, String name})</code>；在一对花括号(<code>{}</code>)里的<code>int id, String name</code> 为命名字段 <code>id</code>与<code>name</code>，其类型分别为<code>int</code>与<code>String</code>；没有花括号包围的便是位置字段。</p>
+<pre><code class="language-dart">// ch01004_b.dart
+void main() {
+  (int x, int y, int z) point = (1, 2, 3);
+  var color = (1, 2, 3);
+  print(point); // Output: (1, 2, 3)
+  print(point == color); // Output: true
+
+  ({int x, int y, int z}) point2 = (x: 1, y: 2, z: 3);
+  var color2 = (r: 1, g: 2, b: 3);
+  print(point2); // Output: (x: 1, y: 2, z: 3)
+  print(color2); // Output: (b: 3, g: 2, r: 1)
+  print(point2 == color2); // Output: false
+}
+</code></pre>
+<p><code>point</code> 与 <code>color</code>具有相同的形状和值，因此他们是相等的，而<code>point2</code> 与 <code>color2</code>的形状不同，自然就不相等。</p>
+<h3 id="解构与变量交换"><a class="header" href="#解构与变量交换">解构与变量交换</a></h3>
+<p>记录的解构与变量交换非常实用。</p>
+<pre><code class="language-dart">// ch0104_c.dart
+void main() {
+  var (x, y) = (1, 2); // 1
+  print('x=$x y=$y'); // Output: x=1 y=2
+
+  (y, x) = (x, y); // 2
+  print('x=$x y=$y'); // Output: x=2 y=1
+
+  var (:name, :age) = (name: 'Bob', age: 20); // 3
+  print('name=$name b=$age'); // Output: name=Bob b=20
+
+  var (x: a, y: b) = (x: 3, y: 4); // 4
+  print('a=$a b=$b'); // Output: a=3 b=4
+  
+  var (who, _, :nickname, fav: _) = (
+    'Robert',
+    'Naughty boy',
+    nickname: 'Bob',
+    fav: 'play the guitar',
+  ); // 5
+  print('who=$who nickname=$nickname'); // Output: who=Robert nickname=Bob
+}
+</code></pre>
+<ol>
+<li>解构记录<code>(1,2)</code>至局部变量<code>x</code>和<code>y</code>，这里使用了模式匹配（第3章内容）;</li>
+<li>交换<code>x</code>和<code>y</code>的值;</li>
+<li>使用冒号（<code>:</code>）语法，解构命名记录<code> (name: 'Bob', age: 20)</code>至局部变量<code>name</code>和<code>age</code> ;</li>
+<li>解构命名记录<code>  (x: 3, y: 4)</code>至局部变量<code>a</code>和<code>b</code> ;</li>
+<li>这是一个综合例子，请运用已学知识自行分析。</li>
+</ol>
+<h2 id="枚举enum"><a class="header" href="#枚举enum">枚举（Enum）</a></h2>
+<p>枚举是一种用于表示固定数量的常量值的特殊类。使用关键字<code>enum</code>声明个一个枚举。</p>
+<pre><code class="language-dart">// ch0104_d.dart
+enum Color { red, green, blue }
+
+void main() {
+  print(Color.red); // Output: Color.red
+  print(Color.blue.name); // Output: blue
+  print(Color.blue.index); // Output: 2
+}
+</code></pre>
+<p>每个枚举值都有个与之关联的数字，称之为<code>index</code>，该数字从0开始。枚举是一种特殊的类，因此它也可以定义字段（实例变量）和方法，只不过有一些限制，例如枚举的实例变量必须声明为<code>final</code>。第4章会更详细地讨论枚举。</p>
+<h2 id="符号symbol"><a class="header" href="#符号symbol">符号（Symbol)</a></h2>
+<p>符号对象表示 Dart 程序中声明的操作符或标识符。一般极少用到，在此了解即可。</p>
+<pre><code class="language-dart">// ch0104_e.dart
+void main() {
+  print(#foo); // Output: Symbol("foo")
+}
+</code></pre>
+<h2 id="typedef"><a class="header" href="#typedef">typedef</a></h2>
+<p>用<code>typedef</code>关键字为数据类型取一个别名。</p>
+<pre><code class="language-dart">//ch0104_f.dart
+typedef Point = ({int x, int y});
+typedef VoidCallback = void Function();
+typedef IntList = List&lt;int&gt;;
+
+void main() {
+  Point p = (x: 1, y: 2);
+  IntList nums = [3, 4, 5];
+}
+
+</code></pre>
+<h2 id="小测验"><a class="header" href="#小测验">小测验</a></h2>
+<p>以下程序的输出是什么?</p>
+<pre><code class="language-dart">// ch01004_quiz.dart
+void main() {
+  var point = (x: 1, y: 2, z: 3);
+  ({num x, int y, int z}) point2 = (x: 1, y: 2, z: 3);
+  print(point == point2);
+}
+</code></pre>
+<h2 id="参考资料-3"><a class="header" href="#参考资料-3">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/built-in-types">https://dart.dev/language/built-in-types</a></li>
+<li><a href="https://pub.dev/documentation/octal/latest/">https://pub.dev/documentation/octal/latest/</a></li>
+<li><a href="https://docs.oracle.com/cd/E19253-01/817-2521/overview-207/index.html">Unicode Overview</a></li>
+<li><a href="https://dart.dev/language/records">https://dart.dev/language/records</a></li>
+<li><a href="https://dart.dev/language/enums">https://dart.dev/language/enums</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="操作符"><a class="header" href="#操作符">操作符</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="注释"><a class="header" href="#注释">注释</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="if-与-switch-语句"><a class="header" href="#if-与-switch-语句">if 与 switch 语句</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="for-与-while-循环"><a class="header" href="#for-与-while-循环">for 与 while 循环</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="断言"><a class="header" href="#断言">断言</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="函数"><a class="header" href="#函数">函数</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="arrow语法与-typedef"><a class="header" href="#arrow语法与-typedef">arrow语法与 typedef</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="位置参数与命名参数"><a class="header" href="#位置参数与命名参数">位置参数与命名参数</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="匿名函数嵌套函数"><a class="header" href="#匿名函数嵌套函数">匿名函数、嵌套函数</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="使用tryoncatch捕捉异常"><a class="header" href="#使用tryoncatch捕捉异常">使用try...on...catch捕捉异常</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="模式简介及使用场景"><a class="header" href="#模式简介及使用场景">模式简介及使用场景</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="模式类型"><a class="header" href="#模式类型">模式类型</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="应用案例"><a class="header" href="#应用案例">应用案例</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="封装与可见性"><a class="header" href="#封装与可见性">封装与可见性</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="构造函数this关键字与初始化列表"><a class="header" href="#构造函数this关键字与初始化列表">构造函数、this关键字与初始化列表</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="命名构造器"><a class="header" href="#命名构造器">命名构造器</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="重定向构造器"><a class="header" href="#重定向构造器">重定向构造器</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="factory构造器"><a class="header" href="#factory构造器">factory构造器</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="使用late延迟初始化"><a class="header" href="#使用late延迟初始化">使用late延迟初始化</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="const构造器与const变量"><a class="header" href="#const构造器与const变量">const构造器与const变量</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="getter-与-setter-方法"><a class="header" href="#getter-与-setter-方法">getter 与 setter 方法</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="操作符重载"><a class="header" href="#操作符重载">操作符重载</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="callable-类"><a class="header" href="#callable-类">callable 类</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="枚举"><a class="header" href="#枚举">枚举</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="注解"><a class="header" href="#注解">注解</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="super构造器"><a class="header" href="#super构造器">super构造器</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="抽象类"><a class="header" href="#抽象类">抽象类</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="接口与implements关键字"><a class="header" href="#接口与implements关键字">接口与implements关键字</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="使用mixin创建可复用代码"><a class="header" href="#使用mixin创建可复用代码">使用Mixin创建可复用代码</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="使用extension扩展已有的类"><a class="header" href="#使用extension扩展已有的类">使用extension扩展已有的类</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="范型"><a class="header" href="#范型">范型</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="列表-list"><a class="header" href="#列表-list">列表 List</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="集合-set"><a class="header" href="#集合-set">集合 Set</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="使用-map-创建键值对集合"><a class="header" href="#使用-map-创建键值对集合">使用 Map 创建"键值对"集合</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hashcode-与equals-操作符"><a class="header" href="#hashcode-与equals-操作符">hashCode 与equals (==操作符)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="transform方法"><a class="header" href="#transform方法">Transform方法</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="futureasync-与-await"><a class="header" href="#futureasync-与-await">Future、async 与 await</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="iterable-stream-sync-async-与-yield"><a class="header" href="#iterable-stream-sync-async-与-yield">Iterable 、Stream 、sync*、 async* 与 yield</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="stream命名构造器"><a class="header" href="#stream命名构造器">Stream命名构造器</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="使用listenawait-for-订阅-stream"><a class="header" href="#使用listenawait-for-订阅-stream">使用listen()/await for 订阅 Stream</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="isolate介绍"><a class="header" href="#isolate介绍">Isolate介绍</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="testgroup"><a class="header" href="#testgroup">test/group</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="测试异步代码"><a class="header" href="#测试异步代码">测试异步代码</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="使用mockito模拟外部依赖"><a class="header" href="#使用mockito模拟外部依赖">使用mockito模拟外部依赖</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="dart命令行工具"><a class="header" href="#dart命令行工具">dart命令行工具</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="solid编码准则"><a class="header" href="#solid编码准则">SOLID编码准则</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="编写dart命令行程序"><a class="header" href="#编写dart命令行程序">编写Dart命令行程序</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="编写dart服务端编程"><a class="header" href="#编写dart服务端编程">编写Dart服务端编程</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="dart-常用package介绍"><a class="header" href="#dart-常用package介绍">Dart 常用package介绍</a></h1>
 
                     </main>
 

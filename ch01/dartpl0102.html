@@ -1,0 +1,395 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>变量与Null safety - 从0开始学Dart</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">从0开始学Dart</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="变量与null-safety"><a class="header" href="#变量与null-safety">变量与Null safety</a></h1>
+<h2 id="什么是变量"><a class="header" href="#什么是变量">什么是变量</a></h2>
+<p>计算机编程语言里的变量（Variable）与数学公式里的变量类似。请看下面这段Dart代码:</p>
+<pre><code class="language-dart">// ch0102-1
+void main() {
+  var x = 3;  // 1
+  var (y, z) = (4, 5); // 2
+  print('x = $x, y = $y, z = $z'); // 3 Output: x = 3, y = 4, z = 5
+  print('x + y + z = ${x + y + z}'); // 4 Output: x + y + z = 12
+}
+</code></pre>
+<p>这段简短的代码只有一个函数，那就是<code>main</code>，整个程序的入口。代码中的 <code>//</code> 是注释，是为了帮助人们阅读代码，Dart编译器会忽略它。</p>
+<ol>
+<li>使用<code>var</code>关键字，声明变量x，并给<code>x</code>赋值为 3，Dart编译器自动推断其类型为<code> int</code> （integer, 整数）;</li>
+<li>同时声明两个变量<code>x</code>和<code>y</code>，分别赋值为4和5，这里使用了record的模式匹配（第3章内容，这里看不懂也没关系）;</li>
+<li>分别将<code>x</code>，<code>y</code>，<code>z</code>的值打印（显示）到控制台（标准输出设备 stdout）；</li>
+<li>计算 <code>x + y + z</code> 并打印。</li>
+</ol>
+<p>第1句也可以写成 <code>int x = 3;</code> 也等同于</p>
+<pre><code class="language-dart">int x;
+x = 3;
+</code></pre>
+<p>第2句也可以写成</p>
+<pre><code class="language-dart">  var y= 4, z = 5;
+</code></pre>
+<p>第3、4两句中的 <code>$x</code>, <code>$y</code>, <code>$z</code> 以及 <code>${x + y + z}</code> 为 字符串插值，非常直观和方便。</p>
+<p><code>var x </code>声明了一个变量，它的标识符为<code>x</code>; 标识符，通俗地说就是给变量、函数、类、方法等起个名字，方便使用，就像我们给宠物取个名，方便呼唤。Dart语言的标识符可以是下列字符的组合：</p>
+<ul>
+<li>字母</li>
+<li>数字</li>
+<li><code>_</code> 和 <code>$</code></li>
+</ul>
+<p>但不能以数字开头。这些都是合法的标识符:  <code>practiceMakesPerfect</code>, <code>_imPrivate</code>, <code>_$GeneratedCode</code>, <code>$happy365</code>。</p>
+<p><code>var</code>修饰的变量 ，可以后续更改，比如</p>
+<pre><code class="language-dart">// ch0102-3
+void main() {
+  var x = 3;
+  x = 30;
+  print('x = $x'); // Output: x = 30
+}
+</code></pre>
+<p>变量除了可以表示数字，还可以表示文本（字符串）等.  例如</p>
+<pre><code class="language-dart">// ch0102-4
+void main(){
+  var name = 'Dart';
+  print('Hello, $name!'); // Output: Hello, Dart!
+}
+</code></pre>
+<p>这里的数字、字符串等，就是所谓的数据类型（本章第4节内容，这里不再展开）。</p>
+<h2 id="优先使用-var-声明变量"><a class="header" href="#优先使用-var-声明变量">优先使用 <code>var </code>声明变量</a></h2>
+<p>对于  <code>var x = 3;</code> 也可以写成 <code>int x = 3</code>，你可能有个疑问，哪种情况下用哪种方式呢？官方的建议是，多数情况下，我们应该使用 var (而非实际类型) 声明变量，这样做除了可以使代码更短之外，还能提高代码的可读性。</p>
+<p>如果我们仅仅声明变量（不赋值），应该写出实际的类型，因为这时候Dart无法推断出变量的数据类型，如</p>
+<pre><code class="language-dart">int x;
+</code></pre>
+<p>如果我们这样写</p>
+<pre><code class="language-dart">var x;
+</code></pre>
+<p>Dart编译器就认为 x 的类型为 <code>dynamic</code> ，这种类型可以表示任何数据，通常情况下我们应该避免这样做，因为Dart的静态类型检查对<code>dynamic</code>无效（可能暗藏bug）。</p>
+<h2 id="使用--late-延迟初始化"><a class="header" href="#使用--late-延迟初始化">使用  <code>late</code> 延迟初始化</a></h2>
+<p>有时候我们希望延迟变量的初始化（特别在Flutter的StatefulWidget中），这时就用到 <code>late</code> 关键字， 例如</p>
+<pre><code class="language-dart">// ch0102-5
+void main() {
+  late String action = 'go camping';
+  var isReady = true; // it may take some time to prepare
+  if (isReady) {
+    print("Let's $action!"); // Output: Let's go camping!
+  }
+}
+</code></pre>
+<p>这里先了解下，第4章会有更多关于 <code>late</code>  的讨论。</p>
+<h2 id="null-safety"><a class="header" href="#null-safety">Null safety</a></h2>
+<h3 id="nnbd"><a class="header" href="#nnbd">NNBD</a></h3>
+<p>从Dart 2.10 开始，变量默认非 <code>null</code>（non-nullable by defaullt, NNBD)；<code>null</code> 表示空值。 比如下面这段代码无法编译</p>
+<pre><code class="language-dart">// ch0102-6
+void main() {
+  int x;
+  print('x = $x'); 
+
+  // Error: Non-nullable variable 'x' must be assigned before it can be used.
+  // print('x = $x'); 
+  //             ^
+}
+</code></pre>
+<p>当我们尝试编译上面这段代码时，出现编译错误，告诉我们在使用变量<code>x</code>之前必须初始化它。</p>
+<p>如果要使用<code>null</code>， 可以像下面这样:</p>
+<pre><code class="language-dart">// ch0102-7
+void main() {
+  int? x;
+  print('x = $x'); // Output: x = null
+}
+</code></pre>
+<p>这里的 <code> int? x</code> 表示变量<code>x</code> 的初始值为<code>null</code>,   <code>x</code> 是一个nullable变量。</p>
+<p>注：
+熟悉Java的朋友想必对<code>NullPointerException</code> (NPE) 并不陌生，这个Exception是一个运行时异常；为了提高代码的健壮性，经常要对方法的入参进行非空检查，否则就很容易遭遇NPE（这个问题有时难以排查，尤其在大型软件项目里）。例如下面这段Java代码</p>
+<pre><code class="language-java">void doSomething(String str) {
+  if (str == null){
+    throw new IllegalArgumentException("doSomething: str cannot be null");
+  }
+  // Do something
+}
+</code></pre>
+<p>我想这便是Dart  NNBD的原因。</p>
+<h3 id="访问nullable变量"><a class="header" href="#访问nullable变量">访问nullable变量</a></h3>
+<p>有几个nullable变量相关的访问/赋值，有必要介绍一下，你以后再看到下面这些符号就不会感到陌生了。</p>
+<h3 id="----"><a class="header" href="#----"><code>??</code> 、 <code>??=</code>、  <code>!</code></a></h3>
+<pre><code class="language-dart">// ch0102-8
+void main() {
+  int? x;
+  var y = x ?? 10; // 1
+  var z = y ?? 20; // 1a
+  print('y = $y, z = $z'); // Output: y = 10, z = 10
+
+  int? y2;
+  y ??= 100; // 2
+  y2 ??= 100; // 2a
+  print('y = $y, y2 = $y2'); // Output: y = 10, y2 = 100
+
+  var a = y!; // 3
+  print('a = $a'); // Output: a = 10
+
+  var b = x!; // 3a
+  print('b = $b');
+  // Unhandled exception:
+  // Null check operator used on a null value
+}
+</code></pre>
+<ol>
+<li>如果 <code>x</code>为<code>null</code>，<code>y</code>赋值为10， 否则将<code>x</code>的值赋给<code>y</code>；</li>
+<li>如果 <code>y</code>为<code>null</code>，<code>y</code>赋值为100，否则啥也不做；</li>
+<li>断言<code>y</code>一定非空(<code>null</code>)，并将<code>y</code>的值赋给<code>a</code>；如果<code>y</code>为<code>null</code>，在程序运行时会出现一个Null check异常（见3a）。</li>
+</ol>
+<p>请对比 1和1a， 2和2a，以及3和3a的结果。</p>
+<h3 id="-"><a class="header" href="#-"><code>?.</code> 、<code>?[]</code></a></h3>
+<pre><code class="language-dart">// ch0102-9
+void main() {
+  var abc = 'ABCD';
+  String? def;
+
+  var first = abc?[0]; // 1
+  var second = def?[0]; // 1a
+  print('first = $first, second = $second'); // Output: first = A, second = null
+
+  var len1 = abc?.length; // 2
+  var len2 = def?.length; // 2a
+  print('len1 = $len1, len2 = $len2'); // Output: len1 = 4, len2 = null
+
+  var len3 = def?.length ?? 0; // 3
+  print('len3 = $len3'); // Output: len3 = 0
+}
+</code></pre>
+<ol>
+<li>如果<code>abc</code>为<code>null</code>，<code>first</code>为<code>null</code>， 否则将<code>abc[0]</code>的值赋给<code>first</code>；</li>
+<li>如果<code>abc</code>为<code>null</code>，<code>len1</code>为<code>null</code>， 否则将<code>abc.length</code>的值赋给<code>len1</code>；</li>
+<li>这是一个综合的例子，同时使用了 <code>?.</code>与 <code>??</code> 符号。</li>
+</ol>
+<p>注：本例中的 <code>abc[0]</code> 返回第0个（下标从0开始）unicode字符，<code>abc.length</code>返回<code>abc</code>的长度。</p>
+<h3 id=""><a class="header" href="#"><code>...?</code></a></h3>
+<pre><code class="language-dart">// ch0102-a
+void main() {
+  var arr = [1, 2, 3];
+  var arr2 = [...arr, 4, 5]; // 1
+  print('arr2 = $arr2'); // Output: arr2 = [1, 2, 3, 4, 5]
+
+  var arr3 = [...?arr, 6, 7]; // 1a
+  print('arr3 = $arr3'); // Output: arr3 = [1, 2, 3, 6, 7]
+
+  List&lt;int&gt;? arr4;
+  var arr5 = [...?arr4, 8, 9]; // 2
+  print('arr5 = $arr5'); // Output: arr5 = [8, 9]
+
+  List&lt;int&gt;? arr6 = []; // 3
+  var arr7 = [...arr6, -1, -2]; // 3a
+  print('arr7 = $arr7'); // Output:  arr7 = [-1, -2]
+}
+</code></pre>
+<ol>
+<li><code>arr</code>是一个列表（数组）， <code>...arr</code>将展开<code>arr</code>， 此行代码将<code>arr</code>以及 4, 5 一起组成一个新的列表，并将其赋值给<code>arr2</code>;</li>
+<li>本行代码 与 1 类似，  区别在于，这里必须使用  <code>...?arr4</code> 执行展开操作，否则无法编译通过;</li>
+<li><code>arr6</code> 跟<code>arr4</code>一样，是一个nullable变量，但其初始值为一个空的列表（不是<code>null</code>），就可以用<code>...</code>对其进行展开，可见Dart编译器非常智能。</li>
+</ol>
+<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/variables">https://dart.dev/language/variables</a></li>
+<li><a href="https://dart.dev/effective-dart/design#types">https://dart.dev/effective-dart/design#types</a></li>
+<li><a href="https://dart.dev/null-safety">https://dart.dev/null-safety</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../ch01/dartpl0101.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../ch01/dartpl0103.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../ch01/dartpl0101.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../ch01/dartpl0103.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
