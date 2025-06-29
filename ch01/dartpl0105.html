@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light sidebar-visible" dir="ltr">
+<html lang="en" class="navy sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -29,12 +29,15 @@
         <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
 
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
         <!-- Provide site root and default themes to javascript -->
         <script>
             const path_to_root = "../";
-            const default_light_theme = "light";
+            const default_light_theme = "navy";
             const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
@@ -65,7 +68,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
-            html.classList.remove('light')
+            html.classList.remove('navy')
             html.classList.add(theme);
             html.classList.add("js");
         </script>
@@ -156,6 +159,161 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="操作符"><a class="header" href="#操作符">操作符</a></h1>
+<p>计算机程序的表达式由操作符和操作数构成。如<code>1+2</code>这个表达式中，<code>+</code>是操作符，数字<code>1</code>和<code>2</code>是操作数。如果表达式中只有一个操作数，它便是一元表达式；如果有两个操作数，它便是二元表达式；类似地还有三元表达式。一元表达式中的操作符为一元操作符。</p>
+<p>Dart提供了非常丰富的操作符，且支持为类（class，第4-5章内容）定义操作符。</p>
+<ul>
+<li><a href="#%E7%AE%97%E6%9C%AF%E6%93%8D%E4%BD%9C%E7%AC%A6">算术操作符</a></li>
+<li><a href="#%E5%85%B3%E7%B3%BB%E6%93%8D%E4%BD%9C%E7%AC%A6">关系操作符</a></li>
+<li><a href="#%E7%B1%BB%E5%9E%8B%E6%B5%8B%E8%AF%95%E6%93%8D%E4%BD%9C%E7%AC%A6">类型测试操作符</a></li>
+<li><a href="#%E8%B5%8B%E5%80%BC%E6%93%8D%E4%BD%9C%E7%AC%A6">赋值操作符</a></li>
+<li><a href="#%E9%80%BB%E8%BE%91%E6%93%8D%E4%BD%9C%E7%AC%A6">逻辑操作符</a></li>
+<li><a href="#%E4%BD%8D%E6%93%8D%E4%BD%9C%E7%AC%A6">位操作符</a></li>
+<li><a href="#%E6%9D%A1%E4%BB%B6%E8%A1%A8%E8%BE%BE%E5%BC%8F">条件表达式</a></li>
+<li><a href="#%E7%BA%A7%E8%81%94%E7%AC%A6%E5%8F%B7">级联符号</a></li>
+<li><a href="#%E5%85%B6%E4%BB%96%E6%93%8D%E4%BD%9C%E7%AC%A6">其他操作符</a></li>
+</ul>
+<h2 id="算术操作符"><a class="header" href="#算术操作符">算术操作符</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<tr><td><code>+</code></td><td>加</td><td><code>1 + 2</code>  <span class="hljs-comment"> <em>//3</em></span></td></tr>
+<tr><td><code>-</code></td><td>减</td><td><code>4 - 3</code>  <span class="hljs-comment">  <em>//1</em></span></td></tr>
+<tr><td><code>-</code><span class="hljs"><em>expr</em></span></td><td>符号取反</td><td><code>-x</code></td></tr>
+<tr><td><code>*</code></td><td>乘</td><td><code>3 * 5</code>  <span class="hljs-comment"> <em>//15</em></span></td></tr>
+<tr><td><code>/</code></td><td>除，结果是一个浮点数</td><td><code>7 / 2</code>  <span class="hljs-comment">  <em>//3.5</em></span></td></tr>
+<tr><td><code>~/</code></td><td>整除，除法的整数部分，结果是一个整数</td><td><code>7 ~/ 2</code>  <span class="hljs-comment">  <em>//3</em></span></td></tr>
+<tr><td><code>%</code></td><td>模，除法的余数部分，结果是一个整数或浮点数</td><td><code>7 % 2</code>  <span class="hljs-comment">  <em>//1</em></span></td></tr>
+</tbody></table>
+</div>
+<p>Dart支持自增（<code>++</code>）与自减（<code>--</code>）一元操作符。表达式<code>x++</code> 相当于<code>x = x+1</code>，<code>x--</code> 相当于<code>x = x-1</code>。 这两个操作符位于操作数之前或之后均可，但有区别。</p>
+<pre><code class="language-dart">// ch0105_1.dart
+void main() {
+  var x = 3, y = 3;
+  print('${x++} $x'); // Output: 3 4
+  print('${++y} $y'); // Output: 4 4
+}
+</code></pre>
+<p>表达式<code>x++</code> 的值为<code>x</code>，先返回<code>x</code>，再将<code>x</code>自增1；而表达式<code>++x</code>的值为<code>x+1</code>，也就是先将<code>x</code>自增1，再返回<code>x</code>。
+我们用同样的方式去理解<code>x--</code> 与<code>--x</code>。</p>
+<h2 id="关系操作符"><a class="header" href="#关系操作符">关系操作符</a></h2>
+<p>关系操作符用于布尔表达式（其结果为<code>true</code>或<code>false</code>）。</p>
+<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<tr><td><code>==</code></td><td>等于</td><td><code>5 == 5</code></td></tr>
+<tr><td><code>!=</code></td><td>不等于</td><td><code>6 != 7</code></td></tr>
+<tr><td><code>&gt;</code></td><td>大于</td><td><code>8 &gt; 7</code></td></tr>
+<tr><td><code>&lt;</code></td><td>小于</td><td><code>6 &lt; 9</code></td></tr>
+<tr><td><code>&gt;=</code></td><td>大于等于</td><td><code>4 &gt;= 3</code></td></tr>
+<tr><td><code>&lt;=</code></td><td>小于等于</td><td><code>3 &lt;= 4</code></td></tr>
+</tbody></table>
+</div>
+<p>关于<code>==</code> 操作符：</p>
+<ol>
+<li>如果 <code>x</code> 或 <code>y</code> 为 <code>null</code>，则只有当它们都是 <code>null</code>，<code>x==y</code> 才返回 <code>true</code>；如果只有一个为 <code>null</code>，则<code>x==y</code> 返回 <code>false</code>。</li>
+<li><code>x == y</code>本质上是调用 <code>x</code>的<code>==</code> 操作符方法（以<code>y</code>作为参数），然后返回其结果， 类似于 <code>x.equals(y)</code> 。</li>
+<li>极少情况下，你需要知道<code>x</code>和<code>y</code>是否引用了同一个对象，使用<code>identical(x,y)</code>。</li>
+</ol>
+<blockquote>
+<p><strong><em>NOTE:</em></strong> 方法、对象的概念将在第4章介绍。</p>
+</blockquote>
+<h2 id="类型测试操作符"><a class="header" href="#类型测试操作符">类型测试操作符</a></h2>
+<p><code>as</code>、<code>is</code> 和 <code>is!</code> 操作符用于在运行时检查类型。</p>
+<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<tr><td><code>as</code></td><td>类型转换（该符号也用于<code>import</code>语句中给包取别名）</td><td><code>obj as String</code></td></tr>
+<tr><td><code>is</code></td><td>如果对象具有指定类型返回<code>true</code></td><td><code>obj is double</code></td></tr>
+<tr><td><code>is!</code></td><td>如果对象不具有指定类型返回<code>true</code></td><td><code>obj is! num</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="赋值操作符"><a class="header" href="#赋值操作符">赋值操作符</a></h2>
+<p>首先来看 <code>=</code> 和 <code>??=</code> 这两个赋值操作符。</p>
+<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<tr><td><code>=</code></td><td>赋值</td><td><code>x = 123;</code></td></tr>
+<tr><td><code>??=</code></td><td>仅当变量为<code>null</code>才对其赋值</td><td><code> x ??= 234;</code></td></tr>
+</tbody></table>
+</div>
+<p>复合赋值操作符组合了一个操作和赋值，以 <code>+=</code> 为例，<code> x += y</code> 就等价于 <code> x = x + y</code>。假设  <code>op</code> 是一个操作符，那么 <code>a op= b</code> 等价于  <code> a = a op b</code>。以下是复合赋值操作符：</p>
+<div class="table-wrapper"><table><thead><tr><th></th><th></th><th></th><th></th></tr></thead><tbody>
+<tr><td><code>*=</code></td><td><code>%=</code></td><td><code>&gt;&gt;&gt;=</code></td><td><code>^=</code></td></tr>
+<tr><td><code>+=</code></td><td><code>/=</code></td><td><code>&lt;&lt;=</code></td><td><code>&amp;=</code></td></tr>
+<tr><td><code>|=</code></td><td><code>-=</code></td><td><code>~/=</code></td><td><code>&gt;&gt;=</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="逻辑操作符"><a class="header" href="#逻辑操作符">逻辑操作符</a></h2>
+<p>您使用逻辑运算符反转或组合布尔表达式。</p>
+<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<tr><td><code>!</code><span class="hljs"><em>expr</em></span></td><td>逻辑非，逻辑取反</td><td><code>!x</code></td></tr>
+<tr><td><code>||</code></td><td>逻辑或（OR）</td><td><code>x == 3 || x ==4</code></td></tr>
+<tr><td><code>&amp;&amp;</code></td><td>逻辑与（AND）</td><td><code> x &gt;=1 &amp;&amp;  y &lt; 6</code></td></tr>
+</tbody></table>
+</div>
+<p>下面是一个稍微复杂的例子：</p>
+<pre><code class="language-dart">if (ok &amp;&amp; (x &lt; 5 || y &gt; 6)) {
+    print('good');
+}
+</code></pre>
+<h2 id="位操作符"><a class="header" href="#位操作符">位操作符</a></h2>
+<p>Dart可以对数字的每一位（bit）进行操作。</p>
+<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<tr><td><code>&amp;</code></td><td>与（AND）</td><td><code> 1 &amp; 2</code> <span class="hljs-comment">  <em>//0</em></span></td></tr>
+<tr><td><code>|</code></td><td>或（OR）</td><td><code>1 | 2</code><span class="hljs-comment">  <em>//3</em></span></td></tr>
+<tr><td><code>^</code></td><td>异或（XOR）</td><td><code>2 ^ 3</code><span class="hljs-comment">  <em>//1</em></span></td></tr>
+<tr><td><code>~</code><span class="hljs"><em>expr</em></span></td><td>按位补码（0变为1，1变为0）</td><td><code>～1</code><span class="hljs-comment">  <em>//-2</em></span></td></tr>
+<tr><td><code>&lt;&lt;</code></td><td>左移位</td><td><code>1 &lt;&lt; 10</code><span class="hljs-comment">  <em>//1024</em></span></td></tr>
+<tr><td><code>&gt;&gt;</code></td><td>右移位</td><td><code>1024 &gt;&gt; 9</code><span class="hljs-comment">  <em>//2</em></span></td></tr>
+<tr><td><code>&gt;&gt;&gt;</code></td><td>无符号右移</td><td><code>-1 &gt;&gt;&gt; 61</code><span class="hljs-comment">  <em>//7</em></span></td></tr>
+</tbody></table>
+</div>
+<h2 id="条件表达式"><a class="header" href="#条件表达式">条件表达式</a></h2>
+<p>先来看下面的代码片段:</p>
+<pre><code class="language-dart">  int n;
+  if (x &lt; 3) {
+    n = 3;
+  } else {
+    n = x;
+  }
+</code></pre>
+<p>上面计算<code>n</code> 的代码，用条件表达式就简化为:</p>
+<pre><code class="language-dart">  var n = x &lt; 3 ? 3 : x;
+</code></pre>
+<p>条件表达式 <code>condition  ?  expr1  :  expr2</code> ，有 <code>?</code>和<code>:</code>2个操作符，<code>?</code>之前为一个表示条件的布尔表达式<code>condition</code>；如果<code>condition</code>的值为<code>true</code>，该表达式的值就取<code>expr1</code>的值，否则取 <code>expr2</code>的值。</p>
+<h2 id="级联符号"><a class="header" href="#级联符号">级联符号</a></h2>
+<p>Dart的级联符号（<code>..</code> 和 <code>?..</code>）用于对同一个对象进行一系列操作。下面的代码片段：</p>
+<pre><code class="language-dart">  var sb = StringBuffer();
+  sb.write('Hello ');
+  sb.write('Dart');
+  sb.write('!');
+  print(sb);
+</code></pre>
+<p>用级联符号就简化为:</p>
+<pre><code class="language-dart">  print(
+    StringBuffer()
+      ..write('Hello ')
+      ..write('Dart')
+      ..write('!'),
+  );
+</code></pre>
+<p><code>?..</code> 与 <code>..</code>类似，只不过用于nullable对象的第一个操作。</p>
+<pre><code class="language-dart">  sb2
+    ?..write('Hello ')
+    ..write('Dart')
+    ..write('!');
+</code></pre>
+<p>上面代码中的<code>sb2</code>如果是<code>null</code>，就不会执行任何的级联操作。</p>
+<h2 id="其他操作符"><a class="header" href="#其他操作符">其他操作符</a></h2>
+<p>下面的操作符已在前面章节介绍过，不再赘述。</p>
+<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<tr><td><code>()</code></td><td>函数调用</td><td><code>doIt()</code></td></tr>
+<tr><td><code>[]</code></td><td>下标访问</td><td><code>todoList[0]</code></td></tr>
+<tr><td><code>?[]</code></td><td>有条件下标访问</td><td><code>fruits?[0]</code></td></tr>
+<tr><td><code>.</code></td><td>成员访问</td><td><code>point.x</code></td></tr>
+<tr><td><code>?.</code></td><td>有条件成员访问</td><td><code>point?.x</code></td></tr>
+<tr><td><code>!</code></td><td>非空断言</td><td><code>point!</code></td></tr>
+<tr><td><code>...</code></td><td>展开一个集合（collection），插入另一个集合（collection）</td><td><code>...myList</code></td></tr>
+<tr><td><code>...?</code></td><td>与<code>...</code>类似，适用于nullable对象</td><td><code>....?anotherList</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/operators">https://dart.dev/language/operators</a></li>
+<li><a href="https://dart.dev/language/methods#operators">https://dart.dev/language/methods#operators</a></li>
+</ul>
 
                     </main>
 
@@ -203,6 +361,8 @@
         <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
+        <script src="../theme/mermaid.min.js"></script>
+        <script src="../theme/mermaid-init.js"></script>
 
 
     </div>

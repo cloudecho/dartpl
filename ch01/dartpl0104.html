@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light sidebar-visible" dir="ltr">
+<html lang="en" class="navy sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -29,12 +29,15 @@
         <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
 
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
         <!-- Provide site root and default themes to javascript -->
         <script>
             const path_to_root = "../";
-            const default_light_theme = "light";
+            const default_light_theme = "navy";
             const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
@@ -65,7 +68,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
-            html.classList.remove('light')
+            html.classList.remove('navy')
             html.classList.add(theme);
             html.classList.add("js");
         </script>
@@ -285,7 +288,7 @@ void main() {
 <li>打印 <code>s</code>，从输出结果可以看出 <code>s</code>包含了7个符文（字符);</li>
 <li>打印<code>s</code>的长度，结果为9, 可见是code unit的个数，下面一行代码印证了这一点；</li>
 <li>代码<code>s</code>的code point 序列;</li>
-<li>代码<code>s</code>的符文（字符)序列;</li>
+<li>代码<code>s</code>的符文（字符）序列;</li>
 <li>第6-7行代码分别显示31505和128518对应的十六进制表示，以方便分析。</li>
 </ol>
 <p>请仔细查看code units 与 runes 并进行对比，这将帮助你理解Rune（符文）和String（字符串）。</p>
@@ -476,6 +479,8 @@ void main() {
         <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
+        <script src="../theme/mermaid.min.js"></script>
+        <script src="../theme/mermaid-init.js"></script>
 
 
     </div>
