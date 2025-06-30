@@ -1988,6 +1988,17 @@ int gcd(int a, int b) {
 <li>用余数代替原来的除数，用原来的除数代替原来的被除数，转第1步。﻿</li>
 </ol>
 </blockquote>
+<h2 id="递归与循环"><a class="header" href="#递归与循环">递归与循环</a></h2>
+<p>有时，递归函数可以用循环来改写，例如：</p>
+<pre><code class="language-dart">/// Greatest common divisor (loop version)
+int gcd2(int a, int b) {
+  while (b != 0) {
+    (a, b) = (b, a % b);
+  }
+  return a;
+}
+</code></pre>
+<p><code>gcd2</code>与<code>gcd</code>函数的功能一样，只不过使用了循环而非递归来实现。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="异常处理"><a class="header" href="#异常处理">异常处理</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="模式简介及使用场景"><a class="header" href="#模式简介及使用场景">模式简介及使用场景</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="模式类型"><a class="header" href="#模式类型">模式类型</a></h1>
