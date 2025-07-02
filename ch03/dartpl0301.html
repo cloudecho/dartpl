@@ -3,10 +3,17 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>模式简介及使用场景 - 从0开始学Dart</title>
+        <title>模式简介 - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-KBMZK6N2');</script>
+        <!-- End Google Tag Manager -->
 
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -158,7 +165,116 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="模式简介及使用场景"><a class="header" href="#模式简介及使用场景">模式简介及使用场景</a></h1>
+                        <h1 id="模式"><a class="header" href="#模式">模式</a></h1>
+<p>Dart 3.0引入了一个非常强大的功能，模式（Pattern）。一般来说，依据模式的形状及其上下文， 模式可以<a href="#%E5%8C%B9%E9%85%8D">匹配（match）</a>或<a href="#%E8%A7%A3%E6%9E%84">解构（destructure)</a>一个值，匹配与解构可同时进行。</p>
+<h2 id="匹配"><a class="header" href="#匹配">匹配</a></h2>
+<p>模式匹配可以检查一个值是否：</p>
+<ul>
+<li>具有特定的形状;</li>
+<li>是特定常数;</li>
+<li>等于某个值;</li>
+<li>有特定的数据类型。</li>
+</ul>
+<p>这么说还是有点抽象，我们来看下面的示例。</p>
+<pre><code class="language-dart">//ch0301_1.dart
+void main() {
+  const numbers = [1, 2, 3]; // 1
+
+  if (numbers case [_, _, _]) { // 2
+    print('numbers is a list which has 3 elements.');
+  }
+
+  if (numbers case [1, 2, 3]) { // 3
+    print('numbers is exactly [1, 2, 3].');
+  }
+
+  const point = (x: 3, y: 4); // 4
+  
+  if (point case (x: _, y: _)) { // 5
+    print("point is a record with named fields x and y.");
+  }
+}
+
+</code></pre>
+<ol>
+<li>声明了一个<code>const</code>列表<code>numbers</code>;</li>
+<li>检查<code>numbers</code>是否是一个具有2个元素的列表;</li>
+<li>检查<code>numbers</code>是否就等于<code> [1, 2, 3]</code>;</li>
+<li>声明一个记录<code>point</code>;</li>
+<li>检查<code>point</code>是否是一个具有命名字段 <code>x</code> 和 <code>y</code> 的记录（record）。</li>
+</ol>
+<h2 id="解构"><a class="header" href="#解构">解构</a></h2>
+<p>模式解构提供了一种便捷的声明式语法，可以将一个值分解成各部件（parts），并将部分或全部的部件，绑定至局部变量。</p>
+<pre><code class="language-dart">//ch0301_2.dart
+void main() {
+  const numbers = [1, 2, 3]; 
+
+  if (numbers case [var a, var b, _]) { // 1
+    print('a=$a b=$b'); 
+  }
+
+  if (numbers case [var a, ...var rest]) { // 2
+    print('The first element is $a, and the rest is $rest'); 
+  }
+
+  const point = (x: 3, y: 4); 
+
+  if (point case (x: var a, :var y)) { // 3
+    print("a=$a y=$y");
+  }
+}
+</code></pre>
+<ol>
+<li>匹配<code>numbers</code>并绑定前2个元素至变量<code>a</code>和<code>b</code>;</li>
+<li>匹配<code>numbers</code>并绑定第1元素至变量<code>a</code>，绑定剩余的元素至变量<code>rest</code>，注意<code>var rest</code>之前有3个点（<code>....</code>）;</li>
+<li>匹配<code>point</code>，并将其<code>x</code>字段绑定至变量<code>a</code>，<code>y</code>字段绑定至变量<code>y</code>；这里的<code>:var y</code>乃<code>y:var y</code>的简便写法。</li>
+</ol>
+<p>下面是与类相关的模式匹配的一个示例：</p>
+<pre><code class="language-dart">// ch0301_3.dart
+void main() {
+  const point = Point(3, 4); // 4
+  if (point case Point(:var x, :var y, :var z)) { // 5
+    print("x=$x, y=$y, z=$z"); 
+  }
+}
+
+class Point { 
+  const Point(this.x, this.y); // 1
+
+  final int x; // 2
+  final int y; // 2a
+  int get z =&gt; x + y; // 3
+}
+</code></pre>
+<ol>
+<li>这是类<code>Point</code>的构造函数；</li>
+<li><code>x</code> 与<code> y</code> 是<code>Point</code> 的两个公开的字段;</li>
+<li><code>z</code> 是 getter 方法，由<code>x</code>和<code>y</code>计算而成，形式上当成字段来用；</li>
+<li>声明一个变量<code>point</code>，它<code>Point</code>类的一个实例；</li>
+<li>解构<code>point</code>，并将其部件分别绑定值变量 <code>x</code>、<code>y</code>、<code>z</code>。</li>
+</ol>
+<p>解构不但可以绑定字段，还可以绑定函数/方法（在类中定义的函数），也就是为什么在描述解构时，采用了部件（而非字段）这个词。</p>
+<pre><code class="language-dart">// ch0301_4.dart
+void main() {
+  const rect = Rectangle(5, 6);
+  if (rect case Rectangle(:var area)) {
+    print("${area(.1)} m²");
+  }
+}
+
+class Rectangle {
+  const Rectangle(this.a, this.b);
+
+  final double a;
+  final double b;
+
+  double area([double unit = 1]) =&gt; a * b * unit * unit;
+}
+</code></pre>
+<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/patterns">https://dart.dev/language/patterns</a></li>
+</ul>
 
                     </main>
 

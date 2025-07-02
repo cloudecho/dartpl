@@ -8,6 +8,13 @@
 
 
         <!-- Custom HTML head -->
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-KBMZK6N2');</script>
+        <!-- End Google Tag Manager -->
 
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -180,7 +187,7 @@ Dart是Flutter应用的开发语言，它专为客户端优化，支持自动内
 <p>第2章，控制流、函数及异常处理。</p>
 <p>第3章，Dart 强大的模式匹配功能。</p>
 <p>第4-5章，Dart 的 面向对象编程(OOP)，第4章学习用于封装信息的class（类）的构造，第5章学习类的继承及扩展。</p>
-<p>第6章，集合与范型。</p>
+<p>第6章，集合与泛型。</p>
 <p>第7章，异步编程。</p>
 <p>第8章，单元测试。</p>
 <p>附录包括dart命令行工具、编码准则、Dart命令行及服务端编程，以及常用package介绍。</p>
@@ -381,7 +388,7 @@ x = 3;
 <li>数字</li>
 <li><code>_</code> 和 <code>$</code></li>
 </ul>
-<p>但不能以数字开头。这些都是合法的标识符:  <code>practiceMakesPerfect</code>, <code>_imPrivate</code>, <code>_$GeneratedCode</code>, <code>$happy365</code>。</p>
+<p>但不能以数字开头。这些都是合法的标识符:  <code>practiceMakesPerfect</code>, <code>_imPrivate</code>, <code>_$GeneratedCode</code>, <code>$happy365</code>。Dart里以下划线（<code>_</code> ）开头的变量是私有变量。</p>
 <p><code>var</code>修饰的变量 ，可以后续更改，比如</p>
 <pre><code class="language-dart">// ch0102-3
 void main() {
@@ -1715,6 +1722,28 @@ double distance(Point a, Point b) { // 1
 <p>使用arrow语法简化为：</p>
 <pre><code class="language-dart">int increase(int value) =&gt; value + 1;
 </code></pre>
+<h2 id="getter-与-setter"><a class="header" href="#getter-与-setter">getter 与 setter</a></h2>
+<p>getter 与 settter 是一种特殊的函数，分别使用 <code>get</code> 与  <code>set</code> 关键字定义 。</p>
+<pre><code class="language-dart">// ch0204_5.dart
+var _foo = 1;
+
+int get foo =&gt; _foo;
+
+set foo(int value) {
+  if (value &gt; 0) {
+    _foo = value;
+  }
+}
+
+void main() {
+  print('foo=$foo'); // Output: foo=1
+  foo = 2;
+  foo = -1;
+  print('foo=$foo'); // Output: foo=2
+}
+
+</code></pre>
+<p>此例中的<code>foo</code>在使用者看来，就像一个变量，但<code>foo</code> setter 给私有变量 <code>_foo</code>提供了额外的保护，它只将正数赋值给<code>_foo</code>。</p>
 <h2 id="main函数"><a class="header" href="#main函数"><code>main</code>函数</a></h2>
 <p>程序的入口<code>main</code>函数，返回<code>void</code>，有一个可选的参数，其类型为<code>List&lt;String&gt;</code>，用于命令行程序中。</p>
 <pre><code class="language-dart">// ch0204_4.dart
@@ -2000,9 +2029,356 @@ int gcd2(int a, int b) {
 </code></pre>
 <p><code>gcd2</code>与<code>gcd</code>函数的功能一样，只不过使用了循环而非递归来实现。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="异常处理"><a class="header" href="#异常处理">异常处理</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="模式简介及使用场景"><a class="header" href="#模式简介及使用场景">模式简介及使用场景</a></h1>
+<p>Dart代码可以抛出（<code>throw</code>）和捕获（<code>catch</code>）异常（<code>Exception</code>）。异常代表了程序的某种错误，也就是一些意想不到的事情。引发异常的代码分支及其上下文，即测试中的负向路径。</p>
+<p>Dart的函数或方法不会声明它将抛出哪些异常; Dart也不强制要求捕获异常。如果异常发生了却不被处理，抛出异常的 isolate 将被挂起，且通常会被终止。第7章将详细讨论 isolate，这里将其视为一种内存独立的线程（如 <code>main</code> 函数所在的 main isolate）即可。</p>
+<h2 id="抛出异常-trhow"><a class="header" href="#抛出异常-trhow">抛出异常 （<code>trhow</code>）</a></h2>
+<p>Dart程序可以抛出（<code>trhow</code>）什么？答案是除了<code>null</code>外的任何东西。</p>
+<pre><code class="language-dart">// ch0208_1.dart
+void main() {
+  throw 'something bad happened';
+  // Unhandled exception:
+  // something bad happened
+}
+</code></pre>
+<p>此例使用<code>throw</code> 关键字，抛出了一个字符串。</p>
+<h3 id="exception-和-error"><a class="header" href="#exception-和-error"><code>Exception</code> 和 <code>Error</code></a></h3>
+<p>Dart提供了 <code>Exception</code> 和 <code>Error</code> 类及相关子类（第4章将介绍类），官方建议我们在产品代码中抛出 <code>Exception</code> 或 <code>Error</code> 的实现类。例如下面这些类实现了<code>Exception</code>：</p>
+<ul>
+<li><code>AnalysisException</code></li>
+<li><code>DeferredLoadException</code></li>
+<li><code>FileSystemException</code></li>
+<li><code>FormatException</code></li>
+<li><code>IOException</code></li>
+<li><code>IsolateSpawnException</code></li>
+<li><code>PathException</code></li>
+<li><code>RemoteException</code></li>
+<li><code>TimeoutException</code></li>
+</ul>
+<p>我们也可以创建自己的异常类，并实现（<code>implements</code>） <code>Exception</code> 或 <code>Error</code>。</p>
+<pre><code class="language-dart">// ch0208_2.dart
+void main() {
+  throw FooException();
+}
+
+class FooException implements Exception {}
+</code></pre>
+<p><code>Exception</code> 与 <code>Error</code> 的区别：</p>
+<ul>
+<li>
+<p><code> Exception</code>旨在向外传递一个失败信息（例如超时异常 <code>TimeoutException</code>），以便通过编程的方式解决；它应该包含有用的信息，且希望被捕获。</p>
+</li>
+<li>
+<p><code>Error</code>代表了程序员引起的错误（例如断言错误 <code>AssertionError</code>）， 它理应被避免，且通常暗示了一个bug，我们不应捕获它。</p>
+</li>
+</ul>
+<h2 id="捕获异常"><a class="header" href="#捕获异常">捕获异常</a></h2>
+<h3 id="捕获指定类型的异常"><a class="header" href="#捕获指定类型的异常">捕获指定类型的异常</a></h3>
+<p>使用 <code>try...on...catch</code> 语法捕获异常。将可能抛出异常的代码放在<code>try{}</code>代码块中，然后使用<code>on</code>关键字捕获特定类型的异常。</p>
+<pre><code class="language-dart">// ch0208_3.dart
+import 'dart:io';
+
+void main() {
+  var str = 'dart';
+  try {
+    int.parse(str);
+  } on FormatException {
+    stderr.writeln('FormatException: Cannot parse "$str" as an integer.');
+  }
+}
+</code></pre>
+<p>此例试图将字符串<code>"dart"</code>转换为一个整数，引发了 <code>FormatException</code>，随后被捕获。</p>
+<h3 id="捕获异常信息"><a class="header" href="#捕获异常信息">捕获异常信息</a></h3>
+<p>使用<code>catch</code>关键字捕获异常信息（即异常类型的一个实例）。</p>
+<pre><code class="language-dart">// ch0208_4.dart
+void main() {
+  try {
+    int.parse('dart');
+  } on FormatException catch (ex) {
+    print(ex.message); // Output: Invalid radix-10 number
+  } 
+}
+</code></pre>
+<p><code>catch()</code> 还有另一个可选参数，表示异常堆栈。</p>
+<pre><code class="language-dart">// ch0208_5.dart
+void main() {
+  try {
+    int.parse('dart');
+  } on FormatException catch (e, s) {
+    print(e);
+    print(s);
+  }
+}
+</code></pre>
+<h3 id="重新抛出异常"><a class="header" href="#重新抛出异常">重新抛出异常</a></h3>
+<p>使用 <code>rethrow</code>关键字重新抛出异常，且保留原来的堆栈信息。</p>
+<pre><code class="language-dart">// ch0208_6.dart
+void main() {
+  try {
+    parseInt('dart');
+  } catch (_, s) {// 2
+    print(s); // 2a
+  }
+}
+
+int parseInt(String str) {
+  try {
+    return int.parse(str);
+  } on FormatException catch (_, s) {
+    print(s); // 1a
+    rethrow; // 1
+  }
+}
+</code></pre>
+<ol>
+<li>使用<code>rethow</code>关键字将捕获到的<code>FormatException</code>再次抛出;</li>
+<li>这里仅用了<code>catch</code> （没有使用<code>on</code>指定异常类型），表示捕获所有类型的异常。</li>
+</ol>
+<h3 id="捕获多种类型的异常"><a class="header" href="#捕获多种类型的异常">捕获多种类型的异常</a></h3>
+<p>使用多个<code>catch</code>子句来分别处理不同类型的异常。</p>
+<pre><code class="language-dart">//ch0206_7.dart
+void main() {
+  print(safeDivide('8', '2'));
+  print(safeDivide('8', '0'));
+  print(safeDivide('hello', 'dart'));
+}
+
+(String? err, int) safeDivide(String a, String b) {
+  try {
+    return (null, int.parse(a) ~/ int.parse(b));
+  } on FormatException catch (e) {
+    return ('FormatException: ${e.source}', 0);
+  } on UnsupportedError catch (e) { // IntegerDivisionByZeroException
+    return ('UnsupportedError: ${e.message}', 0);
+  } on Exception catch (e) {
+    return ('unknown exception: $e', 0);
+  }
+}
+</code></pre>
+<h2 id="finally"><a class="header" href="#finally"><code>finally</code></a></h2>
+<p>无论<code>try</code> 代码块内是否发生了异常， <code>finally</code>子句都将被执行。<code>finally</code>子句通常用来关闭资源（如打开的系统文件）。</p>
+<pre><code class="language-dart">// ch0208_8.dart
+void main() {
+  try {
+    print(2 ~/ 0);
+  } on UnsupportedError {
+    print('oops');
+  } finally {
+    print('done');
+  }
+  // Output:
+  // oops
+  // done
+}
+</code></pre>
+<h2 id="参考资料-8"><a class="header" href="#参考资料-8">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/error-handling">https://dart.dev/language/error-handling</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="模式"><a class="header" href="#模式">模式</a></h1>
+<p>Dart 3.0引入了一个非常强大的功能，模式（Pattern）。一般来说，依据模式的形状及其上下文， 模式可以<a href="ch03/dartpl0301.html#%E5%8C%B9%E9%85%8D">匹配（match）</a>或<a href="ch03/dartpl0301.html#%E8%A7%A3%E6%9E%84">解构（destructure)</a>一个值，匹配与解构可同时进行。</p>
+<h2 id="匹配"><a class="header" href="#匹配">匹配</a></h2>
+<p>模式匹配可以检查一个值是否：</p>
+<ul>
+<li>具有特定的形状;</li>
+<li>是特定常数;</li>
+<li>等于某个值;</li>
+<li>有特定的数据类型。</li>
+</ul>
+<p>这么说还是有点抽象，我们来看下面的示例。</p>
+<pre><code class="language-dart">//ch0301_1.dart
+void main() {
+  const numbers = [1, 2, 3]; // 1
+
+  if (numbers case [_, _, _]) { // 2
+    print('numbers is a list which has 3 elements.');
+  }
+
+  if (numbers case [1, 2, 3]) { // 3
+    print('numbers is exactly [1, 2, 3].');
+  }
+
+  const point = (x: 3, y: 4); // 4
+  
+  if (point case (x: _, y: _)) { // 5
+    print("point is a record with named fields x and y.");
+  }
+}
+
+</code></pre>
+<ol>
+<li>声明了一个<code>const</code>列表<code>numbers</code>;</li>
+<li>检查<code>numbers</code>是否是一个具有2个元素的列表;</li>
+<li>检查<code>numbers</code>是否就等于<code> [1, 2, 3]</code>;</li>
+<li>声明一个记录<code>point</code>;</li>
+<li>检查<code>point</code>是否是一个具有命名字段 <code>x</code> 和 <code>y</code> 的记录（record）。</li>
+</ol>
+<h2 id="解构"><a class="header" href="#解构">解构</a></h2>
+<p>模式解构提供了一种便捷的声明式语法，可以将一个值分解成各部件（parts），并将部分或全部的部件，绑定至局部变量。</p>
+<pre><code class="language-dart">//ch0301_2.dart
+void main() {
+  const numbers = [1, 2, 3]; 
+
+  if (numbers case [var a, var b, _]) { // 1
+    print('a=$a b=$b'); 
+  }
+
+  if (numbers case [var a, ...var rest]) { // 2
+    print('The first element is $a, and the rest is $rest'); 
+  }
+
+  const point = (x: 3, y: 4); 
+
+  if (point case (x: var a, :var y)) { // 3
+    print("a=$a y=$y");
+  }
+}
+</code></pre>
+<ol>
+<li>匹配<code>numbers</code>并绑定前2个元素至变量<code>a</code>和<code>b</code>;</li>
+<li>匹配<code>numbers</code>并绑定第1元素至变量<code>a</code>，绑定剩余的元素至变量<code>rest</code>，注意<code>var rest</code>之前有3个点（<code>....</code>）;</li>
+<li>匹配<code>point</code>，并将其<code>x</code>字段绑定至变量<code>a</code>，<code>y</code>字段绑定至变量<code>y</code>；这里的<code>:var y</code>乃<code>y:var y</code>的简便写法。</li>
+</ol>
+<p>下面是与类相关的模式匹配的一个示例：</p>
+<pre><code class="language-dart">// ch0301_3.dart
+void main() {
+  const point = Point(3, 4); // 4
+  if (point case Point(:var x, :var y, :var z)) { // 5
+    print("x=$x, y=$y, z=$z"); 
+  }
+}
+
+class Point { 
+  const Point(this.x, this.y); // 1
+
+  final int x; // 2
+  final int y; // 2a
+  int get z =&gt; x + y; // 3
+}
+</code></pre>
+<ol>
+<li>这是类<code>Point</code>的构造函数；</li>
+<li><code>x</code> 与<code> y</code> 是<code>Point</code> 的两个公开的字段;</li>
+<li><code>z</code> 是 getter 方法，由<code>x</code>和<code>y</code>计算而成，形式上当成字段来用；</li>
+<li>声明一个变量<code>point</code>，它<code>Point</code>类的一个实例；</li>
+<li>解构<code>point</code>，并将其部件分别绑定值变量 <code>x</code>、<code>y</code>、<code>z</code>。</li>
+</ol>
+<p>解构不但可以绑定字段，还可以绑定函数/方法（在类中定义的函数），也就是为什么在描述解构时，采用了部件（而非字段）这个词。</p>
+<pre><code class="language-dart">// ch0301_4.dart
+void main() {
+  const rect = Rectangle(5, 6);
+  if (rect case Rectangle(:var area)) {
+    print("${area(.1)} m²");
+  }
+}
+
+class Rectangle {
+  const Rectangle(this.a, this.b);
+
+  final double a;
+  final double b;
+
+  double area([double unit = 1]) =&gt; a * b * unit * unit;
+}
+</code></pre>
+<h2 id="参考资料-9"><a class="header" href="#参考资料-9">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/patterns">https://dart.dev/language/patterns</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="模式的使用场景"><a class="header" href="#模式的使用场景">模式的使用场景</a></h1>
+<p>模式可用于下列地方：</p>
+<ul>
+<li><a href="ch03/dartpl0302.html#%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E5%A3%B0%E6%98%8E%E5%92%8C%E8%B5%8B%E5%80%BC">局部变量声明和赋值</a></li>
+<li><a href="ch03/dartpl0302.html#if-case-%E5%92%8C-switch-case">if-case 和 switch-case</a></li>
+<li><a href="ch03/dartpl0302.html#for-%E5%92%8C-for-in-%E5%BE%AA%E7%8E%AF">for 和 for-in 循环</a></li>
+<li><a href="ch03/dartpl0302.html#%E9%9B%86%E5%90%88%E5%AD%97%E9%9D%A2%E9%87%8Fcollection-literals%E4%B8%AD%E7%9A%84%E6%8E%A7%E5%88%B6%E6%B5%81">集合字面量（collection literals）中的控制流(if、for)</a></li>
+</ul>
+<h2 id="局部变量声明和赋值"><a class="header" href="#局部变量声明和赋值">局部变量声明和赋值</a></h2>
+<pre><code class="language-dart">// ch0302_1.dart
+void main() {
+  var (name, :id, [a, b, c]) = ('Tom', id: 1, [3, 4, 5]); // 1
+  print('name=$name id=$id a=$a b=$b c=$c');
+  // Output: name=Tom id=1 a=3 b=4 c=5
+
+  (a, b) = (b, a); // 2
+  print('a=$a b=$b'); // Output: a=4 b=3
+}
+</code></pre>
+<ol>
+<li>这行代码展示了模式如何用于局部变量声明;</li>
+<li>这里使用了模式的局部变量赋值，交换两个变量的值。</li>
+</ol>
+<h2 id="if-case-和-switch-case"><a class="header" href="#if-case-和-switch-case">if-case 和 switch-case</a></h2>
+<p>每个case子句都包含了一个模式，无论是if-case 还是switch-case。</p>
+<pre><code class="language-dart">// ch0302_2.dart
+void main() {
+  const data = ('Tom', id: 1, [3, 4, 5]);
+  if (data case ('Tom' || 'Jerry', id: _, _)) { // 1
+    print('Hey, my friend!');
+  }
+
+  switch (data) {
+    case ('Tom', :var id, _):
+      print('Hi, Tom! Your ID is $id.');
+    case ('Jerry', :var id, _):
+      print('Hi, Jerry! Your ID is $id.');
+    default:
+      print('Hi! Who are you?');
+  }
+}
+</code></pre>
+<ol>
+<li>这里使用了逻辑或（OR）操作符（<code>||</code>），让<code>data.$1</code>匹配多个值，这非常实用。</li>
+</ol>
+<h2 id="for-和-for-in-循环"><a class="header" href="#for-和-for-in-循环">for 和 for-in 循环</a></h2>
+<pre><code class="language-dart">// ch0302_3.dart
+void main() {
+  var points = [Point(0, 1), Point(1, 2), Point(2, 3)]; // 2
+  for (var Point(:x, :y) in points) { // 3
+    print('x=$x y=$y');
+  }
+}
+
+class Point { // 1
+  const Point(this.x, this.y);
+  final double x;
+  final double y;
+}
+</code></pre>
+<ol>
+<li>定义<code>Point</code>类，它包括<code>x</code>和<code>y</code>两个字段;</li>
+<li><code>points</code>是一个<code>Point</code>列表;</li>
+<li>在for-in语句中解构points中的每个<code>Point</code>，将其部件绑定至局部变量<code>x</code>和<code>y</code>。</li>
+</ol>
+<h2 id="集合字面量collection-literals中的控制流"><a class="header" href="#集合字面量collection-literals中的控制流">集合字面量（collection literals）中的控制流</a></h2>
+<p>集合包括List、Set、Map，将在第6章将详细讨论，这里仅以List（列表）为例，对模式的相关使用进行说明。</p>
+<p>首先来看如何使用for语句创建一个列表，以及<code>for</code>与<code>if</code>的嵌套使用。下面的程序将打印数字0到9中的偶数。</p>
+<pre><code class="language-dart">// ch0302_4.dart
+void main() {
+  final nums = [for (var i = 0; i &lt; 10; i++) i]; // 1
+  var evenNums = [
+    for (var num in nums) // 2
+      if (num.isEven) num,
+  ];
+  print(evenNums); // Output: [0, 2, 4, 6, 8]
+}
+</code></pre>
+<ol>
+<li>在集合字面量中使for语句，创建一个0到9的数字列表<code>nums</code>;</li>
+<li>对<code>nums</code>进行过滤（<code>if(num.isEven)</code>），选出其中的偶数。</li>
+</ol>
+<p>下例演示了如何在集合字面量的控制流中使用模式。</p>
+<pre><code class="language-dart">// ch0302_5.dart
+void main() {
+  var points = [for (var x = 0; x &lt; 10; x++) (x: x, y: 2 * x)];
+  var points2 = [
+    for (var (:x, :y) in points)
+      if (x.isEven) (x: x, y: y),
+  ];
+  print(points2);
+}
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="模式类型"><a class="header" href="#模式类型">模式类型</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="应用案例"><a class="header" href="#应用案例">应用案例</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="模式应用案例"><a class="header" href="#模式应用案例">模式应用案例</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="封装与可见性"><a class="header" href="#封装与可见性">封装与可见性</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="构造函数this关键字与初始化列表"><a class="header" href="#构造函数this关键字与初始化列表">构造函数、this关键字与初始化列表</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="命名构造器"><a class="header" href="#命名构造器">命名构造器</a></h1>

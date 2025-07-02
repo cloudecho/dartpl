@@ -7,6 +7,13 @@
 
 
         <!-- Custom HTML head -->
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-KBMZK6N2');</script>
+        <!-- End Google Tag Manager -->
 
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -159,6 +166,151 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="异常处理"><a class="header" href="#异常处理">异常处理</a></h1>
+<p>Dart代码可以抛出（<code>throw</code>）和捕获（<code>catch</code>）异常（<code>Exception</code>）。异常代表了程序的某种错误，也就是一些意想不到的事情。引发异常的代码分支及其上下文，即测试中的负向路径。</p>
+<p>Dart的函数或方法不会声明它将抛出哪些异常; Dart也不强制要求捕获异常。如果异常发生了却不被处理，抛出异常的 isolate 将被挂起，且通常会被终止。第7章将详细讨论 isolate，这里将其视为一种内存独立的线程（如 <code>main</code> 函数所在的 main isolate）即可。</p>
+<h2 id="抛出异常-trhow"><a class="header" href="#抛出异常-trhow">抛出异常 （<code>trhow</code>）</a></h2>
+<p>Dart程序可以抛出（<code>trhow</code>）什么？答案是除了<code>null</code>外的任何东西。</p>
+<pre><code class="language-dart">// ch0208_1.dart
+void main() {
+  throw 'something bad happened';
+  // Unhandled exception:
+  // something bad happened
+}
+</code></pre>
+<p>此例使用<code>throw</code> 关键字，抛出了一个字符串。</p>
+<h3 id="exception-和-error"><a class="header" href="#exception-和-error"><code>Exception</code> 和 <code>Error</code></a></h3>
+<p>Dart提供了 <code>Exception</code> 和 <code>Error</code> 类及相关子类（第4章将介绍类），官方建议我们在产品代码中抛出 <code>Exception</code> 或 <code>Error</code> 的实现类。例如下面这些类实现了<code>Exception</code>：</p>
+<ul>
+<li><code>AnalysisException</code></li>
+<li><code>DeferredLoadException</code></li>
+<li><code>FileSystemException</code></li>
+<li><code>FormatException</code></li>
+<li><code>IOException</code></li>
+<li><code>IsolateSpawnException</code></li>
+<li><code>PathException</code></li>
+<li><code>RemoteException</code></li>
+<li><code>TimeoutException</code></li>
+</ul>
+<p>我们也可以创建自己的异常类，并实现（<code>implements</code>） <code>Exception</code> 或 <code>Error</code>。</p>
+<pre><code class="language-dart">// ch0208_2.dart
+void main() {
+  throw FooException();
+}
+
+class FooException implements Exception {}
+</code></pre>
+<p><code>Exception</code> 与 <code>Error</code> 的区别：</p>
+<ul>
+<li>
+<p><code> Exception</code>旨在向外传递一个失败信息（例如超时异常 <code>TimeoutException</code>），以便通过编程的方式解决；它应该包含有用的信息，且希望被捕获。</p>
+</li>
+<li>
+<p><code>Error</code>代表了程序员引起的错误（例如断言错误 <code>AssertionError</code>）， 它理应被避免，且通常暗示了一个bug，我们不应捕获它。</p>
+</li>
+</ul>
+<h2 id="捕获异常"><a class="header" href="#捕获异常">捕获异常</a></h2>
+<h3 id="捕获指定类型的异常"><a class="header" href="#捕获指定类型的异常">捕获指定类型的异常</a></h3>
+<p>使用 <code>try...on...catch</code> 语法捕获异常。将可能抛出异常的代码放在<code>try{}</code>代码块中，然后使用<code>on</code>关键字捕获特定类型的异常。</p>
+<pre><code class="language-dart">// ch0208_3.dart
+import 'dart:io';
+
+void main() {
+  var str = 'dart';
+  try {
+    int.parse(str);
+  } on FormatException {
+    stderr.writeln('FormatException: Cannot parse "$str" as an integer.');
+  }
+}
+</code></pre>
+<p>此例试图将字符串<code>"dart"</code>转换为一个整数，引发了 <code>FormatException</code>，随后被捕获。</p>
+<h3 id="捕获异常信息"><a class="header" href="#捕获异常信息">捕获异常信息</a></h3>
+<p>使用<code>catch</code>关键字捕获异常信息（即异常类型的一个实例）。</p>
+<pre><code class="language-dart">// ch0208_4.dart
+void main() {
+  try {
+    int.parse('dart');
+  } on FormatException catch (ex) {
+    print(ex.message); // Output: Invalid radix-10 number
+  } 
+}
+</code></pre>
+<p><code>catch()</code> 还有另一个可选参数，表示异常堆栈。</p>
+<pre><code class="language-dart">// ch0208_5.dart
+void main() {
+  try {
+    int.parse('dart');
+  } on FormatException catch (e, s) {
+    print(e);
+    print(s);
+  }
+}
+</code></pre>
+<h3 id="重新抛出异常"><a class="header" href="#重新抛出异常">重新抛出异常</a></h3>
+<p>使用 <code>rethrow</code>关键字重新抛出异常，且保留原来的堆栈信息。</p>
+<pre><code class="language-dart">// ch0208_6.dart
+void main() {
+  try {
+    parseInt('dart');
+  } catch (_, s) {// 2
+    print(s); // 2a
+  }
+}
+
+int parseInt(String str) {
+  try {
+    return int.parse(str);
+  } on FormatException catch (_, s) {
+    print(s); // 1a
+    rethrow; // 1
+  }
+}
+</code></pre>
+<ol>
+<li>使用<code>rethow</code>关键字将捕获到的<code>FormatException</code>再次抛出;</li>
+<li>这里仅用了<code>catch</code> （没有使用<code>on</code>指定异常类型），表示捕获所有类型的异常。</li>
+</ol>
+<h3 id="捕获多种类型的异常"><a class="header" href="#捕获多种类型的异常">捕获多种类型的异常</a></h3>
+<p>使用多个<code>catch</code>子句来分别处理不同类型的异常。</p>
+<pre><code class="language-dart">//ch0206_7.dart
+void main() {
+  print(safeDivide('8', '2'));
+  print(safeDivide('8', '0'));
+  print(safeDivide('hello', 'dart'));
+}
+
+(String? err, int) safeDivide(String a, String b) {
+  try {
+    return (null, int.parse(a) ~/ int.parse(b));
+  } on FormatException catch (e) {
+    return ('FormatException: ${e.source}', 0);
+  } on UnsupportedError catch (e) { // IntegerDivisionByZeroException
+    return ('UnsupportedError: ${e.message}', 0);
+  } on Exception catch (e) {
+    return ('unknown exception: $e', 0);
+  }
+}
+</code></pre>
+<h2 id="finally"><a class="header" href="#finally"><code>finally</code></a></h2>
+<p>无论<code>try</code> 代码块内是否发生了异常， <code>finally</code>子句都将被执行。<code>finally</code>子句通常用来关闭资源（如打开的系统文件）。</p>
+<pre><code class="language-dart">// ch0208_8.dart
+void main() {
+  try {
+    print(2 ~/ 0);
+  } on UnsupportedError {
+    print('oops');
+  } finally {
+    print('done');
+  }
+  // Output:
+  // oops
+  // done
+}
+</code></pre>
+<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/error-handling">https://dart.dev/language/error-handling</a></li>
+</ul>
 
                     </main>
 
