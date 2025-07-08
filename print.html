@@ -2409,7 +2409,7 @@ void main() {
 <div style="break-before: page; page-break-before: always;"></div><h1 id="模式类型"><a class="header" href="#模式类型">模式类型</a></h1>
 <p>类似于<a href="ch03/../ch01/dartpl0105.html#%E6%93%8D%E4%BD%9C%E7%AC%A6%E4%BC%98%E5%85%88%E7%BA%A7">操作符优先级</a>，模式也有优先级，也可以通过圆括号（最高优先级）来改变求值顺序。模式优先级由低到高依次为：</p>
 <ul>
-<li><a href="ch03/dartpl0303.html#%E9%80%BB%E8%BE%91%E6%88%96%E6%A8%A1%E5%BC%8F">”逻辑或“模式</a></li>
+<li><a href="ch03/dartpl0303.html#%E9%80%BB%E8%BE%91%E6%88%96%E6%A8%A1%E5%BC%8F">“逻辑或”模式</a></li>
 <li><a href="ch03/dartpl0303.html#%E9%80%BB%E8%BE%91%E4%B8%8E%E6%A8%A1%E5%BC%8F">“逻辑与”模式</a></li>
 <li><a href="ch03/dartpl0303.html#%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%BC%8F">关系模式</a></li>
 <li><a href="ch03/dartpl0303.html#%E4%B8%80%E5%85%83%E5%90%8E%E7%BC%80%E6%A8%A1%E5%BC%8F">一元后缀模式</a></li>
@@ -2421,7 +2421,7 @@ void main() {
 <pre><code class="language-dart">subpattern1 || subpattern2
 </code></pre>
 <p>只要任何一个子模式匹配，”逻辑或“模式就匹配；子模式从左至右求值，直到匹配上了一个子模式，剩下的子模式将不被求值。</p>
-<h2 id="逻辑与模式"><a class="header" href="#逻辑与模式">”逻辑与“模式</a></h2>
+<h2 id="逻辑与模式"><a class="header" href="#逻辑与模式">“逻辑与”模式</a></h2>
 <pre><code class="language-dart">subpattern1 &amp;&amp; subpattern2
 </code></pre>
 <p>当它的子模式都匹配， ”逻辑与“模式才算匹配；子模式从左至右求值，当遇到一个子模式不匹配时，剩下的子模式将不被求值。</p>
