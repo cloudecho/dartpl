@@ -958,7 +958,7 @@ void main() {
 }
 
 </code></pre>
-<h2 id="小测验"><a class="header" href="#小测验">小测验</a></h2>
+<h2 id="小测试"><a class="header" href="#小测试">小测试</a></h2>
 <p>以下程序的输出是什么?</p>
 <pre><code class="language-dart">// ch01004_quiz.dart
 void main() {
@@ -989,11 +989,12 @@ void main() {
 <li><a href="ch01/dartpl0105.html#%E7%BA%A7%E8%81%94%E7%AC%A6%E5%8F%B7">级联符号</a></li>
 <li><a href="ch01/dartpl0105.html#%E5%85%B6%E4%BB%96%E6%93%8D%E4%BD%9C%E7%AC%A6">其他操作符</a></li>
 </ul>
+<p>在算数表达式中（例如 <code>2 + 3 × 5</code>），乘除法的优先级高于加减法，因此优先计算乘除法（<code> 3 × 5</code>），但可以通过圆括号来改变求值顺序（例如 <code>(2 + 3) × 5）</code>。<a href="ch01/dartpl0105.html#%E6%93%8D%E4%BD%9C%E7%AC%A6%E4%BC%98%E5%85%88%E7%BA%A7">操作符的优先级</a>，与算术中加减乘除的优先级类似。</p>
 <h2 id="算术操作符"><a class="header" href="#算术操作符">算术操作符</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
 <tr><td><code>+</code></td><td>加</td><td><code>1 + 2</code>  <span class="hljs-comment"> <em>//3</em></span></td></tr>
 <tr><td><code>-</code></td><td>减</td><td><code>4 - 3</code>  <span class="hljs-comment">  <em>//1</em></span></td></tr>
-<tr><td><code>-</code><span class="hljs"><em>expr</em></span></td><td>符号取反</td><td><code>-x</code></td></tr>
+<tr><td><code>-</code><em><code>expr</code></em></td><td>符号取反</td><td><code>-x</code></td></tr>
 <tr><td><code>*</code></td><td>乘</td><td><code>3 * 5</code>  <span class="hljs-comment"> <em>//15</em></span></td></tr>
 <tr><td><code>/</code></td><td>除，结果是一个浮点数</td><td><code>7 / 2</code>  <span class="hljs-comment">  <em>//3.5</em></span></td></tr>
 <tr><td><code>~/</code></td><td>整除，除法的整数部分，结果是一个整数</td><td><code>7 ~/ 2</code>  <span class="hljs-comment">  <em>//3</em></span></td></tr>
@@ -1071,7 +1072,7 @@ void main() {
 <tr><td><code>&amp;</code></td><td>与（AND）</td><td><code> 1 &amp; 2</code> <span class="hljs-comment">  <em>//0</em></span></td></tr>
 <tr><td><code>|</code></td><td>或（OR）</td><td><code>1 | 2</code><span class="hljs-comment">  <em>//3</em></span></td></tr>
 <tr><td><code>^</code></td><td>异或（XOR）</td><td><code>2 ^ 3</code><span class="hljs-comment">  <em>//1</em></span></td></tr>
-<tr><td><code>~</code><span class="hljs"><em>expr</em></span></td><td>按位补码（0变为1，1变为0）</td><td><code>～1</code><span class="hljs-comment">  <em>//-2</em></span></td></tr>
+<tr><td><code>~</code><em><code>expr</code></em></td><td>按位补码（0变为1，1变为0）</td><td><code>～1</code><span class="hljs-comment">  <em>//-2</em></span></td></tr>
 <tr><td><code>&lt;&lt;</code></td><td>左移位</td><td><code>1 &lt;&lt; 10</code><span class="hljs-comment">  <em>//1024</em></span></td></tr>
 <tr><td><code>&gt;&gt;</code></td><td>右移位</td><td><code>1024 &gt;&gt; 9</code><span class="hljs-comment">  <em>//2</em></span></td></tr>
 <tr><td><code>&gt;&gt;&gt;</code></td><td>无符号右移</td><td><code>-1 &gt;&gt;&gt; 61</code><span class="hljs-comment">  <em>//7</em></span></td></tr>
@@ -1124,6 +1125,28 @@ void main() {
 <tr><td><code>!</code></td><td>非空断言</td><td><code>point!</code></td></tr>
 <tr><td><code>...</code></td><td>展开一个集合（collection），插入另一个集合（collection）</td><td><code>...myList</code></td></tr>
 <tr><td><code>...?</code></td><td>与<code>...</code>类似，适用于nullable对象</td><td><code>....?anotherList</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="操作符优先级"><a class="header" href="#操作符优先级">操作符优先级</a></h2>
+<p>下表中的操作符按优先级从高到低排依次列，第一行中的优先级最高，第二行次之，以此类推； 同一行里的操作符具有相同的优先级。</p>
+<div class="table-wrapper"><table><thead><tr><th>描述</th><th>操作符</th></tr></thead><tbody>
+<tr><td>一元后缀</td><td><em><code>expr</code></em><code>++</code>     <em><code>expr</code></em><code>--</code>     <code>()</code>      <code>[]</code>     <code>?[]</code>     <code> .</code>      <code>?.</code>     <code>!</code></td></tr>
+<tr><td>一元前缀</td><td><code>-</code><em><code>expr</code></em>     <code>!</code><em><code>expr</code></em>      <code>~</code><em><code>expr</code></em>     <code>++</code><em><code>expr</code></em>     <code>--</code><em><code>expr</code></em>        <code>await </code><em><code>expr</code></em></td></tr>
+<tr><td>乘除</td><td><code>*</code>    <code> /</code>     <code>%</code>    <code>~/</code></td></tr>
+<tr><td>加减</td><td><code>+</code>     <code> -</code></td></tr>
+<tr><td>移位</td><td><code>&lt;&lt;</code>     <code> &gt;&gt;</code>     <code> &gt;&gt;&gt;</code></td></tr>
+<tr><td>位与 AND</td><td><code>&amp;</code></td></tr>
+<tr><td>位异或 XOR</td><td><code>^</code></td></tr>
+<tr><td>位或 OR</td><td><code>|</code></td></tr>
+<tr><td>关系及类型测试</td><td><code>&gt;=</code>     <code>&gt;</code>     <code>&lt;=</code>     <code>&lt;</code>      <code>as</code>     <code>is</code>      <code>is!</code></td></tr>
+<tr><td>相等</td><td><code>==</code>     <code> !=</code></td></tr>
+<tr><td>逻辑与 AND</td><td><code>&amp;&amp;</code></td></tr>
+<tr><td>逻辑或 OR</td><td><code>||</code></td></tr>
+<tr><td>if-null</td><td><code>??</code></td></tr>
+<tr><td>条件</td><td><em><code>expr1</code></em>    <code>?</code>    <em><code>expr2</code></em>   <code> :</code>    <em><code>expr3</code></em></td></tr>
+<tr><td>级联</td><td><code>..</code>     <code>?..</code></td></tr>
+<tr><td>赋值</td><td><code>=</code>     <code>*=</code>      <code>/=</code>     <code>+=</code>      <code>-=</code>      <code>&amp;=</code>     <code>^=</code>   等</td></tr>
+<tr><td>展开</td><td><code>...</code>      <code>...?</code></td></tr>
 </tbody></table>
 </div>
 <h2 id="参考资料-4"><a class="header" href="#参考资料-4">参考资料</a></h2>
@@ -1599,7 +1622,7 @@ void main() {
 }
 </code></pre>
 <p>此例中的 <code>continue outerLoop;</code> 就相当于 <code>break</code>。</p>
-<h2 id="小测验-1"><a class="header" href="#小测验-1">小测验</a></h2>
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
 <ul>
 <li>分别使用 <code>while</code> 和<code>do-while</code> 改写 <code>ch0202_8.dart</code>。</li>
 <li>示例 <code>ch0202_9.dart</code> 中，如果将  <code>continue outerLoop;</code> 改为  <code>break outerLoop;</code> 程序的输出是什么？</li>
@@ -1767,7 +1790,7 @@ dart
 <p>外部函数的函数体（实现）与函数声明是分离的。外部函数的实现可以来自另一个Dart库，更常见的是，来自其它编程语言（例如C）。使用 <code>external</code> 声明一个外部函数，例如 <code>Object</code>类中的 <code>toString()</code>  方法:</p>
 <pre><code class="language-dart">  external String toString();
 </code></pre>
-<h2 id="小测验-2"><a class="header" href="#小测验-2">小测验</a></h2>
+<h2 id="小测验"><a class="header" href="#小测验">小测验</a></h2>
 <p>下例中的<code>printMe2</code>的返回类型是什么？实际上它返回了什么？参数<code>me</code>的类型又是什么？</p>
 <pre><code class="language-dart">printMe2(me) {
   print(me);
@@ -1976,14 +1999,18 @@ void main() {
 <p><code>add2</code>、<code>add4</code> 都记住了<code>makeAdder</code>被调用时的<code>addBy</code>（<code>makeAdder</code>的参数）。从数学的角度来看<code>funcA</code>:</p>
 <p>\( funcA( i ) = addBy + i \)</p>
 <p>这个函数里的自变量是<code>i</code>， <code>addBy</code>是一个常量。 <code>add2 = makeAdder(2)</code>， 相当于指定常量 <code>addBy = 2</code>，<code>add4</code>类似。<code>add2</code>、<code>add4</code> 等都是闭包。</p>
-<h2 id="小测验-3"><a class="header" href="#小测验-3">小测验</a></h2>
+<h2 id="练习-1"><a class="header" href="#练习-1">练习</a></h2>
 <p>修改示例程序<code>ch0206_3.dart</code>，将统计结果按单词的长度降序排序。提示：使用<code>List.sort</code>方法。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="递归"><a class="header" href="#递归">递归</a></h1>
 <p>如果一个函数直接或间接调用它自己，我们便称之为递归函数。之所以讨论它，是因为递归是一种解决问题的有效方法，也是一种分治的思想，它针对特定的问题，这类问题在结构上可以进一步分解为相似的子问题。例如阶乘函数：</p>
 <p>\( n! = (n-1)!*n \)</p>
 <p>下面的代码计算斐波那契（Fibonacci）数列：</p>
-<p>\( fib(0)=0, fib(1) = 1 \)</p>
-<p>\( fib(n) = fib(n-1) + fib(n-2),   n &gt;1 \)</p>
+<p>\(
+\begin{cases}
+fib(0)=0, \  fib(1) = 1  \\
+fib(n) = fib(n-1) + fib(n-2), \  n &gt;1
+\end{cases}
+\)</p>
 <pre><code class="language-dart">// ch0207_1.dart
 void main() {
   var n = 20;
@@ -2380,7 +2407,334 @@ void main() {
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="模式类型"><a class="header" href="#模式类型">模式类型</a></h1>
+<p>类似于<a href="ch03/../ch01/dartpl0105.html#%E6%93%8D%E4%BD%9C%E7%AC%A6%E4%BC%98%E5%85%88%E7%BA%A7">操作符优先级</a>，模式也有优先级，也可以通过圆括号（最高优先级）来改变求值顺序。模式优先级由低到高依次为：</p>
+<ul>
+<li><a href="ch03/dartpl0303.html#%E9%80%BB%E8%BE%91%E6%88%96%E6%A8%A1%E5%BC%8F">”逻辑或“模式</a></li>
+<li><a href="ch03/dartpl0303.html#%E9%80%BB%E8%BE%91%E4%B8%8E%E6%A8%A1%E5%BC%8F">“逻辑与”模式</a></li>
+<li><a href="ch03/dartpl0303.html#%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%BC%8F">关系模式</a></li>
+<li><a href="ch03/dartpl0303.html#%E4%B8%80%E5%85%83%E5%90%8E%E7%BC%80%E6%A8%A1%E5%BC%8F">一元后缀模式</a></li>
+<li><a href="ch03/dartpl0303.html#%E5%85%B6%E5%AE%83%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%BC%8F">其它主要模式</a></li>
+</ul>
+<p>集合型（记录 record、列表 List、映射map）与对象模式包含了其他数据，作为外部模式优先求值。</p>
+<h2 id="逻辑或模式"><a class="header" href="#逻辑或模式">“逻辑或”模式</a></h2>
+<p>这个模式在上一章节已经出现过，如 <code>if (data case ('Tom' || 'Jerry', id: _, _))</code>  中的 <code>'Tom' || 'Jerry'</code> ，其语法为:</p>
+<pre><code class="language-dart">subpattern1 || subpattern2
+</code></pre>
+<p>只要任何一个子模式匹配，”逻辑或“模式就匹配；子模式从左至右求值，直到匹配上了一个子模式，剩下的子模式将不被求值。</p>
+<h2 id="逻辑与模式"><a class="header" href="#逻辑与模式">”逻辑与“模式</a></h2>
+<pre><code class="language-dart">subpattern1 &amp;&amp; subpattern2
+</code></pre>
+<p>当它的子模式都匹配， ”逻辑与“模式才算匹配；子模式从左至右求值，当遇到一个子模式不匹配时，剩下的子模式将不被求值。</p>
+<pre><code class="language-dart">// ch0303_1.dart
+void main() {
+ var goods = (name: 'apple', price: 2.0, quality: 'good');
+ switch (goods) {
+   case (name: _, price: _, quality: 'good') &amp;&amp;
+       (name: 'apple' || 'banana', :var price, quality: _):
+     print('Good apple or banana for \$$price');
+   default:
+     print('Take a look at other fruits');
+ }
+}
+</code></pre>
+<p>此例中的 <code>\$</code> 为转义用法，表示 <code>$</code> 符号本身。</p>
+<p>这个示例旨在说明“逻辑与”模式的用法，它实在可以简化为:</p>
+<pre><code class="language-dart">// ch0303_2.dart
+void main() {
+ // ... (omit for brevity)
+ switch (goods) {
+   case (name: 'apple' || 'banana', :var price, quality: 'good'):
+   // ... (omit for brevity)
+ }
+}
+</code></pre>
+<h2 id="关系模式"><a class="header" href="#关系模式">关系模式</a></h2>
+<p>关系模式使用关系运算符（<code>==</code>、<code>!=</code>、<code>&lt;</code>、<code>&gt;</code>、<code>&lt;=</code> 和 <code>&gt;=</code>）将一个值与常量进行比较。下例绘制分段函数：</p>
+<p>\( f(x)=
+\begin{cases}
+0 &amp; x &lt;0  \\
+2x &amp;   0  \le x &lt; 10  \\
+20 &amp;  10 \le x &lt; 20  \\
+3 * (x - 20) + 20  &amp; x \ge 20  \\
+\end{cases}
+\ ,\ x是整数
+\)</p>
+<pre><code class="language-dart">// ch0303_3.dart
+import 'package:sprintf/sprintf.dart';
+
+void main() {
+  var xs = [for (var x = -5; x &lt;= 30; x++) x];
+  var ys = [for (var x in xs) fx(x)];
+  // Draw the bar chart
+  for (var i = 0; i &lt; xs.length; i++) {
+    print(sprintf('%2d | %s %d', [xs[i], bar(ys[i]), ys[i]]));
+  }
+}
+
+int fx(int x) =&gt; switch (x) {
+  &lt; 0 =&gt; 0,
+  &gt;= 0 &amp;&amp; &lt; 10 =&gt; 2 * x,
+  &gt;= 10 &amp;&amp; &lt; 20 =&gt; 20,
+  _ =&gt; 3 * (x - 20) + 20,
+};
+
+String bar(int y) =&gt; '▩' * y;
+</code></pre>
+<p>该程序将打印一个水平方向的条形图:</p>
+<pre><code class="language-dart">-5 |  0
+-4 |  0
+-3 |  0
+-2 |  0
+-1 |  0
+ 0 |  0
+ 1 | ▩▩ 2
+ 2 | ▩▩▩▩ 4
+ 3 | ▩▩▩▩▩▩ 6
+ 4 | ▩▩▩▩▩▩▩▩ 8
+ 5 | ▩▩▩▩▩▩▩▩▩▩ 10
+ 6 | ▩▩▩▩▩▩▩▩▩▩▩▩ 12
+ 7 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 14
+ 8 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 16
+ 9 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 18
+10 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+11 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+12 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+13 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+14 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+15 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+16 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+17 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+18 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+19 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+20 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+21 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 23
+22 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 26
+23 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 29
+24 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 32
+25 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 35
+26 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 38
+27 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 41
+28 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 44
+29 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 47
+30 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 50
+</code></pre>
+<h2 id="一元后缀模式"><a class="header" href="#一元后缀模式">一元后缀模式</a></h2>
+<p>一元后缀模式包括 Cast（类型转换）、Null-check（空检查）、Null-assert（空断言）。</p>
+<p>Cast模式使得在解构过程中插入类型转换，但如果类型转换失败，程序将抛出异常。</p>
+<pre><code class="language-dart">// ch0304_4.dart
+void main() {
+  (Object, num) dat = ('Alice', 100);
+  var (name as String, score as int) = dat;
+  assert(name == 'Alice');
+  assert(score == 100);
+
+  var (x as double, _) = dat;
+  // Unhandled exception:
+  // type 'String' is not a subtype of type 'double' in type cast
+}
+</code></pre>
+<p>Null-check模式在匹配一个值时，首先检查那个值是否为<code>null</code>，如果是<code>null</code>就直接匹配失败，但不会抛出异常。</p>
+<p>Null-assert与Null-check类似，但当所匹配的那个值为<code>null</code>时会抛出一个异常。</p>
+<pre><code class="language-dart">// ch0303_4.dart
+void main() {
+  int? a;
+  checkNull(a); // Output: check: a is null
+
+  a = 10;
+  checkNull(a); // Output: check: a is 10
+
+  assertNull(a); // Output: assert: a is 10
+
+  assertNull(null);
+  // Unhandled exception:
+  // Null check operator used on a null value
+}
+
+void checkNull(dynamic a) {
+  switch (a) {
+    case var x?:
+      print('check: a is $x');
+    default:
+      print('check: a is null');
+  }
+}
+
+void assertNull(dynamic a) {
+  switch (a) {
+    case var x!:
+      print('assert: a is $x');
+  }
+}
+</code></pre>
+<h2 id="其它主要模式"><a class="header" href="#其它主要模式">其它主要模式</a></h2>
+<h3 id="list列表模式"><a class="header" href="#list列表模式">List（列表）模式</a></h3>
+<p>List模式非常实用，例如利用该模式将一个List分成“首个元素+中间的元素s+尾部元素”三部分。</p>
+<pre><code class="language-dart">// ch0303_6.dart
+void main() {
+  const luckyNumbers = [5, 6, 8, 9];
+  var [first, ...rest, last] = luckyNumbers;
+  print('first=$first last=$last'); // Output: first=5 last=9
+  print('rest=$rest'); // Output: rest=[6, 8]
+}
+</code></pre>
+<p>此例中的<code>...rest</code> 表示剩余元素形成的List，称之为rest元素（Rest element）。List模式至多包含一个rest元素，这不难理解，因为如果有2个rest元素，就无法确定其部件（parts）的边界。</p>
+<h3 id="record记录模式"><a class="header" href="#record记录模式">Record（记录）模式</a></h3>
+<p>我们已经多次见过Record模式（见 <a href="ch03/../ch01/dartpl0104.html#%E8%AE%B0%E5%BD%95%E7%B1%BB%E5%9E%8B">记录类型</a> 一节），在仅举一例，不过多描述。</p>
+<pre><code class="language-dart">// ch0303_7.dart
+void main() {
+  const point = ('A', x: 1, y: 2, z: 3);
+  var (name, :x, :y, z: _) = point;
+  print('$name: x=$x y=$y'); // Output: A: x=1 y=2
+}
+</code></pre>
+<h3 id="map-映射模式"><a class="header" href="#map-映射模式">Map （映射）模式</a></h3>
+<p>Map由key-value pair（键值对）组成，通过key获取value。例如：</p>
+<pre><code class="language-dart">  var employee = {"id": 1, "name": "Tom", "position": "CEO", "salary": 2};
+  var numbers = {1: "one", 2: "two", 3: "three"};
+  assert(employee["name"] == "Tom");
+</code></pre>
+<p>第6章将进一步讨论Map，此处仅举例说明Map模式的运用。</p>
+<pre><code class="language-dart">// ch0303_8.dart
+void main() {
+  var employee = {"id": 1, "name": "Tom", "position": "CEO", "salary": 2};
+  var numbers = {1: "one", 2: "two", 3: "three"};
+
+  var {"id": id, "salary": salaray} = employee;
+  assert(id == 1);
+  assert(salaray == 2);
+
+  var {1: one, 2: two} = numbers;
+  assert(one == "one");
+  assert(two == "two");
+
+  var {4: four} = numbers;
+  // Unhandled exception:
+  // Bad state: Pattern matching error
+}
+</code></pre>
+<p>Map模式的两个特点：</p>
+<ul>
+<li>无需匹配整个Map，也就是说无需匹配所有的Key；</li>
+<li>尝试匹配一个不存在的Key，将抛出一个<a href="https://api.dart.dev/dart-core/StateError-class.html">StateError 错误</a>。</li>
+</ul>
+<h3 id="object对象模式"><a class="header" href="#object对象模式">Object（对象）模式</a></h3>
+<p>Object模式在上一节已有所介绍，下面是另一个示例。</p>
+<pre><code class="language-dart">// ch0303_9.dart
+void main() {
+  const color = Color(50, 60, 80);
+  var Color(:r, :g, :b) = color;
+  print('r=$r g=$g b=$b'); // Output: r=50 g=60 b=80
+}
+
+class Color {
+  const Color(this.r, this.g, this.b);
+  final int r, g, b;
+}
+</code></pre>
+<h2 id="参考资料-10"><a class="header" href="#参考资料-10">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/pattern-types">https://dart.dev/language/pattern-types</a></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="模式应用案例"><a class="header" href="#模式应用案例">模式应用案例</a></h1>
+<p>本文以示例的方式，介绍模式的几个经典应用案例。</p>
+<h2 id="交换两个变量的值"><a class="header" href="#交换两个变量的值">交换两个变量的值</a></h2>
+<pre><code class="language-dart">//ch0304_1.dart
+void main() {
+  var (x, y) = (3, 4);
+  (x, y) = (y, x);
+  assert(x == 4 &amp;&amp; y == 3);
+}
+</code></pre>
+<h2 id="解构map里的-key-value"><a class="header" href="#解构map里的-key-value">解构Map里的 key-value</a></h2>
+<pre><code class="language-dart">//ch0304_2.dart
+void main() {
+  const employee = {"id": 1, "name": "Tom", "position": "CEO", "salary": 2};
+  for (var MapEntry(:key, :value) in employee.entries) {
+    print("$key: $value");
+  }
+  // Output:
+  // id: 1
+  // name: Tom
+  // position: CEO
+  // salary: 2
+}
+</code></pre>
+<h2 id="解构多个返回值"><a class="header" href="#解构多个返回值">解构多个返回值</a></h2>
+<pre><code class="language-dart">// ch0304_3.dart
+void main() {
+  var (ok, result) = foo();
+  print(ok ? result : 'oops!');
+}
+
+(bool ok, String) foo() {
+  // ...
+  return (true, 'Everything is OK');
+}
+</code></pre>
+<h2 id="解构类实例"><a class="header" href="#解构类实例">解构类实例</a></h2>
+<p>见 <a href="ch03/../ch03/dartpl0303.html#object%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%BC%8F">Object（对象）模式</a>。</p>
+<h2 id="代数algebraic数据类型"><a class="header" href="#代数algebraic数据类型">代数（Algebraic）数据类型</a></h2>
+<p>当满足如下条件时，可使用代数数据类型这一风格去写代码：</p>
+<ul>
+<li>有一个相关类型的家族（family。</li>
+<li>有一个操作，需要针对每种类型执行特定的行为。</li>
+<li>希望将这些行为集中到一起，而不是分散到不同的类型中。</li>
+</ul>
+<p>这是一个来自官方文档的示例。</p>
+<pre><code class="language-dart">// ch0304_4.dart
+import 'dart:math' as math;
+
+sealed class Shape {}
+
+class Square implements Shape {
+  final double length;
+  Square(this.length);
+}
+
+class Circle implements Shape {
+  final double radius;
+  Circle(this.radius);
+}
+
+double calculateArea(Shape shape) =&gt; switch (shape) {
+  Square(length: var l) =&gt; l * l,
+  Circle(radius: var r) =&gt; math.pi * r * r,
+};
+</code></pre>
+<h2 id="jsonmap-校验"><a class="header" href="#jsonmap-校验">JSON/Map 校验</a></h2>
+<p><a href="https://www.json.org/json-en.html">JSON（JavaScript Object Notation）</a>是一种轻量级的数据交换格式，其应用极为广泛，尤其在互联网领域。JSON是一种文本格式，独立于编程语言。</p>
+<pre><code class="language-dart">// ch0304_5.dart
+import 'dart:convert';
+
+void main() {
+  const dat = '''{
+    "id": 1,
+    "name": "Learning Dart from Zero",
+    "category": "Digital Book",
+    "tags": ["dart", "programming", "learning"],
+    "website": "https://techo.dev/dartpl/"
+  }'''; // 1
+
+  final product = jsonDecode(dat); // 2
+  print(product.runtimeType); // Output: _Map&lt;String, dynamic&gt;
+
+  if (product case { // 3
+    "id": int _,
+    "name": String name,
+    "tags": [String tag1, String tag2, _],
+    "website": String website,
+  }) {
+    print("$name($website), tagged by $tag1 and $tag2");
+  }
+}
+</code></pre>
+<ol>
+<li><code>dat</code> 是一个JSON字符串;</li>
+<li>使用 <code>jsonDecode</code> 函数解析 <code>dat</code>，其结果存于<code>product</code>变量，此处的<code>product</code>是一个Map;</li>
+<li>使用模式校验<code>product</code>，并绑定相关的部件（parts）。</li>
+</ol>
+<h2 id="参考资料-11"><a class="header" href="#参考资料-11">参考资料</a></h2>
+<p><a href="https://dart.dev/language/patterns#use-cases-for-patterns">https://dart.dev/language/patterns#use-cases-for-patterns</a></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="封装与可见性"><a class="header" href="#封装与可见性">封装与可见性</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="构造函数this关键字与初始化列表"><a class="header" href="#构造函数this关键字与初始化列表">构造函数、this关键字与初始化列表</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="命名构造器"><a class="header" href="#命名构造器">命名构造器</a></h1>

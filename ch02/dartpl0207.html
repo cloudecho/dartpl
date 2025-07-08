@@ -171,8 +171,12 @@
 <p>如果一个函数直接或间接调用它自己，我们便称之为递归函数。之所以讨论它，是因为递归是一种解决问题的有效方法，也是一种分治的思想，它针对特定的问题，这类问题在结构上可以进一步分解为相似的子问题。例如阶乘函数：</p>
 <p>\( n! = (n-1)!*n \)</p>
 <p>下面的代码计算斐波那契（Fibonacci）数列：</p>
-<p>\( fib(0)=0, fib(1) = 1 \)</p>
-<p>\( fib(n) = fib(n-1) + fib(n-2),   n &gt;1 \)</p>
+<p>\(
+\begin{cases}
+fib(0)=0, \  fib(1) = 1  \\
+fib(n) = fib(n-1) + fib(n-2), \  n &gt;1
+\end{cases}
+\)</p>
 <pre><code class="language-dart">// ch0207_1.dart
 void main() {
   var n = 20;

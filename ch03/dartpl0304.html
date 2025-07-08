@@ -168,6 +168,105 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="模式应用案例"><a class="header" href="#模式应用案例">模式应用案例</a></h1>
+<p>本文以示例的方式，介绍模式的几个经典应用案例。</p>
+<h2 id="交换两个变量的值"><a class="header" href="#交换两个变量的值">交换两个变量的值</a></h2>
+<pre><code class="language-dart">//ch0304_1.dart
+void main() {
+  var (x, y) = (3, 4);
+  (x, y) = (y, x);
+  assert(x == 4 &amp;&amp; y == 3);
+}
+</code></pre>
+<h2 id="解构map里的-key-value"><a class="header" href="#解构map里的-key-value">解构Map里的 key-value</a></h2>
+<pre><code class="language-dart">//ch0304_2.dart
+void main() {
+  const employee = {"id": 1, "name": "Tom", "position": "CEO", "salary": 2};
+  for (var MapEntry(:key, :value) in employee.entries) {
+    print("$key: $value");
+  }
+  // Output:
+  // id: 1
+  // name: Tom
+  // position: CEO
+  // salary: 2
+}
+</code></pre>
+<h2 id="解构多个返回值"><a class="header" href="#解构多个返回值">解构多个返回值</a></h2>
+<pre><code class="language-dart">// ch0304_3.dart
+void main() {
+  var (ok, result) = foo();
+  print(ok ? result : 'oops!');
+}
+
+(bool ok, String) foo() {
+  // ...
+  return (true, 'Everything is OK');
+}
+</code></pre>
+<h2 id="解构类实例"><a class="header" href="#解构类实例">解构类实例</a></h2>
+<p>见 <a href="../ch03/dartpl0303.html#object%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%BC%8F">Object（对象）模式</a>。</p>
+<h2 id="代数algebraic数据类型"><a class="header" href="#代数algebraic数据类型">代数（Algebraic）数据类型</a></h2>
+<p>当满足如下条件时，可使用代数数据类型这一风格去写代码：</p>
+<ul>
+<li>有一个相关类型的家族（family。</li>
+<li>有一个操作，需要针对每种类型执行特定的行为。</li>
+<li>希望将这些行为集中到一起，而不是分散到不同的类型中。</li>
+</ul>
+<p>这是一个来自官方文档的示例。</p>
+<pre><code class="language-dart">// ch0304_4.dart
+import 'dart:math' as math;
+
+sealed class Shape {}
+
+class Square implements Shape {
+  final double length;
+  Square(this.length);
+}
+
+class Circle implements Shape {
+  final double radius;
+  Circle(this.radius);
+}
+
+double calculateArea(Shape shape) =&gt; switch (shape) {
+  Square(length: var l) =&gt; l * l,
+  Circle(radius: var r) =&gt; math.pi * r * r,
+};
+</code></pre>
+<h2 id="jsonmap-校验"><a class="header" href="#jsonmap-校验">JSON/Map 校验</a></h2>
+<p><a href="https://www.json.org/json-en.html">JSON（JavaScript Object Notation）</a>是一种轻量级的数据交换格式，其应用极为广泛，尤其在互联网领域。JSON是一种文本格式，独立于编程语言。</p>
+<pre><code class="language-dart">// ch0304_5.dart
+import 'dart:convert';
+
+void main() {
+  const dat = '''{
+    "id": 1,
+    "name": "Learning Dart from Zero",
+    "category": "Digital Book",
+    "tags": ["dart", "programming", "learning"],
+    "website": "https://techo.dev/dartpl/"
+  }'''; // 1
+
+  final product = jsonDecode(dat); // 2
+  print(product.runtimeType); // Output: _Map&lt;String, dynamic&gt;
+
+  if (product case { // 3
+    "id": int _,
+    "name": String name,
+    "tags": [String tag1, String tag2, _],
+    "website": String website,
+  }) {
+    print("$name($website), tagged by $tag1 and $tag2");
+  }
+}
+</code></pre>
+<ol>
+<li><code>dat</code> 是一个JSON字符串;</li>
+<li>使用 <code>jsonDecode</code> 函数解析 <code>dat</code>，其结果存于<code>product</code>变量，此处的<code>product</code>是一个Map;</li>
+<li>使用模式校验<code>product</code>，并绑定相关的部件（parts）。</li>
+</ol>
+<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
+<p><a href="https://dart.dev/language/patterns#use-cases-for-patterns">https://dart.dev/language/patterns#use-cases-for-patterns</a></p>
 
                     </main>
 

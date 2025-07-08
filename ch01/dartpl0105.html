@@ -181,11 +181,12 @@
 <li><a href="#%E7%BA%A7%E8%81%94%E7%AC%A6%E5%8F%B7">级联符号</a></li>
 <li><a href="#%E5%85%B6%E4%BB%96%E6%93%8D%E4%BD%9C%E7%AC%A6">其他操作符</a></li>
 </ul>
+<p>在算数表达式中（例如 <code>2 + 3 × 5</code>），乘除法的优先级高于加减法，因此优先计算乘除法（<code> 3 × 5</code>），但可以通过圆括号来改变求值顺序（例如 <code>(2 + 3) × 5）</code>。<a href="#%E6%93%8D%E4%BD%9C%E7%AC%A6%E4%BC%98%E5%85%88%E7%BA%A7">操作符的优先级</a>，与算术中加减乘除的优先级类似。</p>
 <h2 id="算术操作符"><a class="header" href="#算术操作符">算术操作符</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
 <tr><td><code>+</code></td><td>加</td><td><code>1 + 2</code>  <span class="hljs-comment"> <em>//3</em></span></td></tr>
 <tr><td><code>-</code></td><td>减</td><td><code>4 - 3</code>  <span class="hljs-comment">  <em>//1</em></span></td></tr>
-<tr><td><code>-</code><span class="hljs"><em>expr</em></span></td><td>符号取反</td><td><code>-x</code></td></tr>
+<tr><td><code>-</code><em><code>expr</code></em></td><td>符号取反</td><td><code>-x</code></td></tr>
 <tr><td><code>*</code></td><td>乘</td><td><code>3 * 5</code>  <span class="hljs-comment"> <em>//15</em></span></td></tr>
 <tr><td><code>/</code></td><td>除，结果是一个浮点数</td><td><code>7 / 2</code>  <span class="hljs-comment">  <em>//3.5</em></span></td></tr>
 <tr><td><code>~/</code></td><td>整除，除法的整数部分，结果是一个整数</td><td><code>7 ~/ 2</code>  <span class="hljs-comment">  <em>//3</em></span></td></tr>
@@ -263,7 +264,7 @@ void main() {
 <tr><td><code>&amp;</code></td><td>与（AND）</td><td><code> 1 &amp; 2</code> <span class="hljs-comment">  <em>//0</em></span></td></tr>
 <tr><td><code>|</code></td><td>或（OR）</td><td><code>1 | 2</code><span class="hljs-comment">  <em>//3</em></span></td></tr>
 <tr><td><code>^</code></td><td>异或（XOR）</td><td><code>2 ^ 3</code><span class="hljs-comment">  <em>//1</em></span></td></tr>
-<tr><td><code>~</code><span class="hljs"><em>expr</em></span></td><td>按位补码（0变为1，1变为0）</td><td><code>～1</code><span class="hljs-comment">  <em>//-2</em></span></td></tr>
+<tr><td><code>~</code><em><code>expr</code></em></td><td>按位补码（0变为1，1变为0）</td><td><code>～1</code><span class="hljs-comment">  <em>//-2</em></span></td></tr>
 <tr><td><code>&lt;&lt;</code></td><td>左移位</td><td><code>1 &lt;&lt; 10</code><span class="hljs-comment">  <em>//1024</em></span></td></tr>
 <tr><td><code>&gt;&gt;</code></td><td>右移位</td><td><code>1024 &gt;&gt; 9</code><span class="hljs-comment">  <em>//2</em></span></td></tr>
 <tr><td><code>&gt;&gt;&gt;</code></td><td>无符号右移</td><td><code>-1 &gt;&gt;&gt; 61</code><span class="hljs-comment">  <em>//7</em></span></td></tr>
@@ -316,6 +317,28 @@ void main() {
 <tr><td><code>!</code></td><td>非空断言</td><td><code>point!</code></td></tr>
 <tr><td><code>...</code></td><td>展开一个集合（collection），插入另一个集合（collection）</td><td><code>...myList</code></td></tr>
 <tr><td><code>...?</code></td><td>与<code>...</code>类似，适用于nullable对象</td><td><code>....?anotherList</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="操作符优先级"><a class="header" href="#操作符优先级">操作符优先级</a></h2>
+<p>下表中的操作符按优先级从高到低排依次列，第一行中的优先级最高，第二行次之，以此类推； 同一行里的操作符具有相同的优先级。</p>
+<div class="table-wrapper"><table><thead><tr><th>描述</th><th>操作符</th></tr></thead><tbody>
+<tr><td>一元后缀</td><td><em><code>expr</code></em><code>++</code>     <em><code>expr</code></em><code>--</code>     <code>()</code>      <code>[]</code>     <code>?[]</code>     <code> .</code>      <code>?.</code>     <code>!</code></td></tr>
+<tr><td>一元前缀</td><td><code>-</code><em><code>expr</code></em>     <code>!</code><em><code>expr</code></em>      <code>~</code><em><code>expr</code></em>     <code>++</code><em><code>expr</code></em>     <code>--</code><em><code>expr</code></em>        <code>await </code><em><code>expr</code></em></td></tr>
+<tr><td>乘除</td><td><code>*</code>    <code> /</code>     <code>%</code>    <code>~/</code></td></tr>
+<tr><td>加减</td><td><code>+</code>     <code> -</code></td></tr>
+<tr><td>移位</td><td><code>&lt;&lt;</code>     <code> &gt;&gt;</code>     <code> &gt;&gt;&gt;</code></td></tr>
+<tr><td>位与 AND</td><td><code>&amp;</code></td></tr>
+<tr><td>位异或 XOR</td><td><code>^</code></td></tr>
+<tr><td>位或 OR</td><td><code>|</code></td></tr>
+<tr><td>关系及类型测试</td><td><code>&gt;=</code>     <code>&gt;</code>     <code>&lt;=</code>     <code>&lt;</code>      <code>as</code>     <code>is</code>      <code>is!</code></td></tr>
+<tr><td>相等</td><td><code>==</code>     <code> !=</code></td></tr>
+<tr><td>逻辑与 AND</td><td><code>&amp;&amp;</code></td></tr>
+<tr><td>逻辑或 OR</td><td><code>||</code></td></tr>
+<tr><td>if-null</td><td><code>??</code></td></tr>
+<tr><td>条件</td><td><em><code>expr1</code></em>    <code>?</code>    <em><code>expr2</code></em>   <code> :</code>    <em><code>expr3</code></em></td></tr>
+<tr><td>级联</td><td><code>..</code>     <code>?..</code></td></tr>
+<tr><td>赋值</td><td><code>=</code>     <code>*=</code>      <code>/=</code>     <code>+=</code>      <code>-=</code>      <code>&amp;=</code>     <code>^=</code>   等</td></tr>
+<tr><td>展开</td><td><code>...</code>      <code>...?</code></td></tr>
 </tbody></table>
 </div>
 <h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>

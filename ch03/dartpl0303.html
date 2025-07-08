@@ -168,6 +168,234 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="模式类型"><a class="header" href="#模式类型">模式类型</a></h1>
+<p>类似于<a href="../ch01/dartpl0105.html#%E6%93%8D%E4%BD%9C%E7%AC%A6%E4%BC%98%E5%85%88%E7%BA%A7">操作符优先级</a>，模式也有优先级，也可以通过圆括号（最高优先级）来改变求值顺序。模式优先级由低到高依次为：</p>
+<ul>
+<li><a href="#%E9%80%BB%E8%BE%91%E6%88%96%E6%A8%A1%E5%BC%8F">”逻辑或“模式</a></li>
+<li><a href="#%E9%80%BB%E8%BE%91%E4%B8%8E%E6%A8%A1%E5%BC%8F">“逻辑与”模式</a></li>
+<li><a href="#%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%BC%8F">关系模式</a></li>
+<li><a href="#%E4%B8%80%E5%85%83%E5%90%8E%E7%BC%80%E6%A8%A1%E5%BC%8F">一元后缀模式</a></li>
+<li><a href="#%E5%85%B6%E5%AE%83%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%BC%8F">其它主要模式</a></li>
+</ul>
+<p>集合型（记录 record、列表 List、映射map）与对象模式包含了其他数据，作为外部模式优先求值。</p>
+<h2 id="逻辑或模式"><a class="header" href="#逻辑或模式">“逻辑或”模式</a></h2>
+<p>这个模式在上一章节已经出现过，如 <code>if (data case ('Tom' || 'Jerry', id: _, _))</code>  中的 <code>'Tom' || 'Jerry'</code> ，其语法为:</p>
+<pre><code class="language-dart">subpattern1 || subpattern2
+</code></pre>
+<p>只要任何一个子模式匹配，”逻辑或“模式就匹配；子模式从左至右求值，直到匹配上了一个子模式，剩下的子模式将不被求值。</p>
+<h2 id="逻辑与模式"><a class="header" href="#逻辑与模式">”逻辑与“模式</a></h2>
+<pre><code class="language-dart">subpattern1 &amp;&amp; subpattern2
+</code></pre>
+<p>当它的子模式都匹配， ”逻辑与“模式才算匹配；子模式从左至右求值，当遇到一个子模式不匹配时，剩下的子模式将不被求值。</p>
+<pre><code class="language-dart">// ch0303_1.dart
+void main() {
+ var goods = (name: 'apple', price: 2.0, quality: 'good');
+ switch (goods) {
+   case (name: _, price: _, quality: 'good') &amp;&amp;
+       (name: 'apple' || 'banana', :var price, quality: _):
+     print('Good apple or banana for \$$price');
+   default:
+     print('Take a look at other fruits');
+ }
+}
+</code></pre>
+<p>此例中的 <code>\$</code> 为转义用法，表示 <code>$</code> 符号本身。</p>
+<p>这个示例旨在说明“逻辑与”模式的用法，它实在可以简化为:</p>
+<pre><code class="language-dart">// ch0303_2.dart
+void main() {
+ // ... (omit for brevity)
+ switch (goods) {
+   case (name: 'apple' || 'banana', :var price, quality: 'good'):
+   // ... (omit for brevity)
+ }
+}
+</code></pre>
+<h2 id="关系模式"><a class="header" href="#关系模式">关系模式</a></h2>
+<p>关系模式使用关系运算符（<code>==</code>、<code>!=</code>、<code>&lt;</code>、<code>&gt;</code>、<code>&lt;=</code> 和 <code>&gt;=</code>）将一个值与常量进行比较。下例绘制分段函数：</p>
+<p>\( f(x)=
+\begin{cases}
+0 &amp; x &lt;0  \\
+2x &amp;   0  \le x &lt; 10  \\
+20 &amp;  10 \le x &lt; 20  \\
+3 * (x - 20) + 20  &amp; x \ge 20  \\
+\end{cases}
+\ ,\ x是整数
+\)</p>
+<pre><code class="language-dart">// ch0303_3.dart
+import 'package:sprintf/sprintf.dart';
+
+void main() {
+  var xs = [for (var x = -5; x &lt;= 30; x++) x];
+  var ys = [for (var x in xs) fx(x)];
+  // Draw the bar chart
+  for (var i = 0; i &lt; xs.length; i++) {
+    print(sprintf('%2d | %s %d', [xs[i], bar(ys[i]), ys[i]]));
+  }
+}
+
+int fx(int x) =&gt; switch (x) {
+  &lt; 0 =&gt; 0,
+  &gt;= 0 &amp;&amp; &lt; 10 =&gt; 2 * x,
+  &gt;= 10 &amp;&amp; &lt; 20 =&gt; 20,
+  _ =&gt; 3 * (x - 20) + 20,
+};
+
+String bar(int y) =&gt; '▩' * y;
+</code></pre>
+<p>该程序将打印一个水平方向的条形图:</p>
+<pre><code class="language-dart">-5 |  0
+-4 |  0
+-3 |  0
+-2 |  0
+-1 |  0
+ 0 |  0
+ 1 | ▩▩ 2
+ 2 | ▩▩▩▩ 4
+ 3 | ▩▩▩▩▩▩ 6
+ 4 | ▩▩▩▩▩▩▩▩ 8
+ 5 | ▩▩▩▩▩▩▩▩▩▩ 10
+ 6 | ▩▩▩▩▩▩▩▩▩▩▩▩ 12
+ 7 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 14
+ 8 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 16
+ 9 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 18
+10 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+11 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+12 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+13 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+14 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+15 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+16 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+17 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+18 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+19 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+20 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 20
+21 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 23
+22 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 26
+23 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 29
+24 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 32
+25 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 35
+26 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 38
+27 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 41
+28 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 44
+29 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 47
+30 | ▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ 50
+</code></pre>
+<h2 id="一元后缀模式"><a class="header" href="#一元后缀模式">一元后缀模式</a></h2>
+<p>一元后缀模式包括 Cast（类型转换）、Null-check（空检查）、Null-assert（空断言）。</p>
+<p>Cast模式使得在解构过程中插入类型转换，但如果类型转换失败，程序将抛出异常。</p>
+<pre><code class="language-dart">// ch0304_4.dart
+void main() {
+  (Object, num) dat = ('Alice', 100);
+  var (name as String, score as int) = dat;
+  assert(name == 'Alice');
+  assert(score == 100);
+
+  var (x as double, _) = dat;
+  // Unhandled exception:
+  // type 'String' is not a subtype of type 'double' in type cast
+}
+</code></pre>
+<p>Null-check模式在匹配一个值时，首先检查那个值是否为<code>null</code>，如果是<code>null</code>就直接匹配失败，但不会抛出异常。</p>
+<p>Null-assert与Null-check类似，但当所匹配的那个值为<code>null</code>时会抛出一个异常。</p>
+<pre><code class="language-dart">// ch0303_4.dart
+void main() {
+  int? a;
+  checkNull(a); // Output: check: a is null
+
+  a = 10;
+  checkNull(a); // Output: check: a is 10
+
+  assertNull(a); // Output: assert: a is 10
+
+  assertNull(null);
+  // Unhandled exception:
+  // Null check operator used on a null value
+}
+
+void checkNull(dynamic a) {
+  switch (a) {
+    case var x?:
+      print('check: a is $x');
+    default:
+      print('check: a is null');
+  }
+}
+
+void assertNull(dynamic a) {
+  switch (a) {
+    case var x!:
+      print('assert: a is $x');
+  }
+}
+</code></pre>
+<h2 id="其它主要模式"><a class="header" href="#其它主要模式">其它主要模式</a></h2>
+<h3 id="list列表模式"><a class="header" href="#list列表模式">List（列表）模式</a></h3>
+<p>List模式非常实用，例如利用该模式将一个List分成“首个元素+中间的元素s+尾部元素”三部分。</p>
+<pre><code class="language-dart">// ch0303_6.dart
+void main() {
+  const luckyNumbers = [5, 6, 8, 9];
+  var [first, ...rest, last] = luckyNumbers;
+  print('first=$first last=$last'); // Output: first=5 last=9
+  print('rest=$rest'); // Output: rest=[6, 8]
+}
+</code></pre>
+<p>此例中的<code>...rest</code> 表示剩余元素形成的List，称之为rest元素（Rest element）。List模式至多包含一个rest元素，这不难理解，因为如果有2个rest元素，就无法确定其部件（parts）的边界。</p>
+<h3 id="record记录模式"><a class="header" href="#record记录模式">Record（记录）模式</a></h3>
+<p>我们已经多次见过Record模式（见 <a href="../ch01/dartpl0104.html#%E8%AE%B0%E5%BD%95%E7%B1%BB%E5%9E%8B">记录类型</a> 一节），在仅举一例，不过多描述。</p>
+<pre><code class="language-dart">// ch0303_7.dart
+void main() {
+  const point = ('A', x: 1, y: 2, z: 3);
+  var (name, :x, :y, z: _) = point;
+  print('$name: x=$x y=$y'); // Output: A: x=1 y=2
+}
+</code></pre>
+<h3 id="map-映射模式"><a class="header" href="#map-映射模式">Map （映射）模式</a></h3>
+<p>Map由key-value pair（键值对）组成，通过key获取value。例如：</p>
+<pre><code class="language-dart">  var employee = {"id": 1, "name": "Tom", "position": "CEO", "salary": 2};
+  var numbers = {1: "one", 2: "two", 3: "three"};
+  assert(employee["name"] == "Tom");
+</code></pre>
+<p>第6章将进一步讨论Map，此处仅举例说明Map模式的运用。</p>
+<pre><code class="language-dart">// ch0303_8.dart
+void main() {
+  var employee = {"id": 1, "name": "Tom", "position": "CEO", "salary": 2};
+  var numbers = {1: "one", 2: "two", 3: "three"};
+
+  var {"id": id, "salary": salaray} = employee;
+  assert(id == 1);
+  assert(salaray == 2);
+
+  var {1: one, 2: two} = numbers;
+  assert(one == "one");
+  assert(two == "two");
+
+  var {4: four} = numbers;
+  // Unhandled exception:
+  // Bad state: Pattern matching error
+}
+</code></pre>
+<p>Map模式的两个特点：</p>
+<ul>
+<li>无需匹配整个Map，也就是说无需匹配所有的Key；</li>
+<li>尝试匹配一个不存在的Key，将抛出一个<a href="https://api.dart.dev/dart-core/StateError-class.html">StateError 错误</a>。</li>
+</ul>
+<h3 id="object对象模式"><a class="header" href="#object对象模式">Object（对象）模式</a></h3>
+<p>Object模式在上一节已有所介绍，下面是另一个示例。</p>
+<pre><code class="language-dart">// ch0303_9.dart
+void main() {
+  const color = Color(50, 60, 80);
+  var Color(:r, :g, :b) = color;
+  print('r=$r g=$g b=$b'); // Output: r=50 g=60 b=80
+}
+
+class Color {
+  const Color(this.r, this.g, this.b);
+  final int r, g, b;
+}
+</code></pre>
+<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/pattern-types">https://dart.dev/language/pattern-types</a></li>
+</ul>
 
                     </main>
 
