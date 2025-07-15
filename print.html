@@ -741,20 +741,25 @@ double是双精度浮点数，遵循 IEEE 754 标准。</p>
 void main() {
   int radius = 5;
   double pi = 3.1416;
-  print('area: ${radius * radius * pi}'); 
+  print('area=${radius * radius * pi}'); 
   // Output: area=78.53999999999999
 }
 </code></pre>
 <p>除了使用十进制书写整数外，还可以用十六进制。可以使用科学计数法书写浮点数。例如：</p>
 <pre><code class="language-dart">// ch0104_2.dart
 void main() {
-  int radius = 0x10;
+  int radius = 0x10; // hexadecimal
+  int radius2 = 16; // decimal
   double pi = 0.31416e1;
+
+  print('radius==radius2: ${radius == radius2}');
+  // Output: radius==radius2: true
+
   print('radius=$radius area=${radius * radius * pi}');
   // Output: radius=16 area=804.2496
 }
 </code></pre>
-<p>但是Dart并不直接支持书写八进制数。你可以用  octal 包来实现八进制的书写。</p>
+<p>但是Dart并不直接支持书写八进制数。你可以用  octal 包来书写八进制数。</p>
 <pre><code class="language-dart">// ch0104_3.dart
 // dart pub add octal
 import 'package:octal/octal.dart'; 
@@ -830,8 +835,8 @@ void main() {
 <li>声明变量<code>s</code>，注意这里<code>\u7b11</code>就等于<code>笑</code>这个字符，<code>\uHHHH</code>表示<code>\u</code>后面是code point的十六进制表示<code>HHHH</code>；如果该十六进制数不是4位，就必须位于一堆花括号<code>{}</code>中，如<code>\u{1f606}</code>就等于😆这个emoji符号;</li>
 <li>打印 <code>s</code>，从输出结果可以看出 <code>s</code>包含了7个符文（字符);</li>
 <li>打印<code>s</code>的长度，结果为9, 可见是code unit的个数，下面一行代码印证了这一点；</li>
-<li>代码<code>s</code>的code point 序列;</li>
-<li>代码<code>s</code>的符文（字符）序列;</li>
+<li>打印<code>s</code>的code point 序列;</li>
+<li>打印<code>s</code>的符文（字符）序列;</li>
 <li>第6-7行代码分别显示31505和128518对应的十六进制表示，以方便分析。</li>
 </ol>
 <p>请仔细查看code units 与 runes 并进行对比，这将帮助你理解Rune（符文）和String（字符串）。</p>
@@ -878,7 +883,7 @@ void main() {
 <li>修改 <code>record</code> 的<code>id</code>，遭遇编译错误，这说明了记录是不可变的，同时从错误信息中可以看出，记录是一种特殊的匿名类。</li>
 </ol>
 <h3 id="记录类型"><a class="header" href="#记录类型">记录类型</a></h3>
-<p>记录（Record）没有明确的类型声明，因为它是匿名的，但记录是有形状（Shaple）的。本例中 <code>record</code>的形状为<code>(String, String, {int id, String name})</code>；在一对花括号(<code>{}</code>)里的<code>int id, String name</code> 为命名字段 <code>id</code>与<code>name</code>，其类型分别为<code>int</code>与<code>String</code>；没有花括号包围的便是位置字段。</p>
+<p>记录（Record）没有明确的类型声明，因为它是匿名的，但记录是有形状（Shape）的。本例中 <code>record</code>的形状为<code>(String, String, {int id, String name})</code>；在一对花括号(<code>{}</code>)里的<code>int id, String name</code> 为命名字段 <code>id</code>与<code>name</code>，其类型分别为<code>int</code>与<code>String</code>；没有花括号包围的便是位置字段。</p>
 <pre><code class="language-dart">// ch01004_b.dart
 void main() {
   (int x, int y, int z) point = (1, 2, 3);
@@ -2735,8 +2740,7 @@ void main() {
 </ol>
 <h2 id="参考资料-11"><a class="header" href="#参考资料-11">参考资料</a></h2>
 <p><a href="https://dart.dev/language/patterns#use-cases-for-patterns">https://dart.dev/language/patterns#use-cases-for-patterns</a></p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="封装与可见性"><a class="header" href="#封装与可见性">封装与可见性</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="构造函数this关键字与初始化列表"><a class="header" href="#构造函数this关键字与初始化列表">构造函数、this关键字与初始化列表</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="构造函数this关键字与初始化列表"><a class="header" href="#构造函数this关键字与初始化列表">构造函数、this关键字与初始化列表</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="命名构造器"><a class="header" href="#命名构造器">命名构造器</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="重定向构造器"><a class="header" href="#重定向构造器">重定向构造器</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="factory构造器"><a class="header" href="#factory构造器">factory构造器</a></h1>
