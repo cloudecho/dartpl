@@ -180,14 +180,14 @@ void main() {
 <h2 id="解构map里的-key-value"><a class="header" href="#解构map里的-key-value">解构Map里的 key-value</a></h2>
 <pre><code class="language-dart">//ch0304_2.dart
 void main() {
-  const employee = {"id": 1, "name": "Tom", "position": "CEO", "salary": 2};
+  const employee = {"id": 1, "name": "Tom", "post": "CEO", "salary": 2};
   for (var MapEntry(:key, :value) in employee.entries) {
     print("$key: $value");
   }
   // Output:
   // id: 1
   // name: Tom
-  // position: CEO
+  // post: CEO
   // salary: 2
 }
 </code></pre>

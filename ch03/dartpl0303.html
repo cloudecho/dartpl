@@ -350,14 +350,14 @@ void main() {
 </code></pre>
 <h3 id="map-映射模式"><a class="header" href="#map-映射模式">Map （映射）模式</a></h3>
 <p>Map由key-value pair（键值对）组成，通过key获取value。例如：</p>
-<pre><code class="language-dart">  var employee = {"id": 1, "name": "Tom", "position": "CEO", "salary": 2};
+<pre><code class="language-dart">  var employee = {"id": 1, "name": "Tom", "post": "CEO", "salary": 2};
   var numbers = {1: "one", 2: "two", 3: "three"};
   assert(employee["name"] == "Tom");
 </code></pre>
 <p>第6章将进一步讨论Map，此处仅举例说明Map模式的运用。</p>
 <pre><code class="language-dart">// ch0303_8.dart
 void main() {
-  var employee = {"id": 1, "name": "Tom", "position": "CEO", "salary": 2};
+  var employee = {"id": 1, "name": "Tom", "post": "CEO", "salary": 2};
   var numbers = {1: "one", 2: "two", 3: "three"};
 
   var {"id": id, "salary": salaray} = employee;
