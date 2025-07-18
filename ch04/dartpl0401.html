@@ -167,7 +167,97 @@
 
                 <div id="content" class="content">
                     <main>
-                        
+                        <h1 id="封装与可见性"><a class="header" href="#封装与可见性">封装与可见性</a></h1>
+<p>封装、继承与多态是面向对象编程（Object-oritented programming, OOP）的三大特性，而封装是其中最为基础与关键的特性。Go语言向我们证明了继承对于OOP是可选的，而多态通过接口来实现。这些基本概念将在后续章节陆续介绍，本章节重点说明封装。</p>
+<h2 id="封装"><a class="header" href="#封装">封装</a></h2>
+<p>很多时候我们想要隐藏代码的实现细节，而对外暴露的只是API（应用编程接口），这便是针对接口（而非实现）编程，要实现这一点就要用到封装。接口用于定义API，而类就像一个容器主要用于封装。那么类究竟封装了什么？</p>
+<pre><code class="language-dart">// ch0401_1.dart
+class Dog {
+  const Dog(this.name, this.age); // 3
+  final String name; // 1
+  final int age; // 1a
+
+  void say() {  //2
+    print('$name: Woof woof');
+  }
+
+  void eat() { //2a
+    print("$name: I'd like to have some bones");
+  }
+}
+</code></pre>
+<ol>
+<li>此例中<code>Dog</code>类封装了其属性（即字段 <code>name</code>、<code>age</code>），以及</li>
+<li>行为，即方法 <code>say()</code>、<code>eat()</code>；方法（method）即在类中定义的函数;</li>
+<li>这是<code>Dog</code>的构造函数。</li>
+</ol>
+<h2 id="类的实例化与成员"><a class="header" href="#类的实例化与成员">类的实例化与成员</a></h2>
+<p>下面这行代码使用构造函数，创建（实例化）了<code>Dog</code>类的一个实例（instance）：</p>
+<pre><code class="language-dart">  var dog = Dog('Spots', 6);
+</code></pre>
+<p>我们说<code>dog</code>是<code>Dog</code>类的一个实例或对象。</p>
+<blockquote>
+<p><strong><em>NOTE:</em></strong> 类是对象的模板，对象是类的实例。</p>
+</blockquote>
+<p>类的成员包括实例变量、实例方法、静态变量、静态方法。</p>
+<p><code>Dog</code>类中的<code>name</code>和<code>age</code>是实例变量，像这样引用：<code>dog.name</code>。</p>
+<p><code>Dog</code>类中的<code>say()</code>和<code>eat()</code>是实例方法，像下面这样调用：</p>
+<pre><code class="language-dart">  dog.say();
+</code></pre>
+<p>实例变量与实例方法是与类的实例关联（绑定）的，而静态（static）变量与静态方法则与类关联，例如：</p>
+<pre><code class="language-dart">class Dog {
+  // .... (omit for brevity)
+  static const ponyo = Dog('Ponyo', 5);
+  static void ponyoSay() =&gt; ponyo.say();
+}  
+</code></pre>
+<h2 id="可见性"><a class="header" href="#可见性">可见性</a></h2>
+<p>Dart 没有使用 <code>public</code>, <code>protected</code> 与 <code>private</code> 关键字来表达成员的可见性，而是使用特殊的标记即下划线（<code>_</code>）来表达<code>private</code>（私有）的概念。</p>
+<pre><code class="language-dart">class Dog {
+  // .... (omit for brevity)
+  final _secret = "I won't tell you this";
+  void _tellSecret() =&gt; print(_secret);
+}  
+</code></pre>
+<p><code>_secret</code>字段与<code>_tellSecret()</code> 方法对于外部文件是不可见的，换言之，它只能在当前文件（定义它的文件）中使用。</p>
+<h2 id="libraries库"><a class="header" href="#libraries库">Libraries（库）</a></h2>
+<p>Dart里的每个.dart文件（加上它的子文件，即parts）都是一个libary。使用<code>import</code>关键字导入libary中的代码。这种机制使得代码可以被模块化以及可以被复用。</p>
+<p><em>file <code>lib/hellodart.dart:</code></em></p>
+<pre><code class="language-dart">// lib/hellodart.dart
+int calculate() { // 1
+  return 6 * 7;
+}
+</code></pre>
+<p><em>file <code>bin/hellodart.dart:</code></em></p>
+<pre><code class="language-dart">// bin/hellodart.dart
+import 'package:hellodart/hellodart.dart' as hellodart; // 2
+
+// ch0101
+void main(List&lt;String&gt; arguments) {
+  print('Hello world: ${hellodart.calculate()}!'); // 3
+}
+</code></pre>
+<ol>
+<li>在 <em><code>lib/hellodart.dart</code></em> 中定义函数<code>calculate()</code>;</li>
+<li>这行代码使用关键字 <code>import</code> 导入 <em><code>lib/hellodart.dart</code></em> ，并使用 <code>as</code> 关键字给此library取名<code>hellodart</code>，将其中的标识符置于<code>hellodart</code>命名空间里；</li>
+<li><code>hellodart.calculate()</code>表示调用<code>hellodart</code> library 中的<code>calculate()</code>函数。</li>
+</ol>
+<blockquote>
+<p><strong><em>NOTE</em></strong>:</p>
+<ol>
+<li>第2行<code>import</code>一句中的 <code>package:hellodart</code> 表示 <code>hellodart</code>这个package（包），package的名称与 <em><code>pubspec.yaml</code></em> 文件中 <code>name: hellodart</code> 是一致的；回想一下，我们在第1章<a href="../ch01/dartpl0101.html#hello-dart">Hello Dart: 搭建开发环境</a>一节中创建了<code>helloword</code> 这个package。</li>
+<li>如果第2行代码不使用 as 关键字给 <code>hellodart.dart</code> 取名，表示将此libary导入全局命名空间，就直接使用<code>calculate()</code>来调用该函数。</li>
+</ol>
+</blockquote>
+<p>我们在 <em><code>lib/hellodart.dart</code></em> 中定义另一个函数:</p>
+<pre><code class="language-dart">int _calculate() =&gt; 7 * 8;
+</code></pre>
+<p>然后在其它文件中（如 <em><code>bin/hellodart.dart</code></em>）调用它，将引起编译错误:</p>
+<pre><code class="language-dart">bin/hellodart.dart:6:35: Error: Method not found: '_calculate'.
+  print('Hello world: ${hellodart._calculate()}!'); // 3
+                                  ^^^^^^^^^^
+</code></pre>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">

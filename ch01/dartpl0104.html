@@ -236,6 +236,14 @@ void main() {
   print(decimalValue.toRadixString(8)); // Output: 123
 }
 </code></pre>
+<p>书写数字时，可以在数字中间添加下划线来分节，这一点非常实用。</p>
+<pre><code class="language-dart">// ch0104_g.dart
+void main() {
+  print(10_000); // Output: 10000
+  print(1_2.000_123); // Output: 12.000123
+  print(0x1_0); // 0utput: 16
+}
+</code></pre>
 <h2 id="字符串string"><a class="header" href="#字符串string">字符串（String）</a></h2>
 <p>Dart中的String是一个UTF-16值的有序序列，写在一对单引号或双引号里。一个非常nice的功能是字符串插值，即在字符串里使用 <code>${expr}</code>  。</p>
 <pre><code class="language-dart">// ch0104_4.dart

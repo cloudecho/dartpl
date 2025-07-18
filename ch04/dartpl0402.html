@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>构造函数、this关键字与初始化列表 - 从0开始学Dart</title>
+        <title>构造函数 - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -167,7 +167,289 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="构造函数this关键字与初始化列表"><a class="header" href="#构造函数this关键字与初始化列表">构造函数、this关键字与初始化列表</a></h1>
+                        <h1 id="构造函数"><a class="header" href="#构造函数">构造函数</a></h1>
+<p>构造函数（或构造器，Constructor），是用来创建类实例（对象）的特殊函数。如上一节中</p>
+<pre><code class="language-dart">var dog = Dog('Spots', 6);
+</code></pre>
+<p>通过调用<code>Dog</code>类的构造函数，得到<code>Dog</code>类的一个实例 <code>dog</code>。</p>
+<p>Dart 实现了多种类型的构造函数：</p>
+<ul>
+<li><a href="#%E7%94%9F%E6%88%90%E5%BC%8F%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">生成式构造函数</a>
+<ul>
+<li><a href="#%E9%BB%98%E8%AE%A4%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">默认构造函数 </a></li>
+<li><a href="#%E5%91%BD%E5%90%8D%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">命名构造函数 </a></li>
+<li><a href="#%E5%B8%B8%E9%87%8F%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">常量构造函数 </a></li>
+<li><a href="#%E9%87%8D%E5%AE%9A%E5%90%91%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">重定向构造函数</a></li>
+</ul>
+</li>
+<li><a href="#%E5%B7%A5%E5%8E%82%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">工厂构造函数 </a></li>
+</ul>
+<p>这些函数总体上可以分为 生成式构造函数 与 工厂构造函数 两大类。它们在书写形式上无需指定返回类型，因为它们返回的一定是类的实例。</p>
+<p>在本文的最后还将讨论<a href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%E5%87%BD%E6%95%B0%E4%BD%93">构造函数的函数体</a>。</p>
+<p>在讨论具体的构造函数之前，先来看一下<a href="#%E5%AE%9E%E4%BE%8B%E5%8F%98%E9%87%8F%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96">实例变量的初始化</a>。</p>
+<h2 id="实例变量的初始化"><a class="header" href="#实例变量的初始化">实例变量的初始化</a></h2>
+<h3 id="在声明时初始化"><a class="header" href="#在声明时初始化">在声明时初始化</a></h3>
+<p>在声明类的实例变量时，可对其进行初始化。例如</p>
+<pre><code class="language-dart">// ch0402_1.dart
+class Cat {
+  var name = "Kitty";
+  var age = 1;
+}
+</code></pre>
+<p>实例变量 <code>name</code> 和 <code>age</code> 都有初始值，因此使用 <code>var</code> 关键字来声明，让Dart自动推断其类型。</p>
+<h3 id="初始化形参"><a class="header" href="#初始化形参">初始化形参</a></h3>
+<p>Dart的初始化形参极大的简化了构造函数的书写。</p>
+<pre><code class="language-dart">// ch0402_2.dart
+class Cat {
+  String name;
+  int age;
+
+  Cat(this.name, this.age);
+}
+</code></pre>
+<p>此处的 <code>this</code> 关键字表示当前实例，或则说 <code>this</code> 乃当前实例的引用。</p>
+<h3 id="初始化列表"><a class="header" href="#初始化列表">初始化列表</a></h3>
+<p>上述示例代码（<em><code>ch0402_2.dart</code></em>）等价于:</p>
+<pre><code class="language-dart">// ch0402_3.dart
+class Cat {
+  String name;
+  int age;
+
+  Cat(String name, int age) : name = name, age = age; // 1
+}
+</code></pre>
+<ol>
+<li>冒号后面的 <code>name = name, age = age</code> 即初始化列表。</li>
+</ol>
+<blockquote>
+<p><strong><em>NOTE:</em></strong>
+初始化列表中的 <code>name = name</code>，等号（<code>=</code>）左边是实例变量<code>name</code>，右边是构造函数的参数<code>name</code>。</p>
+</blockquote>
+<p>当然对于如此简单的初始化操作，使用初始化形参数更为简洁。</p>
+<p>实战中经常要对构造函数的参数进行简单校验，比如要求 <code>name</code> 的长度至少为3：</p>
+<pre><code class="language-dart">// ch0402_4.dart
+class Cat {
+  String name;
+  int age;
+
+  Cat(this.name, this.age) : assert(name.length &gt;= 3); // 1
+}
+</code></pre>
+<ol>
+<li>这里在初始化列表里使用 <code>assert</code>对参数<code>name</code>的长度进行了校验。</li>
+</ol>
+<p>有时候实例变量的初始化需要一个简单的计算，可以参考下例：</p>
+<pre><code class="language-dart">// ch0402_5.dart
+class Rectangle { // 1
+  final double width;
+  final double height;
+  final double perimeter;
+
+  Rectangle(this.width, this.height)
+    : perimeter = _computePerimeter(width, height); // 3
+
+  // 2
+  static double _computePerimeter(double w, double h) =&gt; 2 * (w + h);
+}
+</code></pre>
+<ol>
+<li><code>Rectangle</code>类代表了一个矩形;</li>
+<li>定义一个静态的辅助方法<code>_computePerimeter</code>，用以计算矩形的周长；</li>
+<li>在初始化列表中调用<code>_computePerimeter</code>来初始化实例变量 <code>perimeter</code>。</li>
+</ol>
+<h2 id="生成式构造函数"><a class="header" href="#生成式构造函数">生成式构造函数</a></h2>
+<p>生成式构造函数（Generative constructors），负责创建实例并初始化实例变量，是创建新实例的常见方式。上文已经演示了一个简单的生成式构造函数：</p>
+<pre><code class="language-dart">// ch0402_2.dart
+class Cat {
+  String name;
+  int age;
+
+  Cat(this.name, this.age);
+}
+</code></pre>
+<h2 id="默认构造函数"><a class="header" href="#默认构造函数">默认构造函数</a></h2>
+<p>如何没有显示定义一个生成式构造函数，Dart将自动创建一个不具名的无参构造函数。</p>
+<pre><code class="language-dart">// ch0402_6.dart
+class Cat {
+  var name = "Kitty";
+  var age = 1;
+
+  // Auto-created default constructor
+  // Cat();
+
+  @override
+  String toString() {
+    return 'Cat($name,$age)';
+  }
+}
+
+void main() {
+  print(Cat());// Output: Cat(Kitty,1)
+}
+</code></pre>
+<h2 id="命名构造函数"><a class="header" href="#命名构造函数">命名构造函数</a></h2>
+<p>命名构造函数用于实现多个构造函数，并且命名构造函数的名称提供了额外的信息，以帮助用户使用（理解代码的意图）。</p>
+<pre><code class="language-dart">// ch0402_7.dart
+class Point { // 1
+  final double x;
+  final double y;
+
+  Point(this.x, this.y); // 2
+
+  Point.origin() : x = 0, y = 0; // 3
+
+  @override
+  String toString() {
+    return '($x, $y)';
+  }
+}
+
+void main() {
+  print(Point(2, 3)); // Output: (2.0, 3.0)
+  print(Point.origin()); // Output: (0.0, 0.0)
+}
+</code></pre>
+<ol>
+<li><code>Point</code> 类代表了平面坐标系中的一个点;</li>
+<li>使用初始化形参定义了一个构造函数;</li>
+<li>定义了一个命名构造函数 <code>Point.origin()</code>，它使用初始化列表将实例变量<code>x</code>和<code>y</code>的值都设置为0。</li>
+</ol>
+<h2 id="常量构造函数"><a class="header" href="#常量构造函数">常量构造函数</a></h2>
+<p>如果要创建编译时（ compile-time）常量对象，就需要用到常量构造函数（Constant constructors）。</p>
+<pre><code class="language-dart">// ch0402_8.dart
+class Point {
+  final double x;
+  final double y;
+
+  const Point(this.x, this.y); // 1
+}
+</code></pre>
+<ol>
+<li>使用 <code>const</code> 关键字定义常量构造函数。</li>
+</ol>
+<blockquote>
+<p><strong><em>NOTE:</em></strong> 常量构造函数所在类的实例变量必须为声明为 <code>final</code>。</p>
+</blockquote>
+<p>常量构造函数所创建的对象一定是常量吗？</p>
+<pre><code class="language-dart">void main() {
+  var p1 = const Point(1, 2); // 2
+  var p2 = Point(1, 2); // 3
+  print(p1 == p2); // 4 Output: false
+
+  const p3 = Point(1, 2); // 5
+  print(p1 == p3); // 6 Output: true
+}
+</code></pre>
+<ol start="2">
+<li>在常量构造函数 <code>Point(1, 2)</code>  前使用关键字 <code>const</code> 创建<code>Point</code>类的一个实例<code>p1</code>;</li>
+<li>p2 是  <code>Point</code>类的另一个实例，但实例化时没有使用<code>const</code>关键字；</li>
+<li>比较 <code>p1</code> 和 <code>p2</code> 是否相等，结果为 <code>false</code>，可见它们引用了不同的实例;</li>
+<li><code>p3</code> 与 <code>p2</code>类似，但用了 <code>const</code> （而非<code>var</code>）关键字来声明;</li>
+<li>比较 <code>p1</code> 和 <code>p3</code> 是否相等，结果为 <code>true</code>，可见它们引用了同一个实例，该实例是一个常量；而<code>p2</code>对应的实例则不是常量。</li>
+</ol>
+<p>从语法角度来看：</p>
+<ol>
+<li><code>var p2 = Point(1, 2);</code>  等价于 <code>var p2 = new Point(1, 2);</code>， 这里的关键字 <code>new</code> 通常予以省略;</li>
+<li><code>const p3 = Point(1, 2); </code> 这里的 <code>const</code>关键字开启了一个常量上下文，因此这句代码就相当于 <code>const p3 = const Point(1, 2);</code> ，而第二个<code>const</code>通常予以省略。</li>
+</ol>
+<h2 id="重定向构造函数"><a class="header" href="#重定向构造函数">重定向构造函数</a></h2>
+<p>重定向构造函数没有函数体，它使用 <code>this</code> 关键字重定向到类中的另一个生成式构造函数。</p>
+<pre><code class="language-dart">// ch0402_9.dart
+class Point {
+  double x, y;
+
+  Point(this.x, this.y); // 1
+
+  Point.x(double x) : this(x, 0); // 2
+}
+</code></pre>
+<ol>
+<li>使用初始化形参定一个生成式构造函数;</li>
+<li><code>Point.x(double)</code> 是一个重定向构造函数，它重定向至构造函数 <code>Point(this.x, this.y)</code>（语法上使用<code>this</code>关键字）；这行代码的效果为:</li>
+</ol>
+<pre><code class="language-dart">  Point.x(this.x) : y = 0; // 2
+</code></pre>
+<h2 id="工厂构造函数"><a class="header" href="#工厂构造函数">工厂构造函数</a></h2>
+<p>设计模式中有一个创建型模式叫做<a href="https://refactoring.guru/design-patterns/factory-method">工厂方法</a>（也称为虚拟构造函数），它专门用来创建类的实例。Dart的工厂构造函数与设计模式里的工厂方法有类似的意图。工厂构造函数是一种返回类实例的特殊函数，它必须借助生成式构造函数，才能创建实例。下面按使用场景举例说明。</p>
+<h3 id="缓存实例"><a class="header" href="#缓存实例">缓存实例</a></h3>
+<p>工厂构造函数用于缓存实例的一个经典示例是Logger（日志记录器）。</p>
+<pre><code class="language-dart">// ch0402_a.dart
+class Logger {
+  final String name;
+
+  Logger._(this.name); // 1
+
+  static final _cache = &lt;String, Logger&gt;{}; // 2
+
+  factory Logger(String name) { // 3
+    return _cache.putIfAbsent(name, () =&gt; Logger._(name));
+  }
+
+  factory Logger.main() =&gt; Logger("main"); // 4
+
+  void log(String message) { // 5
+    print('${DateTime.now()} $name: $message');
+  }
+}
+
+void main() {
+  assert(Logger("main") == Logger.main()); // 6
+  Logger.main().log('This message is from main function'); // 7
+}
+</code></pre>
+<ol>
+<li><code>Logger._(this.name)</code> 是一个私有的构造函数，对外部文本不可见;</li>
+<li><code>_cache</code>是一个Map，用于缓存 <code>Logger</code>实例;</li>
+<li><code>Logger(String)</code>是一个工厂构造函数，以关键字<code>factory</code>修饰，其内部操作为：如果<code>name</code>参数对应的<code>Logger</code>
+实例已经在<code>_cache</code>中，就直接返回该实例，否则创建一个新的<code>Logger</code>实例存放于<code>_cache</code>，然后返回它;</li>
+<li><code>Logger.main() </code>是命名的工厂构造函数;</li>
+<li><code>log(String)</code> 是用于打印日志的实例方法;</li>
+<li>断言 <code>Logger("main")</code> 与 <code>Logger.main()</code>返回同一个<code>Logger</code>实例;</li>
+<li>调用 <code>Logger.main()</code> 的<code>log</code>方法打印一行日志。</li>
+</ol>
+<h3 id="创建系列对象"><a class="header" href="#创建系列对象">创建系列对象</a></h3>
+<p>有时需要对一系列对象的创建过程进行集中管理，尤其是那些受保护的类。</p>
+<pre><code class="language-dart">// ch0402_b.dart
+abstract class Toy {
+  factory Toy(String name) {
+    return switch (name) {
+      'car' =&gt; _Car(),
+      'truck' =&gt; _Truck(),
+      'airplane' =&gt; _Airplane(),
+      _ =&gt; throw 'unknown toy: $name',
+    };
+  }
+}
+
+class _Car implements Toy {}
+
+class _Truck implements Toy {}
+
+class _Airplane implements Toy {}
+
+void main() {
+  print(Toy('car'));
+}
+</code></pre>
+<p>此例中的<code>Toy</code>是一个抽象类，它定义了一个工厂构造函数，该函数根据参数<code>name</code>来创建对应的实例。<code>Toy</code>的具体类（<code>_Car</code>、<code>_Truck</code>、 <code>_Airplane</code>）是私有的（受保护的），随着时间的推移，它们的内部实现可能被改变，但不会影响用户代码。抽象类与接口等概念将在下一章介绍。</p>
+<h2 id="构造函数的函数体"><a class="header" href="#构造函数的函数体">构造函数的函数体</a></h2>
+<p>重定向构造函数没有函数体，其它生成式构造函数的函数体是可选的。示例  <em><code>ch0402_4.dart</code></em> 可以改写为:</p>
+<pre><code class="language-dart">// ch0402_c.dart
+class Cat {
+  String name;
+  int age;
+
+  Cat(this.name, this.age) {
+    assert(name.length &gt;= 3);
+  }
+}
+</code></pre>
+<p>但一点需要注意，没有<code>late</code>关键字修饰的non-nullable实例变量的初始化，必须在 初始化形参 或 初始化列表中完成，而不可在函数体中完成。</p>
+<p>工厂构造函数是一种返回类实例的特殊函数，它一定有函数体。</p>
+<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/constructors">https://dart.dev/language/constructors</a></li>
+</ul>
 
                     </main>
 
