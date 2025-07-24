@@ -3115,7 +3115,7 @@ void main() {
 </code></pre>
 <p>此例中的<code>Toy</code>是一个抽象类，它定义了一个工厂构造函数，该函数根据参数<code>name</code>来创建对应的实例。<code>Toy</code>的具体类（<code>_Car</code>、<code>_Truck</code>、 <code>_Airplane</code>）是私有的（受保护的），随着时间的推移，它们的内部实现可能被改变，但不会影响用户代码。抽象类与接口等概念将在下一章介绍。</p>
 <h3 id="命名工厂构造函数与静态方法"><a class="header" href="#命名工厂构造函数与静态方法">命名工厂构造函数与静态方法</a></h3>
-<p>实际上，命名工厂构造函数可以用静态方法进行改写，可以说二者是等价的。示例 <em><code>ch0402_a</code></em> 的 <code>Logger.main</code> 方法可以改写为:</p>
+<p>实际上，命名工厂构造函数可以用<em>返回类实例的</em>静态方法进行改写，可以说二者是等价的。示例 <em><code>ch0402_a</code></em> 的 <code>Logger.main</code> 方法可以改写为:</p>
 <pre><code class="language-dart">  static Logger main() =&gt; Logger("main"); // 4
 </code></pre>
 <h2 id="构造函数的函数体"><a class="header" href="#构造函数的函数体">构造函数的函数体</a></h2>
