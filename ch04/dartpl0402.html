@@ -209,7 +209,7 @@ class Cat {
 </code></pre>
 <p>此处的 <code>this</code> 关键字表示当前实例，或则说 <code>this</code> 乃当前实例的引用。</p>
 <h3 id="初始化列表"><a class="header" href="#初始化列表">初始化列表</a></h3>
-<p>上述示例代码（<em><code>ch0402_2.dart</code></em>）等价于:</p>
+<p>上述示例代码（<em><code>ch0402_2</code></em>）等价于:</p>
 <pre><code class="language-dart">// ch0402_3.dart
 class Cat {
   String name;
@@ -370,7 +370,7 @@ class Point {
 <pre><code class="language-dart">  Point.x(this.x) : y = 0; // 2
 </code></pre>
 <h2 id="工厂构造函数"><a class="header" href="#工厂构造函数">工厂构造函数</a></h2>
-<p>设计模式中有一个创建型模式叫做<a href="https://refactoring.guru/design-patterns/factory-method">工厂方法</a>（也称为虚拟构造函数），它专门用来创建类的实例。Dart的工厂构造函数与设计模式里的工厂方法有类似的意图。工厂构造函数是一种返回类实例的特殊函数，它必须借助生成式构造函数，才能创建实例。下面按使用场景举例说明。</p>
+<p>设计模式中有一个创建型模式叫做<a href="https://refactoring.guru/design-patterns/factory-method">工厂方法</a>（也称为虚拟构造函数），它专门用来创建类的实例。Dart的工厂构造函数与设计模式里的工厂方法有点类似，但在结构上有所不同。工厂构造函数是一种返回类实例的特殊函数，它必须借助生成式构造函数，才能创建实例。下面按使用场景举例说明。</p>
 <h3 id="缓存实例"><a class="header" href="#缓存实例">缓存实例</a></h3>
 <p>工厂构造函数用于缓存实例的一个经典示例是Logger（日志记录器）。</p>
 <pre><code class="language-dart">// ch0402_a.dart
@@ -432,8 +432,12 @@ void main() {
 }
 </code></pre>
 <p>此例中的<code>Toy</code>是一个抽象类，它定义了一个工厂构造函数，该函数根据参数<code>name</code>来创建对应的实例。<code>Toy</code>的具体类（<code>_Car</code>、<code>_Truck</code>、 <code>_Airplane</code>）是私有的（受保护的），随着时间的推移，它们的内部实现可能被改变，但不会影响用户代码。抽象类与接口等概念将在下一章介绍。</p>
+<h3 id="命名工厂构造函数与静态方法"><a class="header" href="#命名工厂构造函数与静态方法">命名工厂构造函数与静态方法</a></h3>
+<p>实际上，命名工厂构造函数可以用静态方法进行改写，可以说二者是等价的。示例 <em><code>ch0402_a</code></em> 的 <code>Logger.main</code> 方法可以改写为:</p>
+<pre><code class="language-dart">  static Logger main() =&gt; Logger("main"); // 4
+</code></pre>
 <h2 id="构造函数的函数体"><a class="header" href="#构造函数的函数体">构造函数的函数体</a></h2>
-<p>重定向构造函数没有函数体，其它生成式构造函数的函数体是可选的。示例  <em><code>ch0402_4.dart</code></em> 可以改写为:</p>
+<p>重定向构造函数没有函数体，其它生成式构造函数的函数体是可选的。示例  <em><code>ch0402_4</code></em> 可以改写为:</p>
 <pre><code class="language-dart">// ch0402_c.dart
 class Cat {
   String name;

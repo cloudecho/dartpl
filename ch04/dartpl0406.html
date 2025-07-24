@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>操作符重载 - 从0开始学Dart</title>
+        <title>callable 类 - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -167,7 +167,166 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="操作符重载"><a class="header" href="#操作符重载">操作符重载</a></h1>
+                        <h1 id="callable-类"><a class="header" href="#callable-类">callable 类</a></h1>
+<p>Dart的callable类的实例， 可以像函数一样被调用。听起来有点神秘，但一个示例即可揭开它的面纱。</p>
+<pre><code class="language-dart">// ch0406_1.dart
+class Greeter {
+  String call(String name) =&gt; 'Hello, $name!'; // 1
+}
+
+void main() {
+  var g = Greeter(); // 2
+  print(g('World')); // 3 Output: Hello, World!
+  print(g.call('Dart')); // 3a Hello, Dart!
+}
+</code></pre>
+<ol>
+<li><code>Greeter</code>类中有一个名为 <code>call</code> 的实例方法;</li>
+<li><code>g</code> 是 <code>Greeter</code>的一个实例;</li>
+<li>将 <code>g</code> 当作函数来调用，实际上调用了实例方法 <code>g.call</code>。</li>
+</ol>
+<p><code>Greeter</code> 定义了一个名为 <code>call</code> 实例方法，像这样的类即 callable 类，其实例为 callable 对象。换句话说， <code>call</code> 实例方法让一个类变得 callable。</p>
+<p>除了<code>call()</code>实例方法外，callable类当然还能有其它的方法和字段。</p>
+<pre><code class="language-dart">// ch0406_2.dart
+class Greeter {
+ String call(String name) =&gt; 'Hello, $name!'; // 1
+
+ String hi(String name) =&gt; 'Hi, $name!'; // 2
+}
+
+void main() {
+ var g = Greeter(); // 3
+ print(g.hi('Auggie')); // 4 Output: Hi, Auggie!
+}
+</code></pre>
+<p>此例中的callable类 <code>Greeter</code> 定义了一个普通的实例方法 <code>hi</code>，这样的方法也被称为<em>命名函数</em>。</p>
+<p>接下来看看callable类的应用场景。</p>
+<h2 id="有状态的函数"><a class="header" href="#有状态的函数">有状态的函数</a></h2>
+<p>设想有一个函数，需要在多次调用之间维护其内部状态。比起使用全局变量或复杂的闭包，callable类显得更加简洁。</p>
+<pre><code class="language-dart">// ch0406_3.dart
+class Counter {
+  int _count = 0; // 1
+  int call() =&gt; ++_count; // 2
+  void reset() =&gt; _count = 0; //3
+}
+
+void main() {
+  final count = Counter();
+  print(count()); // Output: 1
+  print(count()); // Output: 2
+  count.reset();
+  print(count()); // Output: 1
+}
+</code></pre>
+<ol>
+<li><code>Counter</code>类是一个计数器， 实例变量 <code>_count</code> 代表计数，是<code>Counter</code>的内部状态;</li>
+<li><code>call()</code>方法每调用一次，<code>_count</code> 的值就加1并更新后的值;</li>
+<li><code>reset()</code>方法将<code>_count</code>重置为0。</li>
+</ol>
+<h2 id="有状态的回调"><a class="header" href="#有状态的回调">有状态的回调</a></h2>
+<p>事件处理函数或回调函数，有时需要管理与事件相关的状态，这是calllable类的另一个用武之地。</p>
+<pre><code class="language-dart">// ch0406_4.dart
+class Button {
+  Function()? onClick; // 1
+  void click() =&gt; onClick?.call(); // 2
+}
+
+class Callback {
+  final String _context; // 3
+  Callback(this._context); // 4
+  void call() =&gt; print('$_context click'); // 5
+}
+
+void main() {
+  var btn = Button();
+  btn.onClick = Callback('Alice');
+  btn.click(); // Output: Alice click
+
+  btn.onClick = Callback('Bob');
+  btn.click(); // Output: Bob click
+}
+</code></pre>
+<ol>
+<li><code>Button</code>类表示图形界面上的按钮，当按钮被点击时，执行回调函数 <code>onClick</code>；</li>
+<li><code>click</code> 方法用来模拟按钮被按下，注意这里是如何调用 <code>onClick</code> 函数的（见<a href="../ch02/dartpl0204.html#call-%E6%96%B9%E6%B3%95"><code>call</code>方法</a>）；</li>
+<li><code>Callback</code>是一个callable类，代表回调函数，它有内部状态<code>_context</code>；</li>
+<li>这是<code>Callback</code>的构造函数；</li>
+<li><code>call()</code>方法即回调函数的具体实现。</li>
+</ol>
+<h2 id="策略模式"><a class="header" href="#策略模式">策略模式</a></h2>
+<p>callable类可用来实现设计模式里的<a href="https://refactoring.guru/design-patterns/strategy">策略模式</a>。</p>
+<p>比如商场对不同等级的客户有不同的折扣。</p>
+<pre class="mermaid">classDiagram
+  ShoppingCart o--&gt; DiscountStrategy 
+
+  DiscountStrategy &lt;|-- VipDiscount
+  DiscountStrategy &lt;|-- RegularDiscount
+  DiscountStrategy &lt;|-- NoDiscount
+  
+  class ShoppingCart {
+    - discountStrategy
+    + double calculatePrice(double originalPrice)
+  }
+  
+  class DiscountStrategy {
+    &lt;&lt;interface&gt;&gt; 
+    + double call(double originalPrice)
+  }
+
+</pre>
+<pre><code class="language-dart">// ch0406_5.dart
+abstract interface class DiscountStrategy {
+  double call(double originalPrice); // 1
+}
+
+class VipDiscount implements DiscountStrategy {
+  @override
+  double call(double originalPrice) =&gt; originalPrice * 0.20; // 2
+}
+
+class RegularDiscount implements DiscountStrategy {
+  @override
+  double call(double originalPrice) =&gt; originalPrice * 0.10; // 2a
+}
+
+class NoDiscount implements DiscountStrategy {
+  @override
+  double call(double originalPrice) =&gt; 0.0; // 2b
+}
+
+class ShoppingCart {
+  DiscountStrategy _discountStrategy; // 3
+
+  ShoppingCart(this._discountStrategy);
+
+  set discountStrategy(DiscountStrategy strategy) =&gt; // 3a
+      _discountStrategy = strategy;
+
+  double calculatePrice(double originalPrice) =&gt; // 4
+      originalPrice - _discountStrategy(originalPrice);
+}
+
+void main() {
+  const price = 100.0;
+  final cart = ShoppingCart(RegularDiscount());
+  print('Price with regular discount: \$${cart.calculatePrice(price)}');
+  // Output: Price with regular discount: $90.0
+
+  cart.discountStrategy = VipDiscount();
+  print('Price with vip discount: \$${cart.calculatePrice(price)}');
+  // Output: Price with vip discount: $80.0
+
+  cart.discountStrategy = NoDiscount();
+  print('Price with no discount: \$${cart.calculatePrice(price)}');
+  // Output: Price with no discount: $100.0
+}
+</code></pre>
+<ol>
+<li><code>DiscountStrategy</code> 是折扣策略的接口（interface）;</li>
+<li><code>VipDiscount</code>、<code>RegularDiscount</code>和<code>NoDiscount</code>是3个具体的折扣策略，它们都实现（implements）了<code>DiscountStrategy</code> ;</li>
+<li><code>ShoppingCart</code>代表购物车，它聚合了一个 <code>DiscountStrategy</code> ;</li>
+<li><code>calculatePrice</code>方法负责计算最终的价格（<code>原价 - 折扣</code>）;</li>
+</ol>
 
                     </main>
 

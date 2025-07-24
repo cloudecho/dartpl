@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>接口与implements关键字 - 从0开始学Dart</title>
+        <title>类修饰符 - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -167,7 +167,81 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="接口与implements关键字"><a class="header" href="#接口与implements关键字">接口与implements关键字</a></h1>
+                        <h1 id="类修饰符"><a class="header" href="#类修饰符">类修饰符</a></h1>
+<p>本文中重点讨论如下类的修饰符及<a href="#%E4%BF%AE%E9%A5%B0%E7%AC%A6%E7%9A%84%E7%BB%84%E5%90%88">它们的组合</a>：</p>
+<ul>
+<li><a href="#abstract"><code>abstract</code></a></li>
+<li><a href="#interface"><code>interface</code></a></li>
+<li><a href="#base"><code>base</code></a></li>
+<li><a href="#sealed"><code>sealed</code></a></li>
+<li><a href="#final"><code>final</code></a></li>
+</ul>
+<h2 id="abstract"><a class="header" href="#abstract">abstract</a></h2>
+<h2 id="interface"><a class="header" href="#interface">interface</a></h2>
+<h2 id="base"><a class="header" href="#base">base</a></h2>
+<p>每个类（<code>class</code>）都隐式地定义了一个接口（<code>interface</code>），因而可以实现（<code>implements</code>）一个类（即实现类中的方法）。<code>base</code> 类却是为继承而生，在定义它的文件之外，只能被继承，而不能被实现。</p>
+<p><em><code>ch0401_2.dart</code></em>:</p>
+<pre><code class="language-dart">// ch0401_2.dart
+base class Vehicle { // 1
+  void moveForward(int meters) {
+    // ...
+  }
+}
+
+base class Car implements Vehicle { // 2
+  @override
+  void moveForward(int meters) {
+    // ...
+  }
+}
+
+base class Motorcycle extends Vehicle { // 3
+ 
+}
+</code></pre>
+<p><em><code>ch0401_2a.dart</code></em>:</p>
+<pre><code class="language-dart">// ch0401_2a.dart
+import 'ch0401_2.dart';
+
+base class Truck extends Vehicle { // 4
+  int passengers = 4;
+
+  @override
+  void moveForward(int meters) {
+    // ...
+  }
+}
+
+// ERROR: 
+// The class 'Vehicle' can't be implemented outside of its library 
+// because it's a base class.
+base class Train implements Vehicle { // 5
+  @override
+  void moveForward(int meters) {
+    // ...
+  }
+}
+</code></pre>
+<ol>
+<li><em><code>ch0401_2.dart</code></em>  文件中的<code>Vehicle</code>是一个 <code>base</code> 类，它有一个实例方法 <code>moveForward(int)</code>;</li>
+<li>同一文件中的 <code>Car</code> 实现了 <code>Vehicle</code>;</li>
+<li>同一文件中的 <code>Motorcycle</code> 继承（<code>extends</code>）了 <code>Vehicle</code>;</li>
+<li>另一文件（ <em><code>ch0401_2a.dart</code></em> ）中的 <code>Truck</code> 继承了  <code>Vehicle</code>;</li>
+<li><em><code>ch0401_2a.dart</code></em> 中的 <code>Train</code> 实现 <code>Vehicle</code>，引发编译错误。</li>
+</ol>
+<p><code>base</code> 类有如下特点：</p>
+<ul>
+<li><code>base</code>类的子类/实现类必须使用<code>base</code>或<code>final</code>或<code>sealed</code>修饰，这是为了确保<code>base</code>的语义；</li>
+<li><code>base</code>类的子类自动继承了其可见的成员（字段/方法），因此为<code>base</code>类添加新的成员不会破坏子类，除非新成员与子类发生冲突;</li>
+<li>实例化<code>base</code>类的子类，必然导致<code>base</code>类的构造函数被调用。</li>
+</ul>
+<h2 id="sealed"><a class="header" href="#sealed"><code>sealed</code></a></h2>
+<h2 id="final"><a class="header" href="#final"><code>final</code></a></h2>
+<h2 id="修饰符的组合"><a class="header" href="#修饰符的组合">修饰符的组合</a></h2>
+<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/class-modifiers">https://dart.dev/language/class-modifiers</a></li>
+</ul>
 
                     </main>
 
