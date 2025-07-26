@@ -177,7 +177,7 @@
 </ul>
 <h2 id="for-循环"><a class="header" href="#for-循环"><code>for</code> 循环</a></h2>
 <p>下面这段代码使用经典的<code>for</code>循环打印数字0到9。</p>
-<pre><code class="language-dart">// ch0202_1.dart
+<pre><code class="language-dart">// ex221.dart
 void main() {
   for (var i = 0; i &lt; 10; i++) {
     print('$i');
@@ -199,7 +199,7 @@ void main() {
 </pre>
 <p>后置操作即执行完循环体之后的操作。初始化列表、 循环条件、后置操作，这三部分用分号（<code>;</code>）分割，且每一部分都可以省略（但必须保留分号）。如果循环体只有一条语句，包围循环体的那对花括号（<code>{}</code>） 可以省略，但不建议这么做。</p>
 <p>下面这段代码将打印九九乘法表：</p>
-<pre><code class="language-dart">// ch0202_2.dart
+<pre><code class="language-dart">// ex222.dart
 import 'dart:io';
 
 import 'package:sprintf/sprintf.dart';
@@ -214,7 +214,7 @@ void main() {
 }
 </code></pre>
 <p>下面这段代码将数字10分解为2个非负整数之和：</p>
-<pre><code class="language-dart">// ch0202_3.dart
+<pre><code class="language-dart">// ex223.dart
 void main() {
   for (var i = 0, j = 10; i &lt;= j; i++, j--) {
     print('$i + $j = 10');
@@ -229,7 +229,7 @@ void main() {
 }
 </code></pre>
 <p>下面这段代码的功能一样，但省略了循环条件 <code>i &lt;= j</code>， 改用<code>break</code>语句来跳出循环：</p>
-<pre><code class="language-dart">// ch0202_4.dart
+<pre><code class="language-dart">// ex224.dart
 void main() {
   for (var i = 0, j = 10; ; i++, j--) {
     if (i &gt; j) break;
@@ -239,7 +239,7 @@ void main() {
 </code></pre>
 <h3 id="for-in"><a class="header" href="#for-in"><code>for-in</code></a></h3>
 <p>使用经典的<code>for</code>语句打印字母A-E：</p>
-<pre><code class="language-dart">// ch0202_5.dart
+<pre><code class="language-dart">// ex225.dart
 import 'dart:io';
 
 void main() {
@@ -250,7 +250,7 @@ void main() {
 }
 </code></pre>
 <p>使用 for-in语句改写上述代码，更为简洁：</p>
-<pre><code class="language-dart">// ch0202_6.dart
+<pre><code class="language-dart">// ex226.dart
 import 'dart:io';
 
 void main() {
@@ -278,7 +278,7 @@ void main() {
 
 </pre>
 <p>下面这段代码先打印数字0到9，再打印数字10到1（递减）。</p>
-<pre><code class="language-dart">//ch0102_7.dart
+<pre><code class="language-dart">//ex127.dart
 void main() {
   // print 0,1,...,9
   var x = 0;
@@ -294,7 +294,7 @@ void main() {
 </code></pre>
 <h2 id="break-和-continue"><a class="header" href="#break-和-continue"><code>break</code> 和 <code>continue</code></a></h2>
 <p><code>break</code>用于跳出当前循环，<code>continue</code>用于跳转至下一次迭代。下面这段代码使用<code>for</code>循环，打印1到9之间的奇数。</p>
-<pre><code class="language-dart">// ch0202_8.dart
+<pre><code class="language-dart">// ex228.dart
 void main() {
   for (var x = 1; ; x++) {
     if (x == 10) break;
@@ -305,7 +305,7 @@ void main() {
 </code></pre>
 <h2 id="标签"><a class="header" href="#标签">标签</a></h2>
 <p><code>break</code> 和 <code>continue</code> 仅对所在的（内层）循环起作用。如果要跳出（<code>break</code>）外层循环，或跳转至（<code>continue</code>）外层循环的下一次迭代，须借助标签。标签是一个标识符，后跟冒号（<code>labelName:</code>）；将标签放在语句之前以创建带标签的语句。</p>
-<pre><code class="language-dart">// ch0202_9.dart
+<pre><code class="language-dart">// ex229.dart
 
 import 'dart:io';
 
@@ -323,8 +323,8 @@ void main() {
 <p>此例中的 <code>continue outerLoop;</code> 就相当于 <code>break</code>。</p>
 <h2 id="练习"><a class="header" href="#练习">练习</a></h2>
 <ul>
-<li>分别使用 <code>while</code> 和<code>do-while</code> 改写 <code>ch0202_8.dart</code>。</li>
-<li>示例 <code>ch0202_9</code> 中，如果将  <code>continue outerLoop;</code> 改为  <code>break outerLoop;</code> 程序的输出是什么？</li>
+<li>分别使用 <code>while</code> 和<code>do-while</code> 改写 <code>ex228.dart</code>。</li>
+<li>示例 <code>ex229</code> 中，如果将  <code>continue outerLoop;</code> 改为  <code>break outerLoop;</code> 程序的输出是什么？</li>
 </ul>
 
                     </main>

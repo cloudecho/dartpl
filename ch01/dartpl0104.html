@@ -203,7 +203,7 @@ double是双精度浮点数，遵循 IEEE 754 标准。</p>
 <li>toString()</li>
 </ul>
 <p>下面的代码声明了一个整数<code>radius</code> 和一个浮点数 <code>pi</code>：</p>
-<pre><code class="language-dart">// ch0104_1.dart
+<pre><code class="language-dart">// ex141.dart
 void main() {
   int radius = 5;
   double pi = 3.1416;
@@ -212,7 +212,7 @@ void main() {
 }
 </code></pre>
 <p>除了使用十进制书写整数外，还可以用十六进制。可以使用科学计数法书写浮点数。例如：</p>
-<pre><code class="language-dart">// ch0104_2.dart
+<pre><code class="language-dart">// ex142.dart
 void main() {
   int radius = 0x10; // hexadecimal
   int radius2 = 16; // decimal
@@ -226,7 +226,7 @@ void main() {
 }
 </code></pre>
 <p>但是Dart并不直接支持书写八进制数。你可以用  octal 包来书写八进制数。</p>
-<pre><code class="language-dart">// ch0104_3.dart
+<pre><code class="language-dart">// ex143.dart
 // dart pub add octal
 import 'package:octal/octal.dart'; 
 
@@ -237,7 +237,7 @@ void main() {
 }
 </code></pre>
 <p>书写数字时，可以在数字中间添加下划线来分节，这一点非常实用。</p>
-<pre><code class="language-dart">// ch0104_g.dart
+<pre><code class="language-dart">// ex14g.dart
 void main() {
   print(10_000); // Output: 10000
   print(1_2.000_123); // Output: 12.000123
@@ -246,7 +246,7 @@ void main() {
 </code></pre>
 <h2 id="字符串string"><a class="header" href="#字符串string">字符串（String）</a></h2>
 <p>Dart中的String是一个UTF-16值的有序序列，写在一对单引号或双引号里。一个非常nice的功能是字符串插值，即在字符串里使用 <code>${expr}</code>  。</p>
-<pre><code class="language-dart">// ch0104_4.dart
+<pre><code class="language-dart">// ex144.dart
 void main() {
   var str = "It's a beautiful day!";
   var str2 = 'It\'s a beautiful day!'; 
@@ -259,13 +259,13 @@ void main() {
 </code></pre>
 <p>上例中<code>str2</code> 写在一对单引号中，该行中的 <code>\</code> 为转义符，<code>\'</code>表示一个单引号。</p>
 <p>两个字符串写在一起，中间可以使用一个<code>+</code>符号（但通常予以省略）， 就表示将这两个字符串顺序拼接在一起，形成一个新的字符串。因此对于多行文本，可以这样写：</p>
-<pre><code class="language-dart">  // ch0104_5.dart
+<pre><code class="language-dart">  // ex145.dart
   var str =
       'A: Nice to meet you!\n'
       'B: Nice to meet you, too!';
 </code></pre>
 <p>这里的<code>\n</code>是换行符。书写多行文本更方便的做法是将文本写在一对三引号（<code>'''</code>或<code>"""</code>）中，例如：</p>
-<pre><code class="language-dart">// ch0104_6.dart
+<pre><code class="language-dart">// ex146.dart
 void main() {
   var minAge = 18;
   var query =
@@ -279,7 +279,7 @@ WHERE age &gt;= $minAge
 </code></pre>
 <h2 id="布尔bool"><a class="header" href="#布尔bool">布尔（bool）</a></h2>
 <p>布尔类型只有2个值，<code>true</code>和<code>false</code>，且它们都是编译时常量。</p>
-<pre><code class="language-dart">// ch0104_7.dart
+<pre><code class="language-dart">// ex147.dart
 void main() {
   var isGreater = 43 &gt; 34;
   print('isGreater: $isGreater'); // Output: isGreater: true
@@ -289,7 +289,7 @@ void main() {
 <h2 id="符文rune"><a class="header" href="#符文rune">符文（Rune）</a></h2>
 <p>符文代表unicode文字系统里的一个符号。unicode为世界上每一个文字或符号分配了一个数字，称之为code point。unicode 最多可支持 1,114,112 个code point，通过 17 个 16 位平面实现，每个平面可支持 65,536 个不同的code point。 unicode常见的编码方式（将code point映射为二进制数）有UTF-8、UTF-16和UTF-32。  Dart采用UTF-16编码，每个code unit为16位（2个字节），每个符文占用1个（0-65,535 code point）或2个code unit（65,536及以上)。对字符编码感兴趣的同学，请继续去了解下ASCII、UTF-8、UTF-16和UTF-32、GBK等。</p>
 <p>Dart的String（字符串）本质上是code unit的序列。</p>
-<pre><code class="language-dart">// ch0104_8.dart
+<pre><code class="language-dart">// ex148.dart
 void main() {
   var s = "笑\u7b11lol😆\u{1f606}"; // 1
   print(s); // 2 Output: 笑笑lol😆😆
@@ -316,7 +316,7 @@ void main() {
 <p>请仔细查看code units 与 runes 并进行对比，这将帮助你理解Rune（符文）和String（字符串）。</p>
 <h3 id="使用-characters-包"><a class="header" href="#使用-characters-包">使用 <code>characters</code> 包</a></h3>
 <p>下面这个示例同时演示了<code>characters</code>及<code>StringBuffer</code>类的使用。<code>characters</code> 为<code>String</code>类添加了一个扩展方法（第5章内容）<code>get characters</code>。<code>StringBuffer</code>是拼接字符串的高效方式。代码中使用的 for-each 循环将在下一章节介绍，这里先了解下。</p>
-<pre><code class="language-dart">//ch0104_9.dart
+<pre><code class="language-dart">//ex149.dart
 //dart pub add characters
 import 'package:characters/characters.dart';
 
@@ -333,7 +333,7 @@ void main() {
 </code></pre>
 <h2 id="记录record"><a class="header" href="#记录record">记录（Record）</a></h2>
 <p>Dart 3.0 引入了记录这一数据类型。记录是匿名的、不可变的聚合类型，是异质数据的集合。</p>
-<pre><code class="language-dart">// ch0104_a.dart
+<pre><code class="language-dart">// ex14a.dart
 void main() {
   var record = ('class 1', name: 'Alice', id: 1, 'good student'); // 1
   print(record); // 2 Output: (class 1, good student, id: 1, name: Alice)
@@ -358,7 +358,7 @@ void main() {
 </ol>
 <h3 id="记录类型"><a class="header" href="#记录类型">记录类型</a></h3>
 <p>记录（Record）没有明确的类型声明，因为它是匿名的，但记录是有形状（Shape）的。本例中 <code>record</code>的形状为<code>(String, String, {int id, String name})</code>；在一对花括号(<code>{}</code>)里的<code>int id, String name</code> 为命名字段 <code>id</code>与<code>name</code>，其类型分别为<code>int</code>与<code>String</code>；没有花括号包围的便是位置字段。</p>
-<pre><code class="language-dart">// ch01004_b.dart
+<pre><code class="language-dart">// ex14b.dart
 void main() {
   (int x, int y, int z) point = (1, 2, 3);
   var color = (1, 2, 3);
@@ -375,7 +375,7 @@ void main() {
 <p><code>point</code> 与 <code>color</code>具有相同的形状和值，因此他们是相等的，而<code>point2</code> 与 <code>color2</code>的形状不同，自然就不相等。</p>
 <h3 id="解构与变量交换"><a class="header" href="#解构与变量交换">解构与变量交换</a></h3>
 <p>记录的解构与变量交换非常实用。</p>
-<pre><code class="language-dart">// ch0104_c.dart
+<pre><code class="language-dart">// ex14c.dart
 void main() {
   var (x, y) = (1, 2); // 1
   print('x=$x y=$y'); // Output: x=1 y=2
@@ -407,7 +407,7 @@ void main() {
 </ol>
 <h2 id="枚举enum"><a class="header" href="#枚举enum">枚举（Enum）</a></h2>
 <p>枚举是一种用于表示固定数量的常量值的特殊类。使用关键字<code>enum</code>声明一个枚举。</p>
-<pre><code class="language-dart">// ch0104_d.dart
+<pre><code class="language-dart">// ex14d.dart
 enum Color { red, green, blue }
 
 void main() {
@@ -419,14 +419,14 @@ void main() {
 <p>每个枚举值都有个与之关联的数字，称之为<code>index</code>，该数字从0开始。枚举是一种特殊的类，因此它也可以定义字段（实例变量）和方法，只不过有一些限制，例如枚举的实例变量必须声明为<code>final</code>。第4章会更详细地讨论枚举。</p>
 <h2 id="符号symbol"><a class="header" href="#符号symbol">符号（Symbol)</a></h2>
 <p>符号对象表示 Dart 程序中声明的操作符或标识符。一般极少用到，在此了解即可。</p>
-<pre><code class="language-dart">// ch0104_e.dart
+<pre><code class="language-dart">// ex14e.dart
 void main() {
   print(#foo); // Output: Symbol("foo")
 }
 </code></pre>
 <h2 id="typedef"><a class="header" href="#typedef">typedef</a></h2>
 <p>用<code>typedef</code>关键字为数据类型取一个别名。</p>
-<pre><code class="language-dart">//ch0104_f.dart
+<pre><code class="language-dart">//ex14f.dart
 typedef Point = ({int x, int y});
 typedef VoidCallback = void Function();
 typedef IntList = List&lt;int&gt;;

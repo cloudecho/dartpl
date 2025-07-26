@@ -171,7 +171,7 @@
 <p>封装、继承与多态是面向对象编程（Object-oritented programming, OOP）的三大特性，而封装是其中最为基础与关键的特性。Go语言向我们证明了继承对于OOP是可选的，而多态通过接口来实现。这些基本概念将在后续章节陆续介绍，本章节重点说明封装。</p>
 <h2 id="封装"><a class="header" href="#封装">封装</a></h2>
 <p>很多时候我们想要隐藏代码的实现细节，而对外暴露的只是API（应用编程接口），这便是针对接口（而非实现）编程，要实现这一点就要用到封装。接口用于定义API，而类就像一个容器主要用于封装。那么类究竟封装了什么？</p>
-<pre><code class="language-dart">// ch0401_1.dart
+<pre><code class="language-dart">// ex411.dart
 class Dog {
   const Dog(this.name, this.age); // 3
   final String name; // 1

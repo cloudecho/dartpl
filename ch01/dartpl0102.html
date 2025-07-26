@@ -170,7 +170,7 @@
                         <h1 id="变量与null-safety"><a class="header" href="#变量与null-safety">变量与Null safety</a></h1>
 <h2 id="什么是变量"><a class="header" href="#什么是变量">什么是变量</a></h2>
 <p>计算机编程语言里的变量（Variable）与数学公式里的变量类似。请看下面这段Dart代码:</p>
-<pre><code class="language-dart">// ch0102-1
+<pre><code class="language-dart">// ex121
 void main() {
   var x = 3;  // 1
   var (y, z) = (4, 5); // 2
@@ -201,7 +201,7 @@ x = 3;
 </ul>
 <p>但不能以数字开头。这些都是合法的标识符:  <code>practiceMakesPerfect</code>, <code>_imPrivate</code>, <code>_$GeneratedCode</code>, <code>$happy365</code>。Dart里以下划线（<code>_</code> ）开头的变量是私有变量。</p>
 <p><code>var</code>修饰的变量 ，可以后续更改，比如</p>
-<pre><code class="language-dart">// ch0102-3
+<pre><code class="language-dart">// ex123
 void main() {
   var x = 3;
   x = 30;
@@ -209,7 +209,7 @@ void main() {
 }
 </code></pre>
 <p>变量除了可以表示数字，还可以表示文本（字符串）等.  例如</p>
-<pre><code class="language-dart">// ch0102-4
+<pre><code class="language-dart">// ex124
 void main(){
   var name = 'Dart';
   print('Hello, $name!'); // Output: Hello, Dart!
@@ -227,7 +227,7 @@ void main(){
 <p>Dart编译器就认为 x 的类型为 <code>dynamic</code> ，这种类型可以表示任何数据，通常情况下我们应该避免这样做，因为Dart的静态类型检查对<code>dynamic</code>无效（可能暗藏bug）。</p>
 <h2 id="使用--late-延迟初始化"><a class="header" href="#使用--late-延迟初始化">使用  <code>late</code> 延迟初始化</a></h2>
 <p>有时候我们希望延迟变量的初始化（特别在Flutter的StatefulWidget中），这时就用到 <code>late</code> 关键字， 例如</p>
-<pre><code class="language-dart">// ch0102-5
+<pre><code class="language-dart">// ex125
 void main() {
   late String action = 'go camping';
   var isReady = true; // it may take some time to prepare
@@ -240,7 +240,7 @@ void main() {
 <h2 id="null-safety"><a class="header" href="#null-safety">Null safety</a></h2>
 <h3 id="nnbd"><a class="header" href="#nnbd">NNBD</a></h3>
 <p>从Dart 2.10 开始，变量默认非 <code>null</code>（non-nullable by defaullt, NNBD)；<code>null</code> 表示空值。 比如下面这段代码无法编译</p>
-<pre><code class="language-dart">// ch0102-6
+<pre><code class="language-dart">// ex126
 void main() {
   int x;
   print('x = $x'); 
@@ -252,7 +252,7 @@ void main() {
 </code></pre>
 <p>当我们尝试编译上面这段代码时，出现编译错误，告诉我们在使用变量<code>x</code>之前必须初始化它。</p>
 <p>如果要使用<code>null</code>， 可以像下面这样:</p>
-<pre><code class="language-dart">// ch0102-7
+<pre><code class="language-dart">// ex127
 void main() {
   int? x;
   print('x = $x'); // Output: x = null
@@ -272,7 +272,7 @@ void main() {
 <h3 id="访问nullable变量"><a class="header" href="#访问nullable变量">访问nullable变量</a></h3>
 <p>有几个nullable变量相关的访问/赋值，有必要介绍一下，你以后再看到下面这些符号就不会感到陌生了。</p>
 <h3 id="----"><a class="header" href="#----"><code>??</code> 、 <code>??=</code>、  <code>!</code></a></h3>
-<pre><code class="language-dart">// ch0102-8
+<pre><code class="language-dart">// ex128
 void main() {
   int? x;
   var y = x ?? 10; // 1
@@ -300,7 +300,7 @@ void main() {
 </ol>
 <p>请对比 1和1a， 2和2a，以及3和3a的结果。</p>
 <h3 id="-"><a class="header" href="#-"><code>?.</code> 、<code>?[]</code></a></h3>
-<pre><code class="language-dart">// ch0102-9
+<pre><code class="language-dart">// ex129
 void main() {
   var abc = 'ABCD';
   String? def;
@@ -324,7 +324,7 @@ void main() {
 </ol>
 <p>注：本例中的 <code>abc[0]</code> 返回第0个（下标从0开始）unicode字符，<code>abc.length</code>返回<code>abc</code>的长度。</p>
 <h3 id=""><a class="header" href="#"><code>...?</code></a></h3>
-<pre><code class="language-dart">// ch0102-a
+<pre><code class="language-dart">// ex12a
 void main() {
   var arr = [1, 2, 3];
   var arr2 = [...arr, 4, 5]; // 1

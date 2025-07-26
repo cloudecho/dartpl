@@ -178,7 +178,7 @@
 <li>有特定的数据类型。</li>
 </ul>
 <p>这么说还是有点抽象，我们来看下面的示例。</p>
-<pre><code class="language-dart">//ch0301_1.dart
+<pre><code class="language-dart">//ex311.dart
 void main() {
   const numbers = [1, 2, 3]; // 1
 
@@ -207,7 +207,7 @@ void main() {
 </ol>
 <h2 id="解构"><a class="header" href="#解构">解构</a></h2>
 <p>模式解构提供了一种便捷的声明式语法，可以将一个值分解成各部件（parts），并将部分或全部的部件，绑定至局部变量。</p>
-<pre><code class="language-dart">//ch0301_2.dart
+<pre><code class="language-dart">//ex312.dart
 void main() {
   const numbers = [1, 2, 3]; 
 
@@ -232,7 +232,7 @@ void main() {
 <li>匹配<code>point</code>，并将其<code>x</code>字段绑定至变量<code>a</code>，<code>y</code>字段绑定至变量<code>y</code>；这里的<code>:var y</code>乃<code>y:var y</code>的简便写法。</li>
 </ol>
 <p>下面是与类相关的模式匹配的一个示例：</p>
-<pre><code class="language-dart">// ch0301_3.dart
+<pre><code class="language-dart">// ex313.dart
 void main() {
   const point = Point(3, 4); // 4
   if (point case Point(:var x, :var y, :var z)) { // 5
@@ -256,7 +256,7 @@ class Point {
 <li>解构<code>point</code>，并将其部件分别绑定值变量 <code>x</code>、<code>y</code>、<code>z</code>。</li>
 </ol>
 <p>解构不但可以绑定字段，还可以绑定函数/方法（在类中定义的函数），也就是为什么在描述解构时，采用了部件（而非字段）这个词。</p>
-<pre><code class="language-dart">// ch0301_4.dart
+<pre><code class="language-dart">// ex314.dart
 void main() {
   const rect = Rectangle(5, 6);
   if (rect case Rectangle(:var area)) {

@@ -175,7 +175,7 @@
 </pre>
 <p>先来看一个示例程序，计算平面上两点之间的欧式距离:</p>
 <p>\( \sqrt{(x_1-x_2)^2 + (y_1-y_2)^2} \)</p>
-<pre><code class="language-dart">//ch0204_1.dart
+<pre><code class="language-dart">//ex241.dart
 import 'dart:math';
 
 typedef Point = ({double x, double y}); // 1
@@ -201,7 +201,7 @@ void main() {
 <li>计算<code>a</code>、<code>c</code>间的欧式距离，随后打印 (5a)；</li>
 </ol>
 <p>将计算欧式距离的代码，抽取成一个函数 <code>distance</code>，然后改写上例：</p>
-<pre><code class="language-dart">//ch0204_2.dart
+<pre><code class="language-dart">//ex242.dart
 import 'dart:math';
 
 typedef Point = ({double x, double y}); 
@@ -259,7 +259,7 @@ double distance(Point a, Point b) { // 1
 <h2 id="返回值"><a class="header" href="#返回值">返回值</a></h2>
 <p>如果没有指定返回值，则语句 <code>return null;</code> 会被隐式附加到函数体中，函数将返回<code>null</code>。</p>
 <p>如果一个函数需要返回多个值，通常返回一个记录（Record）类型。</p>
-<pre><code class="language-dart">// ch0204_3.dart
+<pre><code class="language-dart">// ex243.dart
 (bool ok, String) foo() {
   // Do something
   return (true, 'done');
@@ -276,7 +276,7 @@ double distance(Point a, Point b) { // 1
 </code></pre>
 <h2 id="getter-与-setter"><a class="header" href="#getter-与-setter">getter 与 setter</a></h2>
 <p>getter 与 settter 是一种特殊的函数，分别使用 <code>get</code> 与  <code>set</code> 关键字定义 。</p>
-<pre><code class="language-dart">// ch0204_4.dart
+<pre><code class="language-dart">// ex244.dart
 var _foo = 1;
 
 int get foo =&gt; _foo;
@@ -298,7 +298,7 @@ void main() {
 <p>此例中的<code>foo</code>在使用者看来，就像一个变量，但<code>foo</code> setter 给私有变量 <code>_foo</code>提供了额外的保护，它只将正数赋值给<code>_foo</code>。</p>
 <h2 id="call-方法"><a class="header" href="#call-方法"><code>call</code> 方法</a></h2>
 <p>函数类型有个<code>call</code>方法，其签名（参数列表与返回值）与函数本身一样，调用<code>call</code>的行为与调用函数本身也一样。</p>
-<pre><code class="language-dart">// ch0204_5.dart
+<pre><code class="language-dart">// ex245.dart
 int square(int n) =&gt; n * n;
 
 void main() {
@@ -308,7 +308,7 @@ void main() {
 </code></pre>
 <h2 id="main函数"><a class="header" href="#main函数"><code>main</code>函数</a></h2>
 <p>程序的入口<code>main</code>函数，返回<code>void</code>，有一个可选的参数，其类型为<code>List&lt;String&gt;</code>，用于命令行程序中。</p>
-<pre><code class="language-dart">// ch0204_6.dart
+<pre><code class="language-dart">// ex246.dart
 void main(List&lt;String&gt; args) {
   for (var arg in args) {
     print(arg);
@@ -316,7 +316,7 @@ void main(List&lt;String&gt; args) {
 }
 </code></pre>
 <p>此程序打印命令行参数，一个参数一行。使用<code>dart run</code>运行它:</p>
-<pre><code class="language-sh">$ dart run bin/ch02/ch0204_4.dart hello dart
+<pre><code class="language-sh">$ dart run bin/ch02/ex244.dart hello dart
 hello
 dart
 </code></pre>

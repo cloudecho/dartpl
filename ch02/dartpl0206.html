@@ -171,7 +171,7 @@
 <p>在Dart里，函数像普通变量一样，可作为参数传递，或从一个函数返回，这便是所谓的函数乃一等公民（first-class object）。在Dart里可以定义<a href="##%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0">匿名函数</a> ，也就是没有名称的函数，这在实际应用中极为方便。<a href="#%E9%97%AD%E5%8C%85closure">闭包（Closure）</a>是与之相关的另一个重要的概念，详见后文。</p>
 <h2 id="函数类型"><a class="header" href="#函数类型">函数类型</a></h2>
 <p>首先通过一个示例，来看一看什么是函数类型（funtion type）。</p>
-<pre><code class="language-dart">// ch0206_1.dart
+<pre><code class="language-dart">// ex261.dart
 void main() {
   int increase(int value, {int increment = 1}) =&gt; value + increment; // 3
   var increaseFunc = increase; // 4
@@ -212,7 +212,7 @@ typedef VoidCallback = void Function();
 </code></pre>
 <h2 id="词法范围lexical-scope"><a class="header" href="#词法范围lexical-scope">词法范围（Lexical Scope）</a></h2>
 <p>从语法上看，一对花括号（<code>{}</code>）便定义了一个词法范围，即作用域。作用域嵌套而成，外层作用域内的变量对内层可见，反之不然。下面是来自<a href="https://dart.dev/language/functions#lexical-scope">官方文档</a>的示例:</p>
-<pre><code class="language-dart">// ch0206_2.dart
+<pre><code class="language-dart">// ex262.dart
 bool topLevel = true;
 
 void main() {
@@ -246,7 +246,7 @@ void main() {
 }
 </code></pre>
 <p>下面的示例程序分析一句英文，然后打印其中的单词及其长度。</p>
-<pre><code class="language-dart">// ch0206_3.dart
+<pre><code class="language-dart">// ex263.dart
 void main() {
   var sentence = 'Its quaint events were hammered out'; // 1
   var stats = sentence.split(' ').map((word) =&gt; (word, word.length)); // 2
@@ -275,7 +275,7 @@ void main() {
 </blockquote>
 <p>如果一门编程语言具有上述特性，比如Dart，我们就说Dart支持闭包，可见闭包这个词也用来表示编程语言的这一特点(feature)。</p>
 <p>下面这个示例来自<a href="https://dart.dev/language/functions#lexical-closures">官方文档</a>：</p>
-<pre><code class="language-dart">// ch0206_4.dart
+<pre><code class="language-dart">// ex264.dart
 Function makeAdder(int addBy) {// 1
   return (int i) =&gt; addBy + i; // funcA
 }
@@ -297,7 +297,7 @@ void main() {
 <p>\( funcA( i ) = addBy + i \)</p>
 <p>这个函数里的自变量是<code>i</code>， <code>addBy</code>是一个常量。 <code>add2 = makeAdder(2)</code>， 相当于指定常量 <code>addBy = 2</code>，<code>add4</code>类似。<code>add2</code>、<code>add4</code> 等都是闭包。</p>
 <h2 id="练习"><a class="header" href="#练习">练习</a></h2>
-<p>修改示例程序<code>ch0206_3</code>，将统计结果按单词的长度降序排序。提示：使用<code>List.sort</code>方法。</p>
+<p>修改示例程序<code>ex263</code>，将统计结果按单词的长度降序排序。提示：使用<code>List.sort</code>方法。</p>
 
                     </main>
 

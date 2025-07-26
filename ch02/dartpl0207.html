@@ -172,12 +172,13 @@
 <p>\( n! = (n-1)!*n \)</p>
 <p>下面的代码计算斐波那契（Fibonacci）数列：</p>
 <p>\(
+fib(n) =
 \begin{cases}
-fib(0)=0, \  fib(1) = 1  \\
-fib(n) = fib(n-1) + fib(n-2), \  n &gt;1
+n, \ n=0 \ 或\ 1  \\
+fib(n-1) + fib(n-2), \  n &gt;1
 \end{cases}
 \)</p>
-<pre><code class="language-dart">// ch0207_1.dart
+<pre><code class="language-dart">// ex271.dart
 void main() {
   var n = 20;
   print('fib($n) = ${fib(n).$2}'); // Output: fib(20) = 6765
@@ -192,7 +193,7 @@ void main() {
 </code></pre>
 <p>又如使用辗转相除法，计算两个整数的最大公约数（最大公因数）：</p>
 <p>\( gcd(a, b) = gcd(b, a\%b) \)</p>
-<pre><code class="language-dart">// ch0207_1.dart
+<pre><code class="language-dart">// ex271.dart
 void main() {
   var a = 234, b = 678;
   print('gcd($a, $b) = ${gcd(a, b)}'); // Output: gcd(234, 678) = 6

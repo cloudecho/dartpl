@@ -171,7 +171,7 @@
 <p>枚举（Enum）是一种用于表示固定数量的常量值的特殊类（class），在第1章<a href="../ch01/dartpl0104.html">数据类型</a>一节中已经简单介绍过，文本将更详细地讨论它。</p>
 <h2 id="简单枚举"><a class="header" href="#简单枚举">简单枚举</a></h2>
 <p>使用关键字<code>enum</code>声明一个简单枚举如下：</p>
-<pre><code class="language-dart">// ch0104_d.dart
+<pre><code class="language-dart">// ex14d.dart
 enum Color { red, green, blue }
 
 void main() {
@@ -183,7 +183,7 @@ void main() {
 <p>每个枚举值都有个与之关联的数字，称之为index，该数字从0开始。此例中 <code>red</code>, <code>green</code>, <code>blue</code> 的 <code>index</code> 分别为0、1、2，可见<code>index</code>是按枚举值的声明顺序依次分配的。</p>
 <h2 id="详尽性检查"><a class="header" href="#详尽性检查">详尽性检查</a></h2>
 <p>当枚举值用在switch语句或表达式时，Dart编译器将进行<em>详尽性检查（完备性检查）</em>，迫使程序员处理所有的枚举值。</p>
-<pre><code class="language-dart">// ch0407_1.dart
+<pre><code class="language-dart">// ex471.dart
 enum Color { red, green, blue }
 
 String example(Color color) =&gt; switch (color) {
@@ -197,7 +197,7 @@ void main() {
 }
 </code></pre>
 <p>下面这段代码无法通过编译，因为 <code>Color.blue</code> 没有得到处理。</p>
-<pre><code class="language-dart">// ch0407_2.dart
+<pre><code class="language-dart">// ex472.dart
 enum Color { red, green, blue }
 
 String example(Color color) =&gt; switch (color) {
@@ -206,7 +206,7 @@ String example(Color color) =&gt; switch (color) {
 };
 </code></pre>
 <p>可使用 wildcard （即通配符 <code>_</code>）匹配剩余的枚举值。</p>
-<pre><code class="language-dart">// ch0407_3.dart
+<pre><code class="language-dart">// ex473.dart
 enum Color { red, green, blue, orange, pink }
 
 String example(Color color) =&gt; switch (color) {
@@ -221,7 +221,7 @@ void main() {
 </code></pre>
 <h2 id="增强型枚举"><a class="header" href="#增强型枚举">增强型枚举</a></h2>
 <p>枚举是一种特殊的类，它可以有自己的字段、方法和常量构造器，这便是增强型枚举的概念（自Dart  2.17开始引入）。</p>
-<pre><code class="language-dart">// ch0407_4.dart
+<pre><code class="language-dart">// ex474.dart
 enum Status {
   // 1
   continue_(100, message: 'Continue'),

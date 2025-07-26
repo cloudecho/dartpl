@@ -170,7 +170,7 @@
                         <h1 id="模式应用案例"><a class="header" href="#模式应用案例">模式应用案例</a></h1>
 <p>本文以示例的方式，介绍模式的几个经典应用案例。</p>
 <h2 id="交换两个变量的值"><a class="header" href="#交换两个变量的值">交换两个变量的值</a></h2>
-<pre><code class="language-dart">//ch0304_1.dart
+<pre><code class="language-dart">//ex341.dart
 void main() {
   var (x, y) = (3, 4);
   (x, y) = (y, x);
@@ -178,7 +178,7 @@ void main() {
 }
 </code></pre>
 <h2 id="解构map里的-key-value"><a class="header" href="#解构map里的-key-value">解构Map里的 key-value</a></h2>
-<pre><code class="language-dart">//ch0304_2.dart
+<pre><code class="language-dart">//ex342.dart
 void main() {
   const employee = {"id": 1, "name": "Tom", "post": "CEO", "salary": 2};
   for (var MapEntry(:key, :value) in employee.entries) {
@@ -192,7 +192,7 @@ void main() {
 }
 </code></pre>
 <h2 id="解构多个返回值"><a class="header" href="#解构多个返回值">解构多个返回值</a></h2>
-<pre><code class="language-dart">// ch0304_3.dart
+<pre><code class="language-dart">// ex343.dart
 void main() {
   var (ok, result) = foo();
   print(ok ? result : 'oops!');
@@ -213,7 +213,7 @@ void main() {
 <li>希望将这些行为集中到一起，而不是分散到不同的类型中。</li>
 </ul>
 <p>这是一个来自官方文档的示例。</p>
-<pre><code class="language-dart">// ch0304_4.dart
+<pre><code class="language-dart">// ex344.dart
 import 'dart:math' as math;
 
 sealed class Shape {}
@@ -235,7 +235,7 @@ double calculateArea(Shape shape) =&gt; switch (shape) {
 </code></pre>
 <h2 id="jsonmap-校验"><a class="header" href="#jsonmap-校验">JSON/Map 校验</a></h2>
 <p><a href="https://www.json.org/json-en.html">JSON（JavaScript Object Notation）</a>是一种轻量级的数据交换格式，其应用极为广泛，尤其在互联网领域。JSON采用了独立于编程语言的文本格式。</p>
-<pre><code class="language-dart">// ch0304_5.dart
+<pre><code class="language-dart">// ex345.dart
 import 'dart:convert';
 
 void main() {

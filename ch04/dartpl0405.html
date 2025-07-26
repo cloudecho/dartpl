@@ -177,7 +177,7 @@
 <p>但有些运算符，例如 <code>!=</code>，不在上述列表中，这些运算符不是实例方法，它们的行为是 Dart 内置的。</p>
 <h2 id="示例1分数"><a class="header" href="#示例1分数">示例1：分数</a></h2>
 <p>下面以分数（Fraction）为例，来看看如何在类中定义操作符。</p>
-<pre><code class="language-dart">// ch0405_1.dart
+<pre><code class="language-dart">// ex451.dart
 int gcd(int a, int b) { // 1
   while (b != 0) {
     (a, b) = (b, a % b);
@@ -260,7 +260,7 @@ abstract final class String implements Comparable&lt;String&gt;, Pattern {
 }
 </code></pre>
 <h2 id="练习"><a class="header" href="#练习">练习</a></h2>
-<p>请完善示例 <em><code>ch0405_1</code></em>：</p>
+<p>请完善示例 <em><code>ex451</code></em>：</p>
 <ol>
 <li>让 <code>Fraction</code> 支持分子或分母是负数;</li>
 <li>为 <code>Fraction</code> 添加乘（<code>*</code>）、除（<code>/</code>）操作符;</li>

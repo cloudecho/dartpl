@@ -169,7 +169,7 @@
                     <main>
                         <h1 id="callable-类"><a class="header" href="#callable-类">callable 类</a></h1>
 <p>Dart的callable类的实例， 可以像函数一样被调用。听起来有点神秘，但一个示例即可揭开它的面纱。</p>
-<pre><code class="language-dart">// ch0406_1.dart
+<pre><code class="language-dart">// ex461.dart
 class Greeter {
   String call(String name) =&gt; 'Hello, $name!'; // 1
 }
@@ -187,7 +187,7 @@ void main() {
 </ol>
 <p><code>Greeter</code> 定义了一个名为 <code>call</code> 实例方法，像这样的类即 callable 类，其实例为 callable 对象。换句话说， <code>call</code> 实例方法让一个类变得 callable。</p>
 <p>除了<code>call()</code>实例方法外，callable类当然还能有其它的方法和字段。</p>
-<pre><code class="language-dart">// ch0406_2.dart
+<pre><code class="language-dart">// ex462.dart
 class Greeter {
  String call(String name) =&gt; 'Hello, $name!'; // 1
 
@@ -203,7 +203,7 @@ void main() {
 <p>接下来看看callable类的应用场景。</p>
 <h2 id="有状态的函数"><a class="header" href="#有状态的函数">有状态的函数</a></h2>
 <p>设想有一个函数，需要在多次调用之间维护其内部状态。比起使用全局变量或复杂的闭包，callable类显得更加简洁。</p>
-<pre><code class="language-dart">// ch0406_3.dart
+<pre><code class="language-dart">// ex463.dart
 class Counter {
   int _count = 0; // 1
   int call() =&gt; ++_count; // 2
@@ -225,7 +225,7 @@ void main() {
 </ol>
 <h2 id="有状态的回调"><a class="header" href="#有状态的回调">有状态的回调</a></h2>
 <p>事件处理函数或回调函数，有时需要管理与事件相关的状态，这是calllable类的另一个用武之地。</p>
-<pre><code class="language-dart">// ch0406_4.dart
+<pre><code class="language-dart">// ex464.dart
 class Button {
   Function()? onClick; // 1
   void click() =&gt; onClick?.call(); // 2
@@ -274,7 +274,7 @@ void main() {
   }
 
 </pre>
-<pre><code class="language-dart">// ch0406_5.dart
+<pre><code class="language-dart">// ex465.dart
 abstract interface class DiscountStrategy {
   double call(double originalPrice); // 1
 }

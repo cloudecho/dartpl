@@ -169,7 +169,7 @@
                     <main>
                         <h1 id="延迟初始化"><a class="header" href="#延迟初始化">延迟初始化</a></h1>
 <p><code>late</code> 关键字的本意是延迟变量的初始化。</p>
-<pre><code class="language-dart">// ch0403_1.dart
+<pre><code class="language-dart">// ex431.dart
 
 // int x;
 // Error:
@@ -189,7 +189,7 @@ void main() {
 <h2 id="什么时候使用-late"><a class="header" href="#什么时候使用-late">什么时候使用 <code>late</code></a></h2>
 <p>下面按应用场景对<code>late</code>的使用举例说明。</p>
 <p><em>需要使用 non-nullable 变量，但在声明时又无法初始化（比如依赖另一个实例变量/方法 ）。</em></p>
-<pre><code class="language-dart">// ch0403_2.dart
+<pre><code class="language-dart">// ex432.dart
 class A {
   int x;
   late int y = x + 1;
@@ -205,7 +205,7 @@ void main() {
 </code></pre>
 <p>此例中变量 <code>y</code> 由变量 <code>x</code>计算而成，用<code>late</code>修饰再方便不过了。</p>
 <p><em>变量的初始化是个费时操作，希望延迟初始化它。</em></p>
-<pre><code class="language-dart">// ch0403_3.dart
+<pre><code class="language-dart">// ex433.dart
 import 'dart:math';
 
 class RandAvg {
@@ -233,7 +233,7 @@ void main() {
 </code></pre>
 <p>此例中的 <code>avg</code> 是 <code>n</code> 个随机浮点数（取值0-1）的算术平均数，其计算过程由 <code>init()</code> 函数完成。</p>
 <p><em>变量仅在程序的部分地方用到，没用到的地方无需初始化。</em></p>
-<pre><code class="language-dart">// ch0403_4.dart
+<pre><code class="language-dart">// ex434.dart
 import 'dart:io';
 
 const kDebug = true;
@@ -267,8 +267,8 @@ void main() {
 </code></pre>
 <p>仅当 <code>kDebug</code> 取值 <code>true</code> 时， <code>Logger</code>类的<code>_debugInfo</code> 才被 <code>log</code> 方法用到， 也才被初始化（由<code>ensureDebugInfo</code>方法完成）。</p>
 <h2 id="联合使用-late-final"><a class="header" href="#联合使用-late-final">联合使用 <code>late final</code></a></h2>
-<p>示例 <em><code>ch0403_3</code></em> 中的实例变量 <code>avg</code>，在初始化之后便不再改变，这样的变量使用 <code>late final</code> 修饰更为准确，可以有效防止二次计算。</p>
-<pre><code class="language-dart">// ch0403_5.dart
+<p>示例 <em><code>ex433</code></em> 中的实例变量 <code>avg</code>，在初始化之后便不再改变，这样的变量使用 <code>late final</code> 修饰更为准确，可以有效防止二次计算。</p>
+<pre><code class="language-dart">// ex435.dart
 class RandAvg {
   int n;
   late final double avg;

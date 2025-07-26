@@ -171,7 +171,7 @@
 <p>函数参数有<a href="#%E4%BD%8D%E7%BD%AE%E5%8F%82%E6%95%B0">位置参数</a>和<a href="#%E5%91%BD%E5%90%8D%E5%8F%82%E6%95%B0">命名参数</a>之分，另外还有<a href="#%E5%8F%AF%E9%80%89%E5%8F%82%E6%95%B0">可选参数</a>。</p>
 <h2 id="位置参数"><a class="header" href="#位置参数">位置参数</a></h2>
 <p>上一节中的示例函数，只使用了位置参数，这些参数在参数列表中的顺序至关重要。</p>
-<pre><code class="language-dart">// ch0205_1.dart
+<pre><code class="language-dart">// ex251.dart
 void main(List&lt;String&gt; args) {
   print(power(2, 5)); // 2 Output: 32
   print(power(5, 2)); // 3 Output: 25
@@ -193,7 +193,7 @@ int power(int base, int exponent) { // 1
 <p>可见在调用<code>power</code>函数时，必须注意参数的顺序。</p>
 <h2 id="命名参数"><a class="header" href="#命名参数">命名参数</a></h2>
 <p>命名参数，顾名思义，就是有名字的参数。下面使用命名参数来创建<code>power</code>函数：</p>
-<pre><code class="language-dart">// ch0205_2.dart
+<pre><code class="language-dart">// ex252.dart
 void main() {
   print(power(base: 2, exponent: 5)); // 2 Output: 32
   print(power(exponent: 2, base: 5)); // 3 Output: 25
@@ -217,7 +217,7 @@ power({required int base, required int exponent}) { // 1
 <li>对<code>non-nullable</code> （不可空）参数，必须指定一个默认值，才能成为可选参数;</li>
 <li>在参数名后使用 <code>=</code> 来指定默认值。</li>
 </ul>
-<pre><code class="language-dart">// ch0205_3.dart
+<pre><code class="language-dart">// ex253.dart
 void main() {
   print(increase(5)); // Output: 6
   print(increase(5, increment: 2)); // Output: 7

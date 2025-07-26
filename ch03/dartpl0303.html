@@ -186,7 +186,7 @@
 <pre><code class="language-dart">subpattern1 &amp;&amp; subpattern2
 </code></pre>
 <p>当它的子模式都匹配， ”逻辑与“模式才算匹配；子模式从左至右求值，当遇到一个子模式不匹配时，剩下的子模式将不被求值。</p>
-<pre><code class="language-dart">// ch0303_1.dart
+<pre><code class="language-dart">// ex331.dart
 void main() {
  var goods = (name: 'apple', price: 2.0, quality: 'good');
  switch (goods) {
@@ -200,7 +200,7 @@ void main() {
 </code></pre>
 <p>此例中的 <code>\$</code> 为转义用法，表示 <code>$</code> 符号本身。</p>
 <p>这个示例旨在说明“逻辑与”模式的用法，它实在可以简化为:</p>
-<pre><code class="language-dart">// ch0303_2.dart
+<pre><code class="language-dart">// ex332.dart
 void main() {
  // ... (omit for brevity)
  switch (goods) {
@@ -220,7 +220,7 @@ void main() {
 \end{cases}
 \ ,\ x是整数
 \)</p>
-<pre><code class="language-dart">// ch0303_3.dart
+<pre><code class="language-dart">// ex333.dart
 import 'package:sprintf/sprintf.dart';
 
 void main() {
@@ -282,7 +282,7 @@ String bar(int y) =&gt; '▩' * y;
 <h2 id="一元后缀模式"><a class="header" href="#一元后缀模式">一元后缀模式</a></h2>
 <p>一元后缀模式包括 Cast（类型转换）、Null-check（空检查）、Null-assert（空断言）。</p>
 <p>Cast模式使得在解构过程中插入类型转换，但如果类型转换失败，程序将抛出异常。</p>
-<pre><code class="language-dart">// ch0304_4.dart
+<pre><code class="language-dart">// ex344.dart
 void main() {
   (Object, num) dat = ('Alice', 100);
   var (name as String, score as int) = dat;
@@ -296,7 +296,7 @@ void main() {
 </code></pre>
 <p>Null-check模式在匹配一个值时，首先检查那个值是否为<code>null</code>，如果是<code>null</code>就直接匹配失败，但不会抛出异常。</p>
 <p>Null-assert与Null-check类似，但当所匹配的那个值为<code>null</code>时会抛出一个异常。</p>
-<pre><code class="language-dart">// ch0303_4.dart
+<pre><code class="language-dart">// ex334.dart
 void main() {
   int? a;
   checkNull(a); // Output: check: a is null
@@ -330,7 +330,7 @@ void assertNull(dynamic a) {
 <h2 id="其它主要模式"><a class="header" href="#其它主要模式">其它主要模式</a></h2>
 <h3 id="list列表模式"><a class="header" href="#list列表模式">List（列表）模式</a></h3>
 <p>List模式非常实用，例如利用该模式将一个List分成“首个元素+中间的元素s+尾部元素”三部分。</p>
-<pre><code class="language-dart">// ch0303_6.dart
+<pre><code class="language-dart">// ex336.dart
 void main() {
   const luckyNumbers = [5, 6, 8, 9];
   var [first, ...rest, last] = luckyNumbers;
@@ -341,7 +341,7 @@ void main() {
 <p>此例中的<code>...rest</code> 表示剩余元素形成的List，称之为rest元素（Rest element）。List模式至多包含一个rest元素，这不难理解，因为如果有2个rest元素，就无法确定其部件（parts）的边界。</p>
 <h3 id="record记录模式"><a class="header" href="#record记录模式">Record（记录）模式</a></h3>
 <p>我们已经多次见过Record模式（见 <a href="../ch01/dartpl0104.html#%E8%AE%B0%E5%BD%95%E7%B1%BB%E5%9E%8B">记录类型</a> 一节），在仅举一例，不过多描述。</p>
-<pre><code class="language-dart">// ch0303_7.dart
+<pre><code class="language-dart">// ex337.dart
 void main() {
   const point = ('A', x: 1, y: 2, z: 3);
   var (name, :x, :y, z: _) = point;
@@ -355,7 +355,7 @@ void main() {
   assert(employee["name"] == "Tom");
 </code></pre>
 <p>第6章将进一步讨论Map，此处仅举例说明Map模式的运用。</p>
-<pre><code class="language-dart">// ch0303_8.dart
+<pre><code class="language-dart">// ex338.dart
 void main() {
   var employee = {"id": 1, "name": "Tom", "post": "CEO", "salary": 2};
   var numbers = {1: "one", 2: "two", 3: "three"};
@@ -380,7 +380,7 @@ void main() {
 </ul>
 <h3 id="object对象模式"><a class="header" href="#object对象模式">Object（对象）模式</a></h3>
 <p>Object模式在上一节已有所介绍，下面是另一个示例。</p>
-<pre><code class="language-dart">// ch0303_9.dart
+<pre><code class="language-dart">// ex339.dart
 void main() {
   const color = Color(50, 60, 80);
   var Color(:r, :g, :b) = color;

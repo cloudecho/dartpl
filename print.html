@@ -361,7 +361,7 @@ export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
 <div style="break-before: page; page-break-before: always;"></div><h1 id="变量与null-safety"><a class="header" href="#变量与null-safety">变量与Null safety</a></h1>
 <h2 id="什么是变量"><a class="header" href="#什么是变量">什么是变量</a></h2>
 <p>计算机编程语言里的变量（Variable）与数学公式里的变量类似。请看下面这段Dart代码:</p>
-<pre><code class="language-dart">// ch0102-1
+<pre><code class="language-dart">// ex121
 void main() {
   var x = 3;  // 1
   var (y, z) = (4, 5); // 2
@@ -392,7 +392,7 @@ x = 3;
 </ul>
 <p>但不能以数字开头。这些都是合法的标识符:  <code>practiceMakesPerfect</code>, <code>_imPrivate</code>, <code>_$GeneratedCode</code>, <code>$happy365</code>。Dart里以下划线（<code>_</code> ）开头的变量是私有变量。</p>
 <p><code>var</code>修饰的变量 ，可以后续更改，比如</p>
-<pre><code class="language-dart">// ch0102-3
+<pre><code class="language-dart">// ex123
 void main() {
   var x = 3;
   x = 30;
@@ -400,7 +400,7 @@ void main() {
 }
 </code></pre>
 <p>变量除了可以表示数字，还可以表示文本（字符串）等.  例如</p>
-<pre><code class="language-dart">// ch0102-4
+<pre><code class="language-dart">// ex124
 void main(){
   var name = 'Dart';
   print('Hello, $name!'); // Output: Hello, Dart!
@@ -418,7 +418,7 @@ void main(){
 <p>Dart编译器就认为 x 的类型为 <code>dynamic</code> ，这种类型可以表示任何数据，通常情况下我们应该避免这样做，因为Dart的静态类型检查对<code>dynamic</code>无效（可能暗藏bug）。</p>
 <h2 id="使用--late-延迟初始化"><a class="header" href="#使用--late-延迟初始化">使用  <code>late</code> 延迟初始化</a></h2>
 <p>有时候我们希望延迟变量的初始化（特别在Flutter的StatefulWidget中），这时就用到 <code>late</code> 关键字， 例如</p>
-<pre><code class="language-dart">// ch0102-5
+<pre><code class="language-dart">// ex125
 void main() {
   late String action = 'go camping';
   var isReady = true; // it may take some time to prepare
@@ -431,7 +431,7 @@ void main() {
 <h2 id="null-safety"><a class="header" href="#null-safety">Null safety</a></h2>
 <h3 id="nnbd"><a class="header" href="#nnbd">NNBD</a></h3>
 <p>从Dart 2.10 开始，变量默认非 <code>null</code>（non-nullable by defaullt, NNBD)；<code>null</code> 表示空值。 比如下面这段代码无法编译</p>
-<pre><code class="language-dart">// ch0102-6
+<pre><code class="language-dart">// ex126
 void main() {
   int x;
   print('x = $x'); 
@@ -443,7 +443,7 @@ void main() {
 </code></pre>
 <p>当我们尝试编译上面这段代码时，出现编译错误，告诉我们在使用变量<code>x</code>之前必须初始化它。</p>
 <p>如果要使用<code>null</code>， 可以像下面这样:</p>
-<pre><code class="language-dart">// ch0102-7
+<pre><code class="language-dart">// ex127
 void main() {
   int? x;
   print('x = $x'); // Output: x = null
@@ -463,7 +463,7 @@ void main() {
 <h3 id="访问nullable变量"><a class="header" href="#访问nullable变量">访问nullable变量</a></h3>
 <p>有几个nullable变量相关的访问/赋值，有必要介绍一下，你以后再看到下面这些符号就不会感到陌生了。</p>
 <h3 id="----"><a class="header" href="#----"><code>??</code> 、 <code>??=</code>、  <code>!</code></a></h3>
-<pre><code class="language-dart">// ch0102-8
+<pre><code class="language-dart">// ex128
 void main() {
   int? x;
   var y = x ?? 10; // 1
@@ -491,7 +491,7 @@ void main() {
 </ol>
 <p>请对比 1和1a， 2和2a，以及3和3a的结果。</p>
 <h3 id="-"><a class="header" href="#-"><code>?.</code> 、<code>?[]</code></a></h3>
-<pre><code class="language-dart">// ch0102-9
+<pre><code class="language-dart">// ex129
 void main() {
   var abc = 'ABCD';
   String? def;
@@ -515,7 +515,7 @@ void main() {
 </ol>
 <p>注：本例中的 <code>abc[0]</code> 返回第0个（下标从0开始）unicode字符，<code>abc.length</code>返回<code>abc</code>的长度。</p>
 <h3 id=""><a class="header" href="#"><code>...?</code></a></h3>
-<pre><code class="language-dart">// ch0102-a
+<pre><code class="language-dart">// ex12a
 void main() {
   var arr = [1, 2, 3];
   var arr2 = [...arr, 4, 5]; // 1
@@ -547,7 +547,7 @@ void main() {
 <div style="break-before: page; page-break-before: always;"></div><h1 id="final-const-及wildcard"><a class="header" href="#final-const-及wildcard"><code>final</code>、 <code>const</code> 及wildcard</a></h1>
 <h2 id="final"><a class="header" href="#final"><code>final</code></a></h2>
 <p>声明为final的变量，只能被赋值一次。 如果尝试修改已经赋值过的final变量，会引起编译错误。</p>
-<pre><code class="language-dart">// ch0103_1.dart
+<pre><code class="language-dart">// ex131.dart
 void main() {
   final myPet = 'Doggy'; // 1
   myPet = 'Kitty'; // 2
@@ -562,7 +562,7 @@ void main() {
 </ol>
 <h2 id="late-final"><a class="header" href="#late-final"><code>late final</code></a></h2>
 <p><code>late final</code> 这两个关键字经常一起出现，这里构建了一个简单的例子：</p>
-<pre><code class="language-dart">// ch0103_2.dart
+<pre><code class="language-dart">// ex132.dart
 void main() {
   final width = 3.0; // 1
   final height = 4.0; // 1a
@@ -590,7 +590,7 @@ void main() {
 <p>后面两点与OOP有关，这里提前了解下。</p>
 <h3 id="声明一个常量"><a class="header" href="#声明一个常量">声明一个常量</a></h3>
 <p>试图修改常量会引起编译错误，例如</p>
-<pre><code class="language-dart">// ch0103_3.dart
+<pre><code class="language-dart">// ex133.dart
 void main(){
   const score = 50; // 1
   score = 80; // 2
@@ -601,7 +601,7 @@ void main(){
 </code></pre>
 <h3 id="创建常量值"><a class="header" href="#创建常量值">创建常量值</a></h3>
 <p>任何变量都可以有常量值。</p>
-<pre><code class="language-dart">// ch0103_4.dart
+<pre><code class="language-dart">// ex134.dart
 void main() {
   final luckyNumbers = [5, 6]; // 1
   luckyNumbers.add(8); // 2
@@ -622,7 +622,7 @@ void main() {
 </ol>
 <h3 id="定义const构造器"><a class="header" href="#定义const构造器">定义const构造器</a></h3>
 <p>构造器是OOP里的概念，const构造用于创建常量值。请看下面这个示例：</p>
-<pre><code class="language-dart">// ch0103_5.dart
+<pre><code class="language-dart">// ex135.dart
 class Pet { // 1
   final String name; // 1a
   const Pet(this.name); // 2
@@ -648,7 +648,7 @@ void main() {
 <p>在常量上下文中，<code>Pet('Kitty')</code>之前省略了<code>const</code>关键字。</p>
 <h3 id="常量对象"><a class="header" href="#常量对象">常量对象</a></h3>
 <p><code> const Pet('Kitty')</code> 与 <code> Pet('Kitty')</code>是不一样的，前者创建（实例化）了一个常量对象，而后者创建的是非常量对象（除非是在常量上下文中）。</p>
-<pre><code class="language-dart">// ch0103_6.dart
+<pre><code class="language-dart">// ex136.dart
 void main() {
   const pet1 = Pet('Rabbit'); // 1
   var pet2 = const Pet('Rabbit'); // 2
@@ -666,7 +666,7 @@ class Pet {
 <p>这里的 <code>==</code> 操作符，用于测试左右两边的操作数是否相等。</p>
 <h2 id="wildcard_"><a class="header" href="#wildcard_">Wildcard（<code>_</code>）</a></h2>
 <p>自 Dart 3.7  开始，以 <code>_</code>  命名 的变量或参数，是一个通配符（wildcard ），它的值会被丢弃。同一个命名空间里多次声明 <code>_</code> 不会冲突。例如</p>
-<pre><code class="language-dart">//ch0103_7.dart
+<pre><code class="language-dart">// ex137.dart
 void main() {
   var _ = 10; // 1
   var _ = 'Hello'; // 2
@@ -737,7 +737,7 @@ double是双精度浮点数，遵循 IEEE 754 标准。</p>
 <li>toString()</li>
 </ul>
 <p>下面的代码声明了一个整数<code>radius</code> 和一个浮点数 <code>pi</code>：</p>
-<pre><code class="language-dart">// ch0104_1.dart
+<pre><code class="language-dart">// ex141.dart
 void main() {
   int radius = 5;
   double pi = 3.1416;
@@ -746,7 +746,7 @@ void main() {
 }
 </code></pre>
 <p>除了使用十进制书写整数外，还可以用十六进制。可以使用科学计数法书写浮点数。例如：</p>
-<pre><code class="language-dart">// ch0104_2.dart
+<pre><code class="language-dart">// ex142.dart
 void main() {
   int radius = 0x10; // hexadecimal
   int radius2 = 16; // decimal
@@ -760,7 +760,7 @@ void main() {
 }
 </code></pre>
 <p>但是Dart并不直接支持书写八进制数。你可以用  octal 包来书写八进制数。</p>
-<pre><code class="language-dart">// ch0104_3.dart
+<pre><code class="language-dart">// ex143.dart
 // dart pub add octal
 import 'package:octal/octal.dart'; 
 
@@ -771,7 +771,7 @@ void main() {
 }
 </code></pre>
 <p>书写数字时，可以在数字中间添加下划线来分节，这一点非常实用。</p>
-<pre><code class="language-dart">// ch0104_g.dart
+<pre><code class="language-dart">// ex14g.dart
 void main() {
   print(10_000); // Output: 10000
   print(1_2.000_123); // Output: 12.000123
@@ -780,7 +780,7 @@ void main() {
 </code></pre>
 <h2 id="字符串string"><a class="header" href="#字符串string">字符串（String）</a></h2>
 <p>Dart中的String是一个UTF-16值的有序序列，写在一对单引号或双引号里。一个非常nice的功能是字符串插值，即在字符串里使用 <code>${expr}</code>  。</p>
-<pre><code class="language-dart">// ch0104_4.dart
+<pre><code class="language-dart">// ex144.dart
 void main() {
   var str = "It's a beautiful day!";
   var str2 = 'It\'s a beautiful day!'; 
@@ -793,13 +793,13 @@ void main() {
 </code></pre>
 <p>上例中<code>str2</code> 写在一对单引号中，该行中的 <code>\</code> 为转义符，<code>\'</code>表示一个单引号。</p>
 <p>两个字符串写在一起，中间可以使用一个<code>+</code>符号（但通常予以省略）， 就表示将这两个字符串顺序拼接在一起，形成一个新的字符串。因此对于多行文本，可以这样写：</p>
-<pre><code class="language-dart">  // ch0104_5.dart
+<pre><code class="language-dart">  // ex145.dart
   var str =
       'A: Nice to meet you!\n'
       'B: Nice to meet you, too!';
 </code></pre>
 <p>这里的<code>\n</code>是换行符。书写多行文本更方便的做法是将文本写在一对三引号（<code>'''</code>或<code>"""</code>）中，例如：</p>
-<pre><code class="language-dart">// ch0104_6.dart
+<pre><code class="language-dart">// ex146.dart
 void main() {
   var minAge = 18;
   var query =
@@ -813,7 +813,7 @@ WHERE age &gt;= $minAge
 </code></pre>
 <h2 id="布尔bool"><a class="header" href="#布尔bool">布尔（bool）</a></h2>
 <p>布尔类型只有2个值，<code>true</code>和<code>false</code>，且它们都是编译时常量。</p>
-<pre><code class="language-dart">// ch0104_7.dart
+<pre><code class="language-dart">// ex147.dart
 void main() {
   var isGreater = 43 &gt; 34;
   print('isGreater: $isGreater'); // Output: isGreater: true
@@ -823,7 +823,7 @@ void main() {
 <h2 id="符文rune"><a class="header" href="#符文rune">符文（Rune）</a></h2>
 <p>符文代表unicode文字系统里的一个符号。unicode为世界上每一个文字或符号分配了一个数字，称之为code point。unicode 最多可支持 1,114,112 个code point，通过 17 个 16 位平面实现，每个平面可支持 65,536 个不同的code point。 unicode常见的编码方式（将code point映射为二进制数）有UTF-8、UTF-16和UTF-32。  Dart采用UTF-16编码，每个code unit为16位（2个字节），每个符文占用1个（0-65,535 code point）或2个code unit（65,536及以上)。对字符编码感兴趣的同学，请继续去了解下ASCII、UTF-8、UTF-16和UTF-32、GBK等。</p>
 <p>Dart的String（字符串）本质上是code unit的序列。</p>
-<pre><code class="language-dart">// ch0104_8.dart
+<pre><code class="language-dart">// ex148.dart
 void main() {
   var s = "笑\u7b11lol😆\u{1f606}"; // 1
   print(s); // 2 Output: 笑笑lol😆😆
@@ -850,7 +850,7 @@ void main() {
 <p>请仔细查看code units 与 runes 并进行对比，这将帮助你理解Rune（符文）和String（字符串）。</p>
 <h3 id="使用-characters-包"><a class="header" href="#使用-characters-包">使用 <code>characters</code> 包</a></h3>
 <p>下面这个示例同时演示了<code>characters</code>及<code>StringBuffer</code>类的使用。<code>characters</code> 为<code>String</code>类添加了一个扩展方法（第5章内容）<code>get characters</code>。<code>StringBuffer</code>是拼接字符串的高效方式。代码中使用的 for-each 循环将在下一章节介绍，这里先了解下。</p>
-<pre><code class="language-dart">//ch0104_9.dart
+<pre><code class="language-dart">//ex149.dart
 //dart pub add characters
 import 'package:characters/characters.dart';
 
@@ -867,7 +867,7 @@ void main() {
 </code></pre>
 <h2 id="记录record"><a class="header" href="#记录record">记录（Record）</a></h2>
 <p>Dart 3.0 引入了记录这一数据类型。记录是匿名的、不可变的聚合类型，是异质数据的集合。</p>
-<pre><code class="language-dart">// ch0104_a.dart
+<pre><code class="language-dart">// ex14a.dart
 void main() {
   var record = ('class 1', name: 'Alice', id: 1, 'good student'); // 1
   print(record); // 2 Output: (class 1, good student, id: 1, name: Alice)
@@ -892,7 +892,7 @@ void main() {
 </ol>
 <h3 id="记录类型"><a class="header" href="#记录类型">记录类型</a></h3>
 <p>记录（Record）没有明确的类型声明，因为它是匿名的，但记录是有形状（Shape）的。本例中 <code>record</code>的形状为<code>(String, String, {int id, String name})</code>；在一对花括号(<code>{}</code>)里的<code>int id, String name</code> 为命名字段 <code>id</code>与<code>name</code>，其类型分别为<code>int</code>与<code>String</code>；没有花括号包围的便是位置字段。</p>
-<pre><code class="language-dart">// ch01004_b.dart
+<pre><code class="language-dart">// ex14b.dart
 void main() {
   (int x, int y, int z) point = (1, 2, 3);
   var color = (1, 2, 3);
@@ -909,7 +909,7 @@ void main() {
 <p><code>point</code> 与 <code>color</code>具有相同的形状和值，因此他们是相等的，而<code>point2</code> 与 <code>color2</code>的形状不同，自然就不相等。</p>
 <h3 id="解构与变量交换"><a class="header" href="#解构与变量交换">解构与变量交换</a></h3>
 <p>记录的解构与变量交换非常实用。</p>
-<pre><code class="language-dart">// ch0104_c.dart
+<pre><code class="language-dart">// ex14c.dart
 void main() {
   var (x, y) = (1, 2); // 1
   print('x=$x y=$y'); // Output: x=1 y=2
@@ -941,7 +941,7 @@ void main() {
 </ol>
 <h2 id="枚举enum"><a class="header" href="#枚举enum">枚举（Enum）</a></h2>
 <p>枚举是一种用于表示固定数量的常量值的特殊类。使用关键字<code>enum</code>声明一个枚举。</p>
-<pre><code class="language-dart">// ch0104_d.dart
+<pre><code class="language-dart">// ex14d.dart
 enum Color { red, green, blue }
 
 void main() {
@@ -953,14 +953,14 @@ void main() {
 <p>每个枚举值都有个与之关联的数字，称之为<code>index</code>，该数字从0开始。枚举是一种特殊的类，因此它也可以定义字段（实例变量）和方法，只不过有一些限制，例如枚举的实例变量必须声明为<code>final</code>。第4章会更详细地讨论枚举。</p>
 <h2 id="符号symbol"><a class="header" href="#符号symbol">符号（Symbol)</a></h2>
 <p>符号对象表示 Dart 程序中声明的操作符或标识符。一般极少用到，在此了解即可。</p>
-<pre><code class="language-dart">// ch0104_e.dart
+<pre><code class="language-dart">// ex14e.dart
 void main() {
   print(#foo); // Output: Symbol("foo")
 }
 </code></pre>
 <h2 id="typedef"><a class="header" href="#typedef">typedef</a></h2>
 <p>用<code>typedef</code>关键字为数据类型取一个别名。</p>
-<pre><code class="language-dart">//ch0104_f.dart
+<pre><code class="language-dart">//ex14f.dart
 typedef Point = ({int x, int y});
 typedef VoidCallback = void Function();
 typedef IntList = List&lt;int&gt;;
@@ -1015,7 +1015,7 @@ void main() {
 </tbody></table>
 </div>
 <p>Dart支持自增（<code>++</code>）与自减（<code>--</code>）一元操作符。表达式<code>x++</code> 相当于<code>x = x+1</code>，<code>x--</code> 相当于<code>x = x-1</code>。 这两个操作符位于操作数之前或之后均可，但有区别。</p>
-<pre><code class="language-dart">// ch0105_1.dart
+<pre><code class="language-dart">// ex151.dart
 void main() {
   var x = 3, y = 3;
   print('${x++} $x'); // Output: 3 4
@@ -1190,7 +1190,7 @@ void main() {
 </code></pre>
 <h2 id="文档注释"><a class="header" href="#文档注释">文档注释</a></h2>
 <p>文档注释以<code>///</code>开头（单行文档注释），或以<code>/**</code>开始以<code>*/</code>结束（多行文档注释）。在连续的行上使用 <code>///</code> 与多行文档注释具有相同的效果。</p>
-<pre><code class="language-dart">// lib/ch0106_2.dart
+<pre><code class="language-dart">// ex162.dart
 
 /// A student class encapsulate student information,
 /// including id, name and birthdate.
@@ -1217,7 +1217,7 @@ class Student {
 <p>分支语句包括 <code>if</code> 和 <code>switch</code>语句。</p>
 <h2 id="if"><a class="header" href="#if"><code>if</code></a></h2>
 <p>下例中，如果 <code>isSunny</code>的值为<code>true</code>，就执行打印，否则什么也不做。</p>
-<pre><code class="language-dart">// ch0201_1.dart
+<pre><code class="language-dart">// ex211.dart
 import 'dart:math';
 
 void main() {
@@ -1258,7 +1258,7 @@ void main() {
 <p>从语法上讲，上例中最后的<code>else</code>分支也是可选的。</p>
 <h3 id="if-case"><a class="header" href="#if-case">if-case</a></h3>
 <p>从 Dart 3.0 开始， <code>if</code> 语句支持 <code>case</code> 子句，<code>case</code>后面接一个模式（pattern，第3章内容）。</p>
-<pre><code class="language-dart">// ch0201_2.dart
+<pre><code class="language-dart">// ex212.dart
 void main() {
   var dat = [1, 2]; 
   if (dat case [_, _]) { // 1
@@ -1290,7 +1290,7 @@ void main() {
     D --&gt; Z
     E --&gt; Z
 </pre>
-<pre><code class="language-dart">// ch0201_3.dart
+<pre><code class="language-dart">// ex213.dart
 void main() {
   var status = 'done';
   switch (status) {
@@ -1308,7 +1308,7 @@ void main() {
 <p>如果其他case都不匹配，则执行default case的代码，也就是 <code>default</code>  或 <code>case _</code>  标记的代码 。default case 要放在最后。</p>
 <h3 id="fallthrough-与-标签lablel"><a class="header" href="#fallthrough-与-标签lablel">fallthrough 与 标签（lablel）</a></h3>
 <p>空case（empty case）是指不做任何处理的case。默认情况下空case会fall through到下一个case，使得cases可以共享代码块。如果想让空case fall through到其他的case（非下一个case），使用标签（label）和 <code>continue</code>来实现。</p>
-<pre><code class="language-dart">// ch0201_4.dart
+<pre><code class="language-dart">// ex214.dart
 void main() {
   var status = 'canceled';
   switch (status) {
@@ -1344,7 +1344,7 @@ void main() {
 </code></pre>
 <h3 id="switch-表达式"><a class="header" href="#switch-表达式"><code>switch</code> 表达式</a></h3>
 <p><code>switch</code>表达式将返回一个值，这个值来自于匹配的case的表达式。先来看一个普通的switch语句：</p>
-<pre><code class="language-dart">// ch0201_5.dart
+<pre><code class="language-dart">// ex215.dart
 void main() {
   var x = 1.0, y = 2.0;
   var op = '+';
@@ -1367,7 +1367,7 @@ void main() {
 }
 </code></pre>
 <p>用<code>switch</code>表达式改写：</p>
-<pre><code class="language-dart">// ch0201_6.dart
+<pre><code class="language-dart">// ex216.dart
 void main() {
   var x = 1.0, y = 2.0;
   var op = '+';
@@ -1393,7 +1393,7 @@ void main() {
 </ol>
 <h3 id="详尽性检查"><a class="header" href="#详尽性检查">详尽性检查</a></h3>
 <p>详尽性检查也叫完备性检查。下面这段代码将引起编译错误：</p>
-<pre><code class="language-dart">//ch0201_7.dart
+<pre><code class="language-dart">//ex217.dart
 void main() {
   bool? win;
   var score = switch (win) {
@@ -1408,7 +1408,7 @@ void main() {
 </code></pre>
 <p>对于一个 <code>boo?</code>类型的变量，它的值是穷举的，即 <code>true</code>、<code>false</code>和 <code>null</code>，Dart编译器将对这类可穷举类型的变量进行详尽性检查。上例的编译错误告诉我们缺少了对 <code>null</code> case 的处理。常见的可穷举类型还有<code>bool</code>、枚举（Enum）和<a href="https://dart.dev/language/class-modifiers#sealed">密封类（sealed class）</a>。</p>
 <p>下例演示了针对枚举的详尽性检查。</p>
-<pre><code class="language-dart">// ch0201_8.dart
+<pre><code class="language-dart">// ex218.dart
 void main() {
   var x = 1.0, y = 2.0;
   var op = Op.plus;
@@ -1417,7 +1417,7 @@ void main() {
     // Op.minus =&gt; x - y,
   };
   // Error: The type 'Op' is not exhaustively matched by the switch cases since it doesn't match 'Op.minus'.
-  //  - 'Op' is from 'bin/ch02/ch0201_8.dart'.
+  //  - 'Op' is from 'bin/ch02/ex218.dart'.
   // Try adding a wildcard pattern or cases that match 'Op.minus'.
   //   var r = switch (op) {
   //                   ^
@@ -1426,7 +1426,7 @@ void main() {
 enum Op { plus, minus }
 </code></pre>
 <p>下例演示了针对密封类的详尽性检查。一个<a href="https://dart.dev/language/class-modifiers#sealed">密封类</a>的子类是有限个的，<code>switch</code>语句或表达式将对其子类进行详尽性检查。</p>
-<pre><code class="language-dart">// ch0201_9.dart
+<pre><code class="language-dart">// ex219.dart
 void main() {
   Op op = Plus(1.0, 2.0);
   var r = switch (op) {
@@ -1434,7 +1434,7 @@ void main() {
     // Minus(:double x, :double y) =&gt; x - y,
   };
   // Error: The type 'Op' is not exhaustively matched by the switch cases since it doesn't match 'Minus()'.
-  //  - 'Op' is from 'bin/ch02/ch0201_9.dart'.
+  //  - 'Op' is from 'bin/ch02/ex219.dart'.
   // Try adding a wildcard pattern or cases that match 'Minus()'.
   //   var r = switch (op) {
   //                   ^
@@ -1458,7 +1458,7 @@ class Minus extends Op {
 <p>第4-5章将详细讨论类的相关概念。</p>
 <h2 id="守护子句"><a class="header" href="#守护子句">守护子句</a></h2>
 <p>守护子句（guard clause）是可选的，它出现在case子句之后，使用关键字 <code>when</code>。守护子句可以出现在 if-case 以及 <code>switch</code> 语句和表达式中。</p>
-<pre><code class="language-dart">// ch0201_a.dart
+<pre><code class="language-dart">// ex21a.dart
 void main() {
   var year = 2025;
   bool showAges = true;
@@ -1491,7 +1491,7 @@ void main() {
 </ul>
 <h2 id="for-循环"><a class="header" href="#for-循环"><code>for</code> 循环</a></h2>
 <p>下面这段代码使用经典的<code>for</code>循环打印数字0到9。</p>
-<pre><code class="language-dart">// ch0202_1.dart
+<pre><code class="language-dart">// ex221.dart
 void main() {
   for (var i = 0; i &lt; 10; i++) {
     print('$i');
@@ -1513,7 +1513,7 @@ void main() {
 </pre>
 <p>后置操作即执行完循环体之后的操作。初始化列表、 循环条件、后置操作，这三部分用分号（<code>;</code>）分割，且每一部分都可以省略（但必须保留分号）。如果循环体只有一条语句，包围循环体的那对花括号（<code>{}</code>） 可以省略，但不建议这么做。</p>
 <p>下面这段代码将打印九九乘法表：</p>
-<pre><code class="language-dart">// ch0202_2.dart
+<pre><code class="language-dart">// ex222.dart
 import 'dart:io';
 
 import 'package:sprintf/sprintf.dart';
@@ -1528,7 +1528,7 @@ void main() {
 }
 </code></pre>
 <p>下面这段代码将数字10分解为2个非负整数之和：</p>
-<pre><code class="language-dart">// ch0202_3.dart
+<pre><code class="language-dart">// ex223.dart
 void main() {
   for (var i = 0, j = 10; i &lt;= j; i++, j--) {
     print('$i + $j = 10');
@@ -1543,7 +1543,7 @@ void main() {
 }
 </code></pre>
 <p>下面这段代码的功能一样，但省略了循环条件 <code>i &lt;= j</code>， 改用<code>break</code>语句来跳出循环：</p>
-<pre><code class="language-dart">// ch0202_4.dart
+<pre><code class="language-dart">// ex224.dart
 void main() {
   for (var i = 0, j = 10; ; i++, j--) {
     if (i &gt; j) break;
@@ -1553,7 +1553,7 @@ void main() {
 </code></pre>
 <h3 id="for-in"><a class="header" href="#for-in"><code>for-in</code></a></h3>
 <p>使用经典的<code>for</code>语句打印字母A-E：</p>
-<pre><code class="language-dart">// ch0202_5.dart
+<pre><code class="language-dart">// ex225.dart
 import 'dart:io';
 
 void main() {
@@ -1564,7 +1564,7 @@ void main() {
 }
 </code></pre>
 <p>使用 for-in语句改写上述代码，更为简洁：</p>
-<pre><code class="language-dart">// ch0202_6.dart
+<pre><code class="language-dart">// ex226.dart
 import 'dart:io';
 
 void main() {
@@ -1592,7 +1592,7 @@ void main() {
 
 </pre>
 <p>下面这段代码先打印数字0到9，再打印数字10到1（递减）。</p>
-<pre><code class="language-dart">//ch0102_7.dart
+<pre><code class="language-dart">//ex127.dart
 void main() {
   // print 0,1,...,9
   var x = 0;
@@ -1608,7 +1608,7 @@ void main() {
 </code></pre>
 <h2 id="break-和-continue"><a class="header" href="#break-和-continue"><code>break</code> 和 <code>continue</code></a></h2>
 <p><code>break</code>用于跳出当前循环，<code>continue</code>用于跳转至下一次迭代。下面这段代码使用<code>for</code>循环，打印1到9之间的奇数。</p>
-<pre><code class="language-dart">// ch0202_8.dart
+<pre><code class="language-dart">// ex228.dart
 void main() {
   for (var x = 1; ; x++) {
     if (x == 10) break;
@@ -1619,7 +1619,7 @@ void main() {
 </code></pre>
 <h2 id="标签"><a class="header" href="#标签">标签</a></h2>
 <p><code>break</code> 和 <code>continue</code> 仅对所在的（内层）循环起作用。如果要跳出（<code>break</code>）外层循环，或跳转至（<code>continue</code>）外层循环的下一次迭代，须借助标签。标签是一个标识符，后跟冒号（<code>labelName:</code>）；将标签放在语句之前以创建带标签的语句。</p>
-<pre><code class="language-dart">// ch0202_9.dart
+<pre><code class="language-dart">// ex229.dart
 
 import 'dart:io';
 
@@ -1637,12 +1637,12 @@ void main() {
 <p>此例中的 <code>continue outerLoop;</code> 就相当于 <code>break</code>。</p>
 <h2 id="练习"><a class="header" href="#练习">练习</a></h2>
 <ul>
-<li>分别使用 <code>while</code> 和<code>do-while</code> 改写 <code>ch0202_8.dart</code>。</li>
-<li>示例 <code>ch0202_9</code> 中，如果将  <code>continue outerLoop;</code> 改为  <code>break outerLoop;</code> 程序的输出是什么？</li>
+<li>分别使用 <code>while</code> 和<code>do-while</code> 改写 <code>ex228.dart</code>。</li>
+<li>示例 <code>ex229</code> 中，如果将  <code>continue outerLoop;</code> 改为  <code>break outerLoop;</code> 程序的输出是什么？</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="断言"><a class="header" href="#断言">断言</a></h1>
 <p>斷言（Assertion）是一个很有用的开发工具。下面的代码在调试模式（debug mode）下运行，将产生一个断言错误（AssertionError）。</p>
-<pre><code class="language-dart">// ch0203_1.dart
+<pre><code class="language-dart">// ex231.dart
 void main() {
   var str = '';
   assert(str.isNotEmpty, "str cannot be empty");
@@ -1651,7 +1651,7 @@ void main() {
 </code></pre>
 <p><code>assert</code> 接收2个参数，第一个参数必须是布尔表达式， 第二个参数是可选的，乃错误提示信息；在调试模式下，当第一个参数的值为<code>false</code>时，将出现断言错误。</p>
 <p>断言仅在调试模式（debug mode）下起作用。对于发布模式（release mode），除非在编译时显示启用了断言， 所有的<code>assert</code> 语句都将被忽略，从而不会干预程序的执行流程。在Dart的相关命令中（例如 <code>dart run</code>、<code>dart compile exe</code>），通过<code>--enable-asserts</code> 参数启用断言，如</p>
-<pre><code class="language-sh">dart run --enable-asserts bin/ch02/ch0203_1.dart
+<pre><code class="language-sh">dart run --enable-asserts bin/ch02/ex231.dart
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="函数-function"><a class="header" href="#函数-function">函数 （Function）</a></h1>
 <p>本章节将介绍函数的基本概念，位置参数、命名参数、函数类型、匿名函数等内容，将在后续章节陆续介绍。我们已经多次见过<code>main</code>函数，它是程序的入口。抽象地说，函数对输入数据（输入参数列表）进行处理，然后输出其处理结果（返回值）。</p>
@@ -1661,7 +1661,7 @@ void main() {
 </pre>
 <p>先来看一个示例程序，计算平面上两点之间的欧式距离:</p>
 <p>\( \sqrt{(x_1-x_2)^2 + (y_1-y_2)^2} \)</p>
-<pre><code class="language-dart">//ch0204_1.dart
+<pre><code class="language-dart">//ex241.dart
 import 'dart:math';
 
 typedef Point = ({double x, double y}); // 1
@@ -1687,7 +1687,7 @@ void main() {
 <li>计算<code>a</code>、<code>c</code>间的欧式距离，随后打印 (5a)；</li>
 </ol>
 <p>将计算欧式距离的代码，抽取成一个函数 <code>distance</code>，然后改写上例：</p>
-<pre><code class="language-dart">//ch0204_2.dart
+<pre><code class="language-dart">//ex242.dart
 import 'dart:math';
 
 typedef Point = ({double x, double y}); 
@@ -1745,7 +1745,7 @@ double distance(Point a, Point b) { // 1
 <h2 id="返回值"><a class="header" href="#返回值">返回值</a></h2>
 <p>如果没有指定返回值，则语句 <code>return null;</code> 会被隐式附加到函数体中，函数将返回<code>null</code>。</p>
 <p>如果一个函数需要返回多个值，通常返回一个记录（Record）类型。</p>
-<pre><code class="language-dart">// ch0204_3.dart
+<pre><code class="language-dart">// ex243.dart
 (bool ok, String) foo() {
   // Do something
   return (true, 'done');
@@ -1762,7 +1762,7 @@ double distance(Point a, Point b) { // 1
 </code></pre>
 <h2 id="getter-与-setter"><a class="header" href="#getter-与-setter">getter 与 setter</a></h2>
 <p>getter 与 settter 是一种特殊的函数，分别使用 <code>get</code> 与  <code>set</code> 关键字定义 。</p>
-<pre><code class="language-dart">// ch0204_4.dart
+<pre><code class="language-dart">// ex244.dart
 var _foo = 1;
 
 int get foo =&gt; _foo;
@@ -1784,7 +1784,7 @@ void main() {
 <p>此例中的<code>foo</code>在使用者看来，就像一个变量，但<code>foo</code> setter 给私有变量 <code>_foo</code>提供了额外的保护，它只将正数赋值给<code>_foo</code>。</p>
 <h2 id="call-方法"><a class="header" href="#call-方法"><code>call</code> 方法</a></h2>
 <p>函数类型有个<code>call</code>方法，其签名（参数列表与返回值）与函数本身一样，调用<code>call</code>的行为与调用函数本身也一样。</p>
-<pre><code class="language-dart">// ch0204_5.dart
+<pre><code class="language-dart">// ex245.dart
 int square(int n) =&gt; n * n;
 
 void main() {
@@ -1794,7 +1794,7 @@ void main() {
 </code></pre>
 <h2 id="main函数"><a class="header" href="#main函数"><code>main</code>函数</a></h2>
 <p>程序的入口<code>main</code>函数，返回<code>void</code>，有一个可选的参数，其类型为<code>List&lt;String&gt;</code>，用于命令行程序中。</p>
-<pre><code class="language-dart">// ch0204_6.dart
+<pre><code class="language-dart">// ex246.dart
 void main(List&lt;String&gt; args) {
   for (var arg in args) {
     print(arg);
@@ -1802,7 +1802,7 @@ void main(List&lt;String&gt; args) {
 }
 </code></pre>
 <p>此程序打印命令行参数，一个参数一行。使用<code>dart run</code>运行它:</p>
-<pre><code class="language-sh">$ dart run bin/ch02/ch0204_4.dart hello dart
+<pre><code class="language-sh">$ dart run bin/ch02/ex244.dart hello dart
 hello
 dart
 </code></pre>
@@ -1828,7 +1828,7 @@ dart
 <p>函数参数有<a href="ch02/dartpl0205.html#%E4%BD%8D%E7%BD%AE%E5%8F%82%E6%95%B0">位置参数</a>和<a href="ch02/dartpl0205.html#%E5%91%BD%E5%90%8D%E5%8F%82%E6%95%B0">命名参数</a>之分，另外还有<a href="ch02/dartpl0205.html#%E5%8F%AF%E9%80%89%E5%8F%82%E6%95%B0">可选参数</a>。</p>
 <h2 id="位置参数"><a class="header" href="#位置参数">位置参数</a></h2>
 <p>上一节中的示例函数，只使用了位置参数，这些参数在参数列表中的顺序至关重要。</p>
-<pre><code class="language-dart">// ch0205_1.dart
+<pre><code class="language-dart">// ex251.dart
 void main(List&lt;String&gt; args) {
   print(power(2, 5)); // 2 Output: 32
   print(power(5, 2)); // 3 Output: 25
@@ -1850,7 +1850,7 @@ int power(int base, int exponent) { // 1
 <p>可见在调用<code>power</code>函数时，必须注意参数的顺序。</p>
 <h2 id="命名参数"><a class="header" href="#命名参数">命名参数</a></h2>
 <p>命名参数，顾名思义，就是有名字的参数。下面使用命名参数来创建<code>power</code>函数：</p>
-<pre><code class="language-dart">// ch0205_2.dart
+<pre><code class="language-dart">// ex252.dart
 void main() {
   print(power(base: 2, exponent: 5)); // 2 Output: 32
   print(power(exponent: 2, base: 5)); // 3 Output: 25
@@ -1874,7 +1874,7 @@ power({required int base, required int exponent}) { // 1
 <li>对<code>non-nullable</code> （不可空）参数，必须指定一个默认值，才能成为可选参数;</li>
 <li>在参数名后使用 <code>=</code> 来指定默认值。</li>
 </ul>
-<pre><code class="language-dart">// ch0205_3.dart
+<pre><code class="language-dart">// ex253.dart
 void main() {
   print(increase(5)); // Output: 6
   print(increase(5, increment: 2)); // Output: 7
@@ -1898,7 +1898,7 @@ int descrease(int value, [int? decrement]) =&gt; value - (decrement ?? 1);
 <p>在Dart里，函数像普通变量一样，可作为参数传递，或从一个函数返回，这便是所谓的函数乃一等公民（first-class object）。在Dart里可以定义<a href="ch02/dartpl0206.html##%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0">匿名函数</a> ，也就是没有名称的函数，这在实际应用中极为方便。<a href="ch02/dartpl0206.html#%E9%97%AD%E5%8C%85closure">闭包（Closure）</a>是与之相关的另一个重要的概念，详见后文。</p>
 <h2 id="函数类型"><a class="header" href="#函数类型">函数类型</a></h2>
 <p>首先通过一个示例，来看一看什么是函数类型（funtion type）。</p>
-<pre><code class="language-dart">// ch0206_1.dart
+<pre><code class="language-dart">// ex261.dart
 void main() {
   int increase(int value, {int increment = 1}) =&gt; value + increment; // 3
   var increaseFunc = increase; // 4
@@ -1939,7 +1939,7 @@ typedef VoidCallback = void Function();
 </code></pre>
 <h2 id="词法范围lexical-scope"><a class="header" href="#词法范围lexical-scope">词法范围（Lexical Scope）</a></h2>
 <p>从语法上看，一对花括号（<code>{}</code>）便定义了一个词法范围，即作用域。作用域嵌套而成，外层作用域内的变量对内层可见，反之不然。下面是来自<a href="https://dart.dev/language/functions#lexical-scope">官方文档</a>的示例:</p>
-<pre><code class="language-dart">// ch0206_2.dart
+<pre><code class="language-dart">// ex262.dart
 bool topLevel = true;
 
 void main() {
@@ -1973,7 +1973,7 @@ void main() {
 }
 </code></pre>
 <p>下面的示例程序分析一句英文，然后打印其中的单词及其长度。</p>
-<pre><code class="language-dart">// ch0206_3.dart
+<pre><code class="language-dart">// ex263.dart
 void main() {
   var sentence = 'Its quaint events were hammered out'; // 1
   var stats = sentence.split(' ').map((word) =&gt; (word, word.length)); // 2
@@ -2002,7 +2002,7 @@ void main() {
 </blockquote>
 <p>如果一门编程语言具有上述特性，比如Dart，我们就说Dart支持闭包，可见闭包这个词也用来表示编程语言的这一特点(feature)。</p>
 <p>下面这个示例来自<a href="https://dart.dev/language/functions#lexical-closures">官方文档</a>：</p>
-<pre><code class="language-dart">// ch0206_4.dart
+<pre><code class="language-dart">// ex264.dart
 Function makeAdder(int addBy) {// 1
   return (int i) =&gt; addBy + i; // funcA
 }
@@ -2024,18 +2024,19 @@ void main() {
 <p>\( funcA( i ) = addBy + i \)</p>
 <p>这个函数里的自变量是<code>i</code>， <code>addBy</code>是一个常量。 <code>add2 = makeAdder(2)</code>， 相当于指定常量 <code>addBy = 2</code>，<code>add4</code>类似。<code>add2</code>、<code>add4</code> 等都是闭包。</p>
 <h2 id="练习-1"><a class="header" href="#练习-1">练习</a></h2>
-<p>修改示例程序<code>ch0206_3</code>，将统计结果按单词的长度降序排序。提示：使用<code>List.sort</code>方法。</p>
+<p>修改示例程序<code>ex263</code>，将统计结果按单词的长度降序排序。提示：使用<code>List.sort</code>方法。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="递归"><a class="header" href="#递归">递归</a></h1>
 <p>如果一个函数直接或间接调用它自己，我们便称之为递归函数。之所以讨论它，是因为递归是一种解决问题的有效方法，也是一种分治的思想，它针对特定的问题，这类问题在结构上可以进一步分解为相似的子问题。例如阶乘函数：</p>
 <p>\( n! = (n-1)!*n \)</p>
 <p>下面的代码计算斐波那契（Fibonacci）数列：</p>
 <p>\(
+fib(n) =
 \begin{cases}
-fib(0)=0, \  fib(1) = 1  \\
-fib(n) = fib(n-1) + fib(n-2), \  n &gt;1
+n, \ n=0 \ 或\ 1  \\
+fib(n-1) + fib(n-2), \  n &gt;1
 \end{cases}
 \)</p>
-<pre><code class="language-dart">// ch0207_1.dart
+<pre><code class="language-dart">// ex271.dart
 void main() {
   var n = 20;
   print('fib($n) = ${fib(n).$2}'); // Output: fib(20) = 6765
@@ -2050,7 +2051,7 @@ void main() {
 </code></pre>
 <p>又如使用辗转相除法，计算两个整数的最大公约数（最大公因数）：</p>
 <p>\( gcd(a, b) = gcd(b, a\%b) \)</p>
-<pre><code class="language-dart">// ch0207_1.dart
+<pre><code class="language-dart">// ex271.dart
 void main() {
   var a = 234, b = 678;
   print('gcd($a, $b) = ${gcd(a, b)}'); // Output: gcd(234, 678) = 6
@@ -2086,7 +2087,7 @@ int gcd2(int a, int b) {
 <p>Dart的函数或方法不会声明它将抛出哪些异常; Dart也不强制要求捕获异常。如果异常发生了却不被处理，抛出异常的 isolate 将被挂起，且通常会被终止。第7章将详细讨论 isolate，这里将其视为一种内存独立的线程（如 <code>main</code> 函数所在的 main isolate）即可。</p>
 <h2 id="抛出异常-trhow"><a class="header" href="#抛出异常-trhow">抛出异常 （<code>trhow</code>）</a></h2>
 <p>Dart程序可以抛出（<code>trhow</code>）什么？答案是除了<code>null</code>外的任何东西。</p>
-<pre><code class="language-dart">// ch0208_1.dart
+<pre><code class="language-dart">// ex281.dart
 void main() {
   throw 'something bad happened';
   // Unhandled exception:
@@ -2108,7 +2109,7 @@ void main() {
 <li><code>TimeoutException</code></li>
 </ul>
 <p>我们也可以创建自己的异常类，并实现（<code>implements</code>） <code>Exception</code> 或 <code>Error</code>。</p>
-<pre><code class="language-dart">// ch0208_2.dart
+<pre><code class="language-dart">// ex282.dart
 void main() {
   throw FooException();
 }
@@ -2127,7 +2128,7 @@ class FooException implements Exception {}
 <h2 id="捕获异常"><a class="header" href="#捕获异常">捕获异常</a></h2>
 <h3 id="捕获指定类型的异常"><a class="header" href="#捕获指定类型的异常">捕获指定类型的异常</a></h3>
 <p>使用 <code>try...on...catch</code> 语法捕获异常。将可能抛出异常的代码放在<code>try{}</code>代码块中，然后使用<code>on</code>关键字捕获特定类型的异常。</p>
-<pre><code class="language-dart">// ch0208_3.dart
+<pre><code class="language-dart">// ex283.dart
 import 'dart:io';
 
 void main() {
@@ -2142,7 +2143,7 @@ void main() {
 <p>此例试图将字符串<code>"dart"</code>转换为一个整数，引发了 <code>FormatException</code>，随后被捕获。</p>
 <h3 id="捕获异常信息"><a class="header" href="#捕获异常信息">捕获异常信息</a></h3>
 <p>使用<code>catch</code>关键字捕获异常信息（即异常类型的一个实例）。</p>
-<pre><code class="language-dart">// ch0208_4.dart
+<pre><code class="language-dart">// ex284.dart
 void main() {
   try {
     int.parse('dart');
@@ -2152,7 +2153,7 @@ void main() {
 }
 </code></pre>
 <p><code>catch()</code> 还有另一个可选参数，表示异常堆栈。</p>
-<pre><code class="language-dart">// ch0208_5.dart
+<pre><code class="language-dart">// ex285.dart
 void main() {
   try {
     int.parse('dart');
@@ -2164,7 +2165,7 @@ void main() {
 </code></pre>
 <h3 id="重新抛出异常"><a class="header" href="#重新抛出异常">重新抛出异常</a></h3>
 <p>使用 <code>rethrow</code>关键字重新抛出异常，且保留原来的堆栈信息。</p>
-<pre><code class="language-dart">// ch0208_6.dart
+<pre><code class="language-dart">// ex286.dart
 void main() {
   try {
     parseInt('dart');
@@ -2188,7 +2189,7 @@ int parseInt(String str) {
 </ol>
 <h3 id="捕获多种类型的异常"><a class="header" href="#捕获多种类型的异常">捕获多种类型的异常</a></h3>
 <p>使用多个<code>catch</code>子句来分别处理不同类型的异常。</p>
-<pre><code class="language-dart">//ch0206_7.dart
+<pre><code class="language-dart">//ex267.dart
 void main() {
   print(safeDivide('8', '2'));
   print(safeDivide('8', '0'));
@@ -2209,7 +2210,7 @@ void main() {
 </code></pre>
 <h2 id="finally"><a class="header" href="#finally"><code>finally</code></a></h2>
 <p>无论<code>try</code> 代码块内是否发生了异常， <code>finally</code>子句都将被执行。<code>finally</code>子句通常用来关闭资源（如打开的系统文件）。</p>
-<pre><code class="language-dart">// ch0208_8.dart
+<pre><code class="language-dart">// ex288.dart
 void main() {
   try {
     print(2 ~/ 0);
@@ -2238,7 +2239,7 @@ void main() {
 <li>有特定的数据类型。</li>
 </ul>
 <p>这么说还是有点抽象，我们来看下面的示例。</p>
-<pre><code class="language-dart">//ch0301_1.dart
+<pre><code class="language-dart">//ex311.dart
 void main() {
   const numbers = [1, 2, 3]; // 1
 
@@ -2267,7 +2268,7 @@ void main() {
 </ol>
 <h2 id="解构"><a class="header" href="#解构">解构</a></h2>
 <p>模式解构提供了一种便捷的声明式语法，可以将一个值分解成各部件（parts），并将部分或全部的部件，绑定至局部变量。</p>
-<pre><code class="language-dart">//ch0301_2.dart
+<pre><code class="language-dart">//ex312.dart
 void main() {
   const numbers = [1, 2, 3]; 
 
@@ -2292,7 +2293,7 @@ void main() {
 <li>匹配<code>point</code>，并将其<code>x</code>字段绑定至变量<code>a</code>，<code>y</code>字段绑定至变量<code>y</code>；这里的<code>:var y</code>乃<code>y:var y</code>的简便写法。</li>
 </ol>
 <p>下面是与类相关的模式匹配的一个示例：</p>
-<pre><code class="language-dart">// ch0301_3.dart
+<pre><code class="language-dart">// ex313.dart
 void main() {
   const point = Point(3, 4); // 4
   if (point case Point(:var x, :var y, :var z)) { // 5
@@ -2316,7 +2317,7 @@ class Point {
 <li>解构<code>point</code>，并将其部件分别绑定值变量 <code>x</code>、<code>y</code>、<code>z</code>。</li>
 </ol>
 <p>解构不但可以绑定字段，还可以绑定函数/方法（在类中定义的函数），也就是为什么在描述解构时，采用了部件（而非字段）这个词。</p>
-<pre><code class="language-dart">// ch0301_4.dart
+<pre><code class="language-dart">// ex314.dart
 void main() {
   const rect = Rectangle(5, 6);
   if (rect case Rectangle(:var area)) {
@@ -2346,7 +2347,7 @@ class Rectangle {
 <li><a href="ch03/dartpl0302.html#%E9%9B%86%E5%90%88%E5%AD%97%E9%9D%A2%E9%87%8Fcollection-literals%E4%B8%AD%E7%9A%84%E6%8E%A7%E5%88%B6%E6%B5%81">集合字面量（collection literals）中的控制流(if、for)</a></li>
 </ul>
 <h2 id="局部变量声明和赋值"><a class="header" href="#局部变量声明和赋值">局部变量声明和赋值</a></h2>
-<pre><code class="language-dart">// ch0302_1.dart
+<pre><code class="language-dart">// ex321.dart
 void main() {
   var (name, :id, [a, b, c]) = ('Tom', id: 1, [3, 4, 5]); // 1
   print('name=$name id=$id a=$a b=$b c=$c');
@@ -2362,7 +2363,7 @@ void main() {
 </ol>
 <h2 id="if-case-和-switch-case"><a class="header" href="#if-case-和-switch-case">if-case 和 switch-case</a></h2>
 <p>每个case子句都包含了一个模式，无论是if-case 还是switch-case。</p>
-<pre><code class="language-dart">// ch0302_2.dart
+<pre><code class="language-dart">// ex322.dart
 void main() {
   const data = ('Tom', id: 1, [3, 4, 5]);
   if (data case ('Tom' || 'Jerry', id: _, _)) { // 1
@@ -2383,7 +2384,7 @@ void main() {
 <li>这里使用了逻辑或（OR）操作符（<code>||</code>），让<code>data.$1</code>匹配多个值，这非常实用。</li>
 </ol>
 <h2 id="for-和-for-in-循环"><a class="header" href="#for-和-for-in-循环">for 和 for-in 循环</a></h2>
-<pre><code class="language-dart">// ch0302_3.dart
+<pre><code class="language-dart">// ex323.dart
 void main() {
   var points = [Point(0, 1), Point(1, 2), Point(2, 3)]; // 2
   for (var Point(:x, :y) in points) { // 3
@@ -2405,7 +2406,7 @@ class Point { // 1
 <h2 id="集合字面量collection-literals中的控制流"><a class="header" href="#集合字面量collection-literals中的控制流">集合字面量（collection literals）中的控制流</a></h2>
 <p>集合包括List、Set、Map，将在第6章将详细讨论，这里仅以List（列表）为例，对模式的相关使用进行说明。</p>
 <p>首先来看如何使用for语句创建一个列表，以及<code>for</code>与<code>if</code>的嵌套使用。下面的程序将打印数字0到9中的偶数。</p>
-<pre><code class="language-dart">// ch0302_4.dart
+<pre><code class="language-dart">// ex324.dart
 void main() {
   final nums = [for (var i = 0; i &lt; 10; i++) i]; // 1
   var evenNums = [
@@ -2420,7 +2421,7 @@ void main() {
 <li>对<code>nums</code>进行过滤（<code>if(num.isEven)</code>），选出其中的偶数。</li>
 </ol>
 <p>下例演示了如何在集合字面量的控制流中使用模式。</p>
-<pre><code class="language-dart">// ch0302_5.dart
+<pre><code class="language-dart">// ex325.dart
 void main() {
   var points = [for (var x = 0; x &lt; 10; x++) (x: x, y: 2 * x)];
   var points2 = [
@@ -2449,7 +2450,7 @@ void main() {
 <pre><code class="language-dart">subpattern1 &amp;&amp; subpattern2
 </code></pre>
 <p>当它的子模式都匹配， ”逻辑与“模式才算匹配；子模式从左至右求值，当遇到一个子模式不匹配时，剩下的子模式将不被求值。</p>
-<pre><code class="language-dart">// ch0303_1.dart
+<pre><code class="language-dart">// ex331.dart
 void main() {
  var goods = (name: 'apple', price: 2.0, quality: 'good');
  switch (goods) {
@@ -2463,7 +2464,7 @@ void main() {
 </code></pre>
 <p>此例中的 <code>\$</code> 为转义用法，表示 <code>$</code> 符号本身。</p>
 <p>这个示例旨在说明“逻辑与”模式的用法，它实在可以简化为:</p>
-<pre><code class="language-dart">// ch0303_2.dart
+<pre><code class="language-dart">// ex332.dart
 void main() {
  // ... (omit for brevity)
  switch (goods) {
@@ -2483,7 +2484,7 @@ void main() {
 \end{cases}
 \ ,\ x是整数
 \)</p>
-<pre><code class="language-dart">// ch0303_3.dart
+<pre><code class="language-dart">// ex333.dart
 import 'package:sprintf/sprintf.dart';
 
 void main() {
@@ -2545,7 +2546,7 @@ String bar(int y) =&gt; '▩' * y;
 <h2 id="一元后缀模式"><a class="header" href="#一元后缀模式">一元后缀模式</a></h2>
 <p>一元后缀模式包括 Cast（类型转换）、Null-check（空检查）、Null-assert（空断言）。</p>
 <p>Cast模式使得在解构过程中插入类型转换，但如果类型转换失败，程序将抛出异常。</p>
-<pre><code class="language-dart">// ch0304_4.dart
+<pre><code class="language-dart">// ex344.dart
 void main() {
   (Object, num) dat = ('Alice', 100);
   var (name as String, score as int) = dat;
@@ -2559,7 +2560,7 @@ void main() {
 </code></pre>
 <p>Null-check模式在匹配一个值时，首先检查那个值是否为<code>null</code>，如果是<code>null</code>就直接匹配失败，但不会抛出异常。</p>
 <p>Null-assert与Null-check类似，但当所匹配的那个值为<code>null</code>时会抛出一个异常。</p>
-<pre><code class="language-dart">// ch0303_4.dart
+<pre><code class="language-dart">// ex334.dart
 void main() {
   int? a;
   checkNull(a); // Output: check: a is null
@@ -2593,7 +2594,7 @@ void assertNull(dynamic a) {
 <h2 id="其它主要模式"><a class="header" href="#其它主要模式">其它主要模式</a></h2>
 <h3 id="list列表模式"><a class="header" href="#list列表模式">List（列表）模式</a></h3>
 <p>List模式非常实用，例如利用该模式将一个List分成“首个元素+中间的元素s+尾部元素”三部分。</p>
-<pre><code class="language-dart">// ch0303_6.dart
+<pre><code class="language-dart">// ex336.dart
 void main() {
   const luckyNumbers = [5, 6, 8, 9];
   var [first, ...rest, last] = luckyNumbers;
@@ -2604,7 +2605,7 @@ void main() {
 <p>此例中的<code>...rest</code> 表示剩余元素形成的List，称之为rest元素（Rest element）。List模式至多包含一个rest元素，这不难理解，因为如果有2个rest元素，就无法确定其部件（parts）的边界。</p>
 <h3 id="record记录模式"><a class="header" href="#record记录模式">Record（记录）模式</a></h3>
 <p>我们已经多次见过Record模式（见 <a href="ch03/../ch01/dartpl0104.html#%E8%AE%B0%E5%BD%95%E7%B1%BB%E5%9E%8B">记录类型</a> 一节），在仅举一例，不过多描述。</p>
-<pre><code class="language-dart">// ch0303_7.dart
+<pre><code class="language-dart">// ex337.dart
 void main() {
   const point = ('A', x: 1, y: 2, z: 3);
   var (name, :x, :y, z: _) = point;
@@ -2618,7 +2619,7 @@ void main() {
   assert(employee["name"] == "Tom");
 </code></pre>
 <p>第6章将进一步讨论Map，此处仅举例说明Map模式的运用。</p>
-<pre><code class="language-dart">// ch0303_8.dart
+<pre><code class="language-dart">// ex338.dart
 void main() {
   var employee = {"id": 1, "name": "Tom", "post": "CEO", "salary": 2};
   var numbers = {1: "one", 2: "two", 3: "three"};
@@ -2643,7 +2644,7 @@ void main() {
 </ul>
 <h3 id="object对象模式"><a class="header" href="#object对象模式">Object（对象）模式</a></h3>
 <p>Object模式在上一节已有所介绍，下面是另一个示例。</p>
-<pre><code class="language-dart">// ch0303_9.dart
+<pre><code class="language-dart">// ex339.dart
 void main() {
   const color = Color(50, 60, 80);
   var Color(:r, :g, :b) = color;
@@ -2662,7 +2663,7 @@ class Color {
 <div style="break-before: page; page-break-before: always;"></div><h1 id="模式应用案例"><a class="header" href="#模式应用案例">模式应用案例</a></h1>
 <p>本文以示例的方式，介绍模式的几个经典应用案例。</p>
 <h2 id="交换两个变量的值"><a class="header" href="#交换两个变量的值">交换两个变量的值</a></h2>
-<pre><code class="language-dart">//ch0304_1.dart
+<pre><code class="language-dart">//ex341.dart
 void main() {
   var (x, y) = (3, 4);
   (x, y) = (y, x);
@@ -2670,7 +2671,7 @@ void main() {
 }
 </code></pre>
 <h2 id="解构map里的-key-value"><a class="header" href="#解构map里的-key-value">解构Map里的 key-value</a></h2>
-<pre><code class="language-dart">//ch0304_2.dart
+<pre><code class="language-dart">//ex342.dart
 void main() {
   const employee = {"id": 1, "name": "Tom", "post": "CEO", "salary": 2};
   for (var MapEntry(:key, :value) in employee.entries) {
@@ -2684,7 +2685,7 @@ void main() {
 }
 </code></pre>
 <h2 id="解构多个返回值"><a class="header" href="#解构多个返回值">解构多个返回值</a></h2>
-<pre><code class="language-dart">// ch0304_3.dart
+<pre><code class="language-dart">// ex343.dart
 void main() {
   var (ok, result) = foo();
   print(ok ? result : 'oops!');
@@ -2705,7 +2706,7 @@ void main() {
 <li>希望将这些行为集中到一起，而不是分散到不同的类型中。</li>
 </ul>
 <p>这是一个来自官方文档的示例。</p>
-<pre><code class="language-dart">// ch0304_4.dart
+<pre><code class="language-dart">// ex344.dart
 import 'dart:math' as math;
 
 sealed class Shape {}
@@ -2727,7 +2728,7 @@ double calculateArea(Shape shape) =&gt; switch (shape) {
 </code></pre>
 <h2 id="jsonmap-校验"><a class="header" href="#jsonmap-校验">JSON/Map 校验</a></h2>
 <p><a href="https://www.json.org/json-en.html">JSON（JavaScript Object Notation）</a>是一种轻量级的数据交换格式，其应用极为广泛，尤其在互联网领域。JSON采用了独立于编程语言的文本格式。</p>
-<pre><code class="language-dart">// ch0304_5.dart
+<pre><code class="language-dart">// ex345.dart
 import 'dart:convert';
 
 void main() {
@@ -2763,7 +2764,7 @@ void main() {
 <p>封装、继承与多态是面向对象编程（Object-oritented programming, OOP）的三大特性，而封装是其中最为基础与关键的特性。Go语言向我们证明了继承对于OOP是可选的，而多态通过接口来实现。这些基本概念将在后续章节陆续介绍，本章节重点说明封装。</p>
 <h2 id="封装"><a class="header" href="#封装">封装</a></h2>
 <p>很多时候我们想要隐藏代码的实现细节，而对外暴露的只是API（应用编程接口），这便是针对接口（而非实现）编程，要实现这一点就要用到封装。接口用于定义API，而类就像一个容器主要用于封装。那么类究竟封装了什么？</p>
-<pre><code class="language-dart">// ch0401_1.dart
+<pre><code class="language-dart">// ex411.dart
 class Dog {
   const Dog(this.name, this.age); // 3
   final String name; // 1
@@ -2872,7 +2873,7 @@ void main(List&lt;String&gt; arguments) {
 <h2 id="实例变量的初始化"><a class="header" href="#实例变量的初始化">实例变量的初始化</a></h2>
 <h3 id="在声明时初始化"><a class="header" href="#在声明时初始化">在声明时初始化</a></h3>
 <p>在声明类的实例变量时，可对其进行初始化。例如</p>
-<pre><code class="language-dart">// ch0402_1.dart
+<pre><code class="language-dart">// ex421.dart
 class Cat {
   var name = "Kitty";
   var age = 1;
@@ -2881,7 +2882,7 @@ class Cat {
 <p>实例变量 <code>name</code> 和 <code>age</code> 都有初始值，因此使用 <code>var</code> 关键字来声明，让Dart自动推断其类型。</p>
 <h3 id="初始化形参"><a class="header" href="#初始化形参">初始化形参</a></h3>
 <p>Dart的初始化形参极大的简化了构造函数的书写。</p>
-<pre><code class="language-dart">// ch0402_2.dart
+<pre><code class="language-dart">// ex422.dart
 class Cat {
   String name;
   int age;
@@ -2891,8 +2892,8 @@ class Cat {
 </code></pre>
 <p>此处的 <code>this</code> 关键字表示当前实例，或则说 <code>this</code> 乃当前实例的引用。</p>
 <h3 id="初始化列表"><a class="header" href="#初始化列表">初始化列表</a></h3>
-<p>上述示例代码（<em><code>ch0402_2</code></em>）等价于:</p>
-<pre><code class="language-dart">// ch0402_3.dart
+<p>上述示例代码（<em><code>ex422</code></em>）等价于:</p>
+<pre><code class="language-dart">// ex423.dart
 class Cat {
   String name;
   int age;
@@ -2909,7 +2910,7 @@ class Cat {
 </blockquote>
 <p>当然对于如此简单的初始化操作，使用初始化形参数更为简洁。</p>
 <p>实战中经常要对构造函数的参数进行简单校验，比如要求 <code>name</code> 的长度至少为3：</p>
-<pre><code class="language-dart">// ch0402_4.dart
+<pre><code class="language-dart">// ex424.dart
 class Cat {
   String name;
   int age;
@@ -2921,7 +2922,7 @@ class Cat {
 <li>这里在初始化列表里使用 <code>assert</code>对参数<code>name</code>的长度进行了校验。</li>
 </ol>
 <p>有时候实例变量的初始化需要一个简单的计算，可以参考下例：</p>
-<pre><code class="language-dart">// ch0402_5.dart
+<pre><code class="language-dart">// ex425.dart
 class Rectangle { // 1
   final double width;
   final double height;
@@ -2941,7 +2942,7 @@ class Rectangle { // 1
 </ol>
 <h2 id="生成式构造函数"><a class="header" href="#生成式构造函数">生成式构造函数</a></h2>
 <p>生成式构造函数（Generative constructors），负责创建实例并初始化实例变量，是创建新实例的常见方式。上文已经演示了一个简单的生成式构造函数：</p>
-<pre><code class="language-dart">// ch0402_2.dart
+<pre><code class="language-dart">// ex422.dart
 class Cat {
   String name;
   int age;
@@ -2951,7 +2952,7 @@ class Cat {
 </code></pre>
 <h2 id="默认构造函数"><a class="header" href="#默认构造函数">默认构造函数</a></h2>
 <p>如何没有显示定义一个生成式构造函数，Dart将自动创建一个不具名的无参构造函数。</p>
-<pre><code class="language-dart">// ch0402_6.dart
+<pre><code class="language-dart">// ex426.dart
 class Cat {
   var name = "Kitty";
   var age = 1;
@@ -2971,7 +2972,7 @@ void main() {
 </code></pre>
 <h2 id="命名构造函数"><a class="header" href="#命名构造函数">命名构造函数</a></h2>
 <p>命名构造函数用于实现多个构造函数，并且命名构造函数的名称提供了额外的信息，以帮助用户使用（理解代码的意图）。</p>
-<pre><code class="language-dart">// ch0402_7.dart
+<pre><code class="language-dart">// ex427.dart
 class Point { // 1
   final double x;
   final double y;
@@ -2998,7 +2999,7 @@ void main() {
 </ol>
 <h2 id="常量构造函数"><a class="header" href="#常量构造函数">常量构造函数</a></h2>
 <p>如果要创建编译时（ compile-time）常量对象，就需要用到常量构造函数（Constant constructors）。</p>
-<pre><code class="language-dart">// ch0402_8.dart
+<pre><code class="language-dart">// ex428.dart
 class Point {
   final double x;
   final double y;
@@ -3036,7 +3037,7 @@ class Point {
 </ol>
 <h2 id="重定向构造函数"><a class="header" href="#重定向构造函数">重定向构造函数</a></h2>
 <p>重定向构造函数没有函数体，它使用 <code>this</code> 关键字重定向到类中的另一个生成式构造函数。</p>
-<pre><code class="language-dart">// ch0402_9.dart
+<pre><code class="language-dart">// ex429.dart
 class Point {
   double x, y;
 
@@ -3055,7 +3056,7 @@ class Point {
 <p>设计模式中有一个创建型模式叫做<a href="https://refactoring.guru/design-patterns/factory-method">工厂方法</a>（也称为虚拟构造函数），它专门用来创建类的实例。Dart的工厂构造函数与设计模式里的工厂方法有点类似，但在结构上有所不同。工厂构造函数是一种返回类实例的特殊函数，它必须借助生成式构造函数，才能创建实例。下面按使用场景举例说明。</p>
 <h3 id="缓存实例"><a class="header" href="#缓存实例">缓存实例</a></h3>
 <p>工厂构造函数用于缓存实例的一个经典示例是Logger（日志记录器）。</p>
-<pre><code class="language-dart">// ch0402_a.dart
+<pre><code class="language-dart">// ex42a.dart
 class Logger {
   final String name;
 
@@ -3091,7 +3092,7 @@ void main() {
 </ol>
 <h3 id="创建系列对象"><a class="header" href="#创建系列对象">创建系列对象</a></h3>
 <p>有时需要对一系列对象的创建过程进行集中管理，尤其是那些受保护的类。</p>
-<pre><code class="language-dart">// ch0402_b.dart
+<pre><code class="language-dart">// ex42b.dart
 abstract class Toy {
   factory Toy(String name) {
     return switch (name) {
@@ -3115,12 +3116,12 @@ void main() {
 </code></pre>
 <p>此例中的<code>Toy</code>是一个抽象类，它定义了一个工厂构造函数，该函数根据参数<code>name</code>来创建对应的实例。<code>Toy</code>的具体类（<code>_Car</code>、<code>_Truck</code>、 <code>_Airplane</code>）是私有的（受保护的），随着时间的推移，它们的内部实现可能被改变，但不会影响用户代码。抽象类与接口等概念将在下一章介绍。</p>
 <h3 id="命名工厂构造函数与静态方法"><a class="header" href="#命名工厂构造函数与静态方法">命名工厂构造函数与静态方法</a></h3>
-<p>实际上，命名工厂构造函数可以用<em>返回类实例的</em>静态方法进行改写，可以说二者是等价的。示例 <em><code>ch0402_a</code></em> 的 <code>Logger.main</code> 方法可以改写为:</p>
+<p>实际上，命名工厂构造函数可以用<em>返回类实例的</em>静态方法进行改写，可以说二者是等价的。示例 <em><code>ex42a</code></em> 的 <code>Logger.main</code> 方法可以改写为:</p>
 <pre><code class="language-dart">  static Logger main() =&gt; Logger("main"); // 4
 </code></pre>
 <h2 id="构造函数的函数体"><a class="header" href="#构造函数的函数体">构造函数的函数体</a></h2>
-<p>重定向构造函数没有函数体，其它生成式构造函数的函数体是可选的。示例  <em><code>ch0402_4</code></em> 可以改写为:</p>
-<pre><code class="language-dart">// ch0402_c.dart
+<p>重定向构造函数没有函数体，其它生成式构造函数的函数体是可选的。示例  <em><code>ex424</code></em> 可以改写为:</p>
+<pre><code class="language-dart">// ex42c.dart
 class Cat {
   String name;
   int age;
@@ -3138,7 +3139,7 @@ class Cat {
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="延迟初始化"><a class="header" href="#延迟初始化">延迟初始化</a></h1>
 <p><code>late</code> 关键字的本意是延迟变量的初始化。</p>
-<pre><code class="language-dart">// ch0403_1.dart
+<pre><code class="language-dart">// ex431.dart
 
 // int x;
 // Error:
@@ -3158,7 +3159,7 @@ void main() {
 <h2 id="什么时候使用-late"><a class="header" href="#什么时候使用-late">什么时候使用 <code>late</code></a></h2>
 <p>下面按应用场景对<code>late</code>的使用举例说明。</p>
 <p><em>需要使用 non-nullable 变量，但在声明时又无法初始化（比如依赖另一个实例变量/方法 ）。</em></p>
-<pre><code class="language-dart">// ch0403_2.dart
+<pre><code class="language-dart">// ex432.dart
 class A {
   int x;
   late int y = x + 1;
@@ -3174,7 +3175,7 @@ void main() {
 </code></pre>
 <p>此例中变量 <code>y</code> 由变量 <code>x</code>计算而成，用<code>late</code>修饰再方便不过了。</p>
 <p><em>变量的初始化是个费时操作，希望延迟初始化它。</em></p>
-<pre><code class="language-dart">// ch0403_3.dart
+<pre><code class="language-dart">// ex433.dart
 import 'dart:math';
 
 class RandAvg {
@@ -3202,7 +3203,7 @@ void main() {
 </code></pre>
 <p>此例中的 <code>avg</code> 是 <code>n</code> 个随机浮点数（取值0-1）的算术平均数，其计算过程由 <code>init()</code> 函数完成。</p>
 <p><em>变量仅在程序的部分地方用到，没用到的地方无需初始化。</em></p>
-<pre><code class="language-dart">// ch0403_4.dart
+<pre><code class="language-dart">// ex434.dart
 import 'dart:io';
 
 const kDebug = true;
@@ -3236,8 +3237,8 @@ void main() {
 </code></pre>
 <p>仅当 <code>kDebug</code> 取值 <code>true</code> 时， <code>Logger</code>类的<code>_debugInfo</code> 才被 <code>log</code> 方法用到， 也才被初始化（由<code>ensureDebugInfo</code>方法完成）。</p>
 <h2 id="联合使用-late-final"><a class="header" href="#联合使用-late-final">联合使用 <code>late final</code></a></h2>
-<p>示例 <em><code>ch0403_3</code></em> 中的实例变量 <code>avg</code>，在初始化之后便不再改变，这样的变量使用 <code>late final</code> 修饰更为准确，可以有效防止二次计算。</p>
-<pre><code class="language-dart">// ch0403_5.dart
+<p>示例 <em><code>ex433</code></em> 中的实例变量 <code>avg</code>，在初始化之后便不再改变，这样的变量使用 <code>late final</code> 修饰更为准确，可以有效防止二次计算。</p>
+<pre><code class="language-dart">// ex435.dart
 class RandAvg {
   int n;
   late final double avg;
@@ -3251,7 +3252,7 @@ class RandAvg {
 另外有一种特殊的方法是<a href="ch04/./dartpl0405.html">操作符</a>，将在下一节中介绍。</p>
 <h2 id="getter-与-setter-方法"><a class="header" href="#getter-与-setter-方法">Getter 与 Setter 方法</a></h2>
 <p>第2章讨论过 <a href="ch04/../ch02/dartpl0204.html#getter-%E4%B8%8E-setter">getter与 setter函数</a>，getter 与 setter 方法与之类似，只不过方法定义在类中。</p>
-<pre><code class="language-dart">// ch0401_1.dart
+<pre><code class="language-dart">// ex411.dart
 class Foo {
   Foo(this._bar);
 
@@ -3278,7 +3279,7 @@ void main() {
 <li>调用 <code>set bar</code> 这个setter方法 。</li>
 </ol>
 <p>语法上看，此例中的 <code>bar</code> 跟一个实例变量无异，实在没有必要专门定义 getter 和 setter ，即此例中<code>Foo</code>类等价于：</p>
-<pre><code class="language-dart">// ch0401_2.dart
+<pre><code class="language-dart">// ex412.dart
 class Foo {
   Foo(this.bar);
   int bar; // 1
@@ -3287,7 +3288,7 @@ class Foo {
 <p>从方法的角度看，<em>类中的公开字段（不以下划线开头）隐式地定义了对应的  getter 和 setter</em>。</p>
 <h2 id="何时使用-getter"><a class="header" href="#何时使用-getter">何时使用 getter</a></h2>
 <p>使用 getter 的一个典型场景是<em>计算型属性</em>。这里的属性（property）即拥有getter的实例变量。</p>
-<pre><code class="language-dart">// ch0401_3.dart
+<pre><code class="language-dart">// ex413.dart
 class Foo {
   Foo(this.bar);
 
@@ -3306,7 +3307,7 @@ void main() {
 </code></pre>
 <p>此例中的 <code>bar2</code> 由   <code>bar</code> 计算而成，像数学函数里的因变量。</p>
 <p>下面来看一下如何使用 getter 定义<em>只读属性</em>。试想有一个代办任务类（<code>Task</code>），它的当前状态（<code>status</code>），只允许在 <code>Task</code> 内部修改，但允许类的外部代码访问，也就是说 <code>status</code> 对外是只读的。</p>
-<pre><code class="language-dart">// ch0404_4.dart
+<pre><code class="language-dart">// ex444.dart
 class Task {
   Task(this._status) : assert(_status &gt;= 0);
   int _status;
@@ -3316,7 +3317,7 @@ class Task {
 </code></pre>
 <h2 id="何时使用-setter"><a class="header" href="#何时使用-setter">何时使用 setter</a></h2>
 <p>代码总是在一次次迭代（<a href="https://agilealliance.org/glossary/iteration/">Iteration</a>，敏捷开发术语，指一个小的开发周期，比如2周）中完善。为方面用户使用<code>Task</code>类，又同时让其 <code>_status</code> 始终得到良好的维护，下面为 <code>_status</code> 添加一个setter。</p>
-<pre><code class="language-dart">// ch0404_5.dart
+<pre><code class="language-dart">// ex445.dart
 class Task {
   // ... (omitted for brevity)
 
@@ -3328,7 +3329,7 @@ class Task {
 }
 </code></pre>
 <p>此例中的 <code> set status</code> 在 修改<code>_status</code> 前进行了校验，这便是<em>有条件地更新</em>。还可以在setter中添加一些附加操作，例如打印日志。完整的示例如下:</p>
-<pre><code class="language-dart">// ch0404_6.dart
+<pre><code class="language-dart">// ex446.dart
 class Task {
   Task(this._status) : assert(_status &gt;= 0);
   int _status;
@@ -3350,7 +3351,7 @@ void main() {
 }
 </code></pre>
 <p>有时两个或多个实例变量之间有一定的约束关系。比如指定一个长方形的周长，那么长+宽的值便是固定的（等于半周长）。</p>
-<pre><code class="language-dart">// ch0404_7.dart
+<pre><code class="language-dart">// ex447.dart
 class Rect {
   Rect(this.perimeter, this.width);
 
@@ -3378,7 +3379,7 @@ void main() {
 <p>此例中<code>Rect</code>类的 <code>height</code>由 <code>perimeter</code> 和 <code>width</code> 计算而成，通过它的setter修改其值，实际上是在修改<code>width</code>的值 ，之所以为<code>height</code>定义setter仅仅是为了<em>计算上或概念理解上的方便</em>。</p>
 <h2 id="抽象方法"><a class="header" href="#抽象方法">抽象方法</a></h2>
 <p>抽象类可以拥有抽象方法。没有方法体（也就是没有具体的实现）的方法，称为抽象方法。 使用 <code>abstract</code> 关键字定义抽象类，例如：</p>
-<pre><code class="language-dart">// ch0404_8.dart
+<pre><code class="language-dart">// ex448.dart
 abstract class Mammal {
    void breathe();
 }
@@ -3401,7 +3402,7 @@ abstract class Mammal {
 <p>但有些运算符，例如 <code>!=</code>，不在上述列表中，这些运算符不是实例方法，它们的行为是 Dart 内置的。</p>
 <h2 id="示例1分数"><a class="header" href="#示例1分数">示例1：分数</a></h2>
 <p>下面以分数（Fraction）为例，来看看如何在类中定义操作符。</p>
-<pre><code class="language-dart">// ch0405_1.dart
+<pre><code class="language-dart">// ex451.dart
 int gcd(int a, int b) { // 1
   while (b != 0) {
     (a, b) = (b, a % b);
@@ -3484,7 +3485,7 @@ abstract final class String implements Comparable&lt;String&gt;, Pattern {
 }
 </code></pre>
 <h2 id="练习-2"><a class="header" href="#练习-2">练习</a></h2>
-<p>请完善示例 <em><code>ch0405_1</code></em>：</p>
+<p>请完善示例 <em><code>ex451</code></em>：</p>
 <ol>
 <li>让 <code>Fraction</code> 支持分子或分母是负数;</li>
 <li>为 <code>Fraction</code> 添加乘（<code>*</code>）、除（<code>/</code>）操作符;</li>
@@ -3496,7 +3497,7 @@ abstract final class String implements Comparable&lt;String&gt;, Pattern {
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="callable-类"><a class="header" href="#callable-类">callable 类</a></h1>
 <p>Dart的callable类的实例， 可以像函数一样被调用。听起来有点神秘，但一个示例即可揭开它的面纱。</p>
-<pre><code class="language-dart">// ch0406_1.dart
+<pre><code class="language-dart">// ex461.dart
 class Greeter {
   String call(String name) =&gt; 'Hello, $name!'; // 1
 }
@@ -3514,7 +3515,7 @@ void main() {
 </ol>
 <p><code>Greeter</code> 定义了一个名为 <code>call</code> 实例方法，像这样的类即 callable 类，其实例为 callable 对象。换句话说， <code>call</code> 实例方法让一个类变得 callable。</p>
 <p>除了<code>call()</code>实例方法外，callable类当然还能有其它的方法和字段。</p>
-<pre><code class="language-dart">// ch0406_2.dart
+<pre><code class="language-dart">// ex462.dart
 class Greeter {
  String call(String name) =&gt; 'Hello, $name!'; // 1
 
@@ -3530,7 +3531,7 @@ void main() {
 <p>接下来看看callable类的应用场景。</p>
 <h2 id="有状态的函数"><a class="header" href="#有状态的函数">有状态的函数</a></h2>
 <p>设想有一个函数，需要在多次调用之间维护其内部状态。比起使用全局变量或复杂的闭包，callable类显得更加简洁。</p>
-<pre><code class="language-dart">// ch0406_3.dart
+<pre><code class="language-dart">// ex463.dart
 class Counter {
   int _count = 0; // 1
   int call() =&gt; ++_count; // 2
@@ -3552,7 +3553,7 @@ void main() {
 </ol>
 <h2 id="有状态的回调"><a class="header" href="#有状态的回调">有状态的回调</a></h2>
 <p>事件处理函数或回调函数，有时需要管理与事件相关的状态，这是calllable类的另一个用武之地。</p>
-<pre><code class="language-dart">// ch0406_4.dart
+<pre><code class="language-dart">// ex464.dart
 class Button {
   Function()? onClick; // 1
   void click() =&gt; onClick?.call(); // 2
@@ -3601,7 +3602,7 @@ void main() {
   }
 
 </pre>
-<pre><code class="language-dart">// ch0406_5.dart
+<pre><code class="language-dart">// ex465.dart
 abstract interface class DiscountStrategy {
   double call(double originalPrice); // 1
 }
@@ -3658,7 +3659,7 @@ void main() {
 <p>枚举（Enum）是一种用于表示固定数量的常量值的特殊类（class），在第1章<a href="ch04/../ch01/dartpl0104.html">数据类型</a>一节中已经简单介绍过，文本将更详细地讨论它。</p>
 <h2 id="简单枚举"><a class="header" href="#简单枚举">简单枚举</a></h2>
 <p>使用关键字<code>enum</code>声明一个简单枚举如下：</p>
-<pre><code class="language-dart">// ch0104_d.dart
+<pre><code class="language-dart">// ex14d.dart
 enum Color { red, green, blue }
 
 void main() {
@@ -3670,7 +3671,7 @@ void main() {
 <p>每个枚举值都有个与之关联的数字，称之为index，该数字从0开始。此例中 <code>red</code>, <code>green</code>, <code>blue</code> 的 <code>index</code> 分别为0、1、2，可见<code>index</code>是按枚举值的声明顺序依次分配的。</p>
 <h2 id="详尽性检查-1"><a class="header" href="#详尽性检查-1">详尽性检查</a></h2>
 <p>当枚举值用在switch语句或表达式时，Dart编译器将进行<em>详尽性检查（完备性检查）</em>，迫使程序员处理所有的枚举值。</p>
-<pre><code class="language-dart">// ch0407_1.dart
+<pre><code class="language-dart">// ex471.dart
 enum Color { red, green, blue }
 
 String example(Color color) =&gt; switch (color) {
@@ -3684,7 +3685,7 @@ void main() {
 }
 </code></pre>
 <p>下面这段代码无法通过编译，因为 <code>Color.blue</code> 没有得到处理。</p>
-<pre><code class="language-dart">// ch0407_2.dart
+<pre><code class="language-dart">// ex472.dart
 enum Color { red, green, blue }
 
 String example(Color color) =&gt; switch (color) {
@@ -3693,7 +3694,7 @@ String example(Color color) =&gt; switch (color) {
 };
 </code></pre>
 <p>可使用 wildcard （即通配符 <code>_</code>）匹配剩余的枚举值。</p>
-<pre><code class="language-dart">// ch0407_3.dart
+<pre><code class="language-dart">// ex473.dart
 enum Color { red, green, blue, orange, pink }
 
 String example(Color color) =&gt; switch (color) {
@@ -3708,7 +3709,7 @@ void main() {
 </code></pre>
 <h2 id="增强型枚举"><a class="header" href="#增强型枚举">增强型枚举</a></h2>
 <p>枚举是一种特殊的类，它可以有自己的字段、方法和常量构造器，这便是增强型枚举的概念（自Dart  2.17开始引入）。</p>
-<pre><code class="language-dart">// ch0407_4.dart
+<pre><code class="language-dart">// ex474.dart
 enum Status {
   // 1
   continue_(100, message: 'Continue'),
@@ -3790,8 +3791,8 @@ void main() {
 <h2 id="interface"><a class="header" href="#interface">interface</a></h2>
 <h2 id="base"><a class="header" href="#base">base</a></h2>
 <p>每个类（<code>class</code>）都隐式地定义了一个接口（<code>interface</code>），因而可以实现（<code>implements</code>）一个类（即实现类中的方法）。<code>base</code> 类却是为继承而生，在定义它的文件之外，只能被继承，而不能被实现。</p>
-<p><em><code>ch0401_2.dart</code></em>:</p>
-<pre><code class="language-dart">// ch0401_2.dart
+<p><em><code>ex412.dart</code></em>:</p>
+<pre><code class="language-dart">// ex412.dart
 base class Vehicle { // 1
   void moveForward(int meters) {
     // ...
@@ -3809,9 +3810,9 @@ base class Motorcycle extends Vehicle { // 3
  
 }
 </code></pre>
-<p><em><code>ch0401_2a.dart</code></em>:</p>
-<pre><code class="language-dart">// ch0401_2a.dart
-import 'ch0401_2.dart';
+<p><em><code>ex412a.dart</code></em>:</p>
+<pre><code class="language-dart">// ex412a.dart
+import 'ex412.dart';
 
 base class Truck extends Vehicle { // 4
   int passengers = 4;
@@ -3833,11 +3834,11 @@ base class Train implements Vehicle { // 5
 }
 </code></pre>
 <ol>
-<li><em><code>ch0401_2.dart</code></em>  文件中的<code>Vehicle</code>是一个 <code>base</code> 类，它有一个实例方法 <code>moveForward(int)</code>;</li>
+<li><em><code>ex412.dart</code></em>  文件中的<code>Vehicle</code>是一个 <code>base</code> 类，它有一个实例方法 <code>moveForward(int)</code>;</li>
 <li>同一文件中的 <code>Car</code> 实现了 <code>Vehicle</code>;</li>
 <li>同一文件中的 <code>Motorcycle</code> 继承（<code>extends</code>）了 <code>Vehicle</code>;</li>
-<li>另一文件（ <em><code>ch0401_2a.dart</code></em> ）中的 <code>Truck</code> 继承了  <code>Vehicle</code>;</li>
-<li><em><code>ch0401_2a.dart</code></em> 中的 <code>Train</code> 实现 <code>Vehicle</code>，引发编译错误。</li>
+<li>另一文件（ <em><code>ex412a.dart</code></em> ）中的 <code>Truck</code> 继承了  <code>Vehicle</code>;</li>
+<li><em><code>ex412a.dart</code></em> 中的 <code>Train</code> 实现 <code>Vehicle</code>，引发编译错误。</li>
 </ol>
 <p><code>base</code> 类有如下特点：</p>
 <ul>

@@ -172,7 +172,7 @@
 <p>Dart的函数或方法不会声明它将抛出哪些异常; Dart也不强制要求捕获异常。如果异常发生了却不被处理，抛出异常的 isolate 将被挂起，且通常会被终止。第7章将详细讨论 isolate，这里将其视为一种内存独立的线程（如 <code>main</code> 函数所在的 main isolate）即可。</p>
 <h2 id="抛出异常-trhow"><a class="header" href="#抛出异常-trhow">抛出异常 （<code>trhow</code>）</a></h2>
 <p>Dart程序可以抛出（<code>trhow</code>）什么？答案是除了<code>null</code>外的任何东西。</p>
-<pre><code class="language-dart">// ch0208_1.dart
+<pre><code class="language-dart">// ex281.dart
 void main() {
   throw 'something bad happened';
   // Unhandled exception:
@@ -194,7 +194,7 @@ void main() {
 <li><code>TimeoutException</code></li>
 </ul>
 <p>我们也可以创建自己的异常类，并实现（<code>implements</code>） <code>Exception</code> 或 <code>Error</code>。</p>
-<pre><code class="language-dart">// ch0208_2.dart
+<pre><code class="language-dart">// ex282.dart
 void main() {
   throw FooException();
 }
@@ -213,7 +213,7 @@ class FooException implements Exception {}
 <h2 id="捕获异常"><a class="header" href="#捕获异常">捕获异常</a></h2>
 <h3 id="捕获指定类型的异常"><a class="header" href="#捕获指定类型的异常">捕获指定类型的异常</a></h3>
 <p>使用 <code>try...on...catch</code> 语法捕获异常。将可能抛出异常的代码放在<code>try{}</code>代码块中，然后使用<code>on</code>关键字捕获特定类型的异常。</p>
-<pre><code class="language-dart">// ch0208_3.dart
+<pre><code class="language-dart">// ex283.dart
 import 'dart:io';
 
 void main() {
@@ -228,7 +228,7 @@ void main() {
 <p>此例试图将字符串<code>"dart"</code>转换为一个整数，引发了 <code>FormatException</code>，随后被捕获。</p>
 <h3 id="捕获异常信息"><a class="header" href="#捕获异常信息">捕获异常信息</a></h3>
 <p>使用<code>catch</code>关键字捕获异常信息（即异常类型的一个实例）。</p>
-<pre><code class="language-dart">// ch0208_4.dart
+<pre><code class="language-dart">// ex284.dart
 void main() {
   try {
     int.parse('dart');
@@ -238,7 +238,7 @@ void main() {
 }
 </code></pre>
 <p><code>catch()</code> 还有另一个可选参数，表示异常堆栈。</p>
-<pre><code class="language-dart">// ch0208_5.dart
+<pre><code class="language-dart">// ex285.dart
 void main() {
   try {
     int.parse('dart');
@@ -250,7 +250,7 @@ void main() {
 </code></pre>
 <h3 id="重新抛出异常"><a class="header" href="#重新抛出异常">重新抛出异常</a></h3>
 <p>使用 <code>rethrow</code>关键字重新抛出异常，且保留原来的堆栈信息。</p>
-<pre><code class="language-dart">// ch0208_6.dart
+<pre><code class="language-dart">// ex286.dart
 void main() {
   try {
     parseInt('dart');
@@ -274,7 +274,7 @@ int parseInt(String str) {
 </ol>
 <h3 id="捕获多种类型的异常"><a class="header" href="#捕获多种类型的异常">捕获多种类型的异常</a></h3>
 <p>使用多个<code>catch</code>子句来分别处理不同类型的异常。</p>
-<pre><code class="language-dart">//ch0206_7.dart
+<pre><code class="language-dart">//ex267.dart
 void main() {
   print(safeDivide('8', '2'));
   print(safeDivide('8', '0'));
@@ -295,7 +295,7 @@ void main() {
 </code></pre>
 <h2 id="finally"><a class="header" href="#finally"><code>finally</code></a></h2>
 <p>无论<code>try</code> 代码块内是否发生了异常， <code>finally</code>子句都将被执行。<code>finally</code>子句通常用来关闭资源（如打开的系统文件）。</p>
-<pre><code class="language-dart">// ch0208_8.dart
+<pre><code class="language-dart">// ex288.dart
 void main() {
   try {
     print(2 ~/ 0);

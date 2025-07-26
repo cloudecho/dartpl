@@ -177,7 +177,7 @@
 <p>分支语句包括 <code>if</code> 和 <code>switch</code>语句。</p>
 <h2 id="if"><a class="header" href="#if"><code>if</code></a></h2>
 <p>下例中，如果 <code>isSunny</code>的值为<code>true</code>，就执行打印，否则什么也不做。</p>
-<pre><code class="language-dart">// ch0201_1.dart
+<pre><code class="language-dart">// ex211.dart
 import 'dart:math';
 
 void main() {
@@ -218,7 +218,7 @@ void main() {
 <p>从语法上讲，上例中最后的<code>else</code>分支也是可选的。</p>
 <h3 id="if-case"><a class="header" href="#if-case">if-case</a></h3>
 <p>从 Dart 3.0 开始， <code>if</code> 语句支持 <code>case</code> 子句，<code>case</code>后面接一个模式（pattern，第3章内容）。</p>
-<pre><code class="language-dart">// ch0201_2.dart
+<pre><code class="language-dart">// ex212.dart
 void main() {
   var dat = [1, 2]; 
   if (dat case [_, _]) { // 1
@@ -250,7 +250,7 @@ void main() {
     D --&gt; Z
     E --&gt; Z
 </pre>
-<pre><code class="language-dart">// ch0201_3.dart
+<pre><code class="language-dart">// ex213.dart
 void main() {
   var status = 'done';
   switch (status) {
@@ -268,7 +268,7 @@ void main() {
 <p>如果其他case都不匹配，则执行default case的代码，也就是 <code>default</code>  或 <code>case _</code>  标记的代码 。default case 要放在最后。</p>
 <h3 id="fallthrough-与-标签lablel"><a class="header" href="#fallthrough-与-标签lablel">fallthrough 与 标签（lablel）</a></h3>
 <p>空case（empty case）是指不做任何处理的case。默认情况下空case会fall through到下一个case，使得cases可以共享代码块。如果想让空case fall through到其他的case（非下一个case），使用标签（label）和 <code>continue</code>来实现。</p>
-<pre><code class="language-dart">// ch0201_4.dart
+<pre><code class="language-dart">// ex214.dart
 void main() {
   var status = 'canceled';
   switch (status) {
@@ -304,7 +304,7 @@ void main() {
 </code></pre>
 <h3 id="switch-表达式"><a class="header" href="#switch-表达式"><code>switch</code> 表达式</a></h3>
 <p><code>switch</code>表达式将返回一个值，这个值来自于匹配的case的表达式。先来看一个普通的switch语句：</p>
-<pre><code class="language-dart">// ch0201_5.dart
+<pre><code class="language-dart">// ex215.dart
 void main() {
   var x = 1.0, y = 2.0;
   var op = '+';
@@ -327,7 +327,7 @@ void main() {
 }
 </code></pre>
 <p>用<code>switch</code>表达式改写：</p>
-<pre><code class="language-dart">// ch0201_6.dart
+<pre><code class="language-dart">// ex216.dart
 void main() {
   var x = 1.0, y = 2.0;
   var op = '+';
@@ -353,7 +353,7 @@ void main() {
 </ol>
 <h3 id="详尽性检查"><a class="header" href="#详尽性检查">详尽性检查</a></h3>
 <p>详尽性检查也叫完备性检查。下面这段代码将引起编译错误：</p>
-<pre><code class="language-dart">//ch0201_7.dart
+<pre><code class="language-dart">//ex217.dart
 void main() {
   bool? win;
   var score = switch (win) {
@@ -368,7 +368,7 @@ void main() {
 </code></pre>
 <p>对于一个 <code>boo?</code>类型的变量，它的值是穷举的，即 <code>true</code>、<code>false</code>和 <code>null</code>，Dart编译器将对这类可穷举类型的变量进行详尽性检查。上例的编译错误告诉我们缺少了对 <code>null</code> case 的处理。常见的可穷举类型还有<code>bool</code>、枚举（Enum）和<a href="https://dart.dev/language/class-modifiers#sealed">密封类（sealed class）</a>。</p>
 <p>下例演示了针对枚举的详尽性检查。</p>
-<pre><code class="language-dart">// ch0201_8.dart
+<pre><code class="language-dart">// ex218.dart
 void main() {
   var x = 1.0, y = 2.0;
   var op = Op.plus;
@@ -377,7 +377,7 @@ void main() {
     // Op.minus =&gt; x - y,
   };
   // Error: The type 'Op' is not exhaustively matched by the switch cases since it doesn't match 'Op.minus'.
-  //  - 'Op' is from 'bin/ch02/ch0201_8.dart'.
+  //  - 'Op' is from 'bin/ch02/ex218.dart'.
   // Try adding a wildcard pattern or cases that match 'Op.minus'.
   //   var r = switch (op) {
   //                   ^
@@ -386,7 +386,7 @@ void main() {
 enum Op { plus, minus }
 </code></pre>
 <p>下例演示了针对密封类的详尽性检查。一个<a href="https://dart.dev/language/class-modifiers#sealed">密封类</a>的子类是有限个的，<code>switch</code>语句或表达式将对其子类进行详尽性检查。</p>
-<pre><code class="language-dart">// ch0201_9.dart
+<pre><code class="language-dart">// ex219.dart
 void main() {
   Op op = Plus(1.0, 2.0);
   var r = switch (op) {
@@ -394,7 +394,7 @@ void main() {
     // Minus(:double x, :double y) =&gt; x - y,
   };
   // Error: The type 'Op' is not exhaustively matched by the switch cases since it doesn't match 'Minus()'.
-  //  - 'Op' is from 'bin/ch02/ch0201_9.dart'.
+  //  - 'Op' is from 'bin/ch02/ex219.dart'.
   // Try adding a wildcard pattern or cases that match 'Minus()'.
   //   var r = switch (op) {
   //                   ^
@@ -418,7 +418,7 @@ class Minus extends Op {
 <p>第4-5章将详细讨论类的相关概念。</p>
 <h2 id="守护子句"><a class="header" href="#守护子句">守护子句</a></h2>
 <p>守护子句（guard clause）是可选的，它出现在case子句之后，使用关键字 <code>when</code>。守护子句可以出现在 if-case 以及 <code>switch</code> 语句和表达式中。</p>
-<pre><code class="language-dart">// ch0201_a.dart
+<pre><code class="language-dart">// ex21a.dart
 void main() {
   var year = 2025;
   bool showAges = true;

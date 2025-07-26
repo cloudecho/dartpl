@@ -180,8 +180,8 @@
 <h2 id="interface"><a class="header" href="#interface">interface</a></h2>
 <h2 id="base"><a class="header" href="#base">base</a></h2>
 <p>每个类（<code>class</code>）都隐式地定义了一个接口（<code>interface</code>），因而可以实现（<code>implements</code>）一个类（即实现类中的方法）。<code>base</code> 类却是为继承而生，在定义它的文件之外，只能被继承，而不能被实现。</p>
-<p><em><code>ch0401_2.dart</code></em>:</p>
-<pre><code class="language-dart">// ch0401_2.dart
+<p><em><code>ex412.dart</code></em>:</p>
+<pre><code class="language-dart">// ex412.dart
 base class Vehicle { // 1
   void moveForward(int meters) {
     // ...
@@ -199,9 +199,9 @@ base class Motorcycle extends Vehicle { // 3
  
 }
 </code></pre>
-<p><em><code>ch0401_2a.dart</code></em>:</p>
-<pre><code class="language-dart">// ch0401_2a.dart
-import 'ch0401_2.dart';
+<p><em><code>ex412a.dart</code></em>:</p>
+<pre><code class="language-dart">// ex412a.dart
+import 'ex412.dart';
 
 base class Truck extends Vehicle { // 4
   int passengers = 4;
@@ -223,11 +223,11 @@ base class Train implements Vehicle { // 5
 }
 </code></pre>
 <ol>
-<li><em><code>ch0401_2.dart</code></em>  文件中的<code>Vehicle</code>是一个 <code>base</code> 类，它有一个实例方法 <code>moveForward(int)</code>;</li>
+<li><em><code>ex412.dart</code></em>  文件中的<code>Vehicle</code>是一个 <code>base</code> 类，它有一个实例方法 <code>moveForward(int)</code>;</li>
 <li>同一文件中的 <code>Car</code> 实现了 <code>Vehicle</code>;</li>
 <li>同一文件中的 <code>Motorcycle</code> 继承（<code>extends</code>）了 <code>Vehicle</code>;</li>
-<li>另一文件（ <em><code>ch0401_2a.dart</code></em> ）中的 <code>Truck</code> 继承了  <code>Vehicle</code>;</li>
-<li><em><code>ch0401_2a.dart</code></em> 中的 <code>Train</code> 实现 <code>Vehicle</code>，引发编译错误。</li>
+<li>另一文件（ <em><code>ex412a.dart</code></em> ）中的 <code>Truck</code> 继承了  <code>Vehicle</code>;</li>
+<li><em><code>ex412a.dart</code></em> 中的 <code>Train</code> 实现 <code>Vehicle</code>，引发编译错误。</li>
 </ol>
 <p><code>base</code> 类有如下特点：</p>
 <ul>
