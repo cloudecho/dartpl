@@ -33,9 +33,9 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
@@ -43,11 +43,10 @@
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root and default themes to javascript -->
+        <!-- Provide site root to javascript -->
         <script>
-            const path_to_root = "../";
-            const default_light_theme = "navy";
-            const default_dark_theme = "navy";
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -57,8 +56,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                let theme = localStorage.getItem('mdbook-theme');
-                let sidebar = localStorage.getItem('mdbook-sidebar');
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -72,8 +71,7 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
-            let theme;
+            var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -86,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            let sidebar = null;
-            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -123,7 +121,6 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -168,6 +165,149 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="元数据"><a class="header" href="#元数据">元数据</a></h1>
+<p>本章节将讨论Dart的<a href="#%E6%B3%A8%E8%A7%A3">元数据注解</a>及其<a href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3">自定义</a>，以及<a href="#%E4%BD%BF%E7%94%A8-mirrors">使用 mirors 包</a>获取元数据等信息。</p>
+<h2 id="注解"><a class="header" href="#注解">注解</a></h2>
+<p>元数据（metadata）用于给代码添加额外的信息，元数据注解（annotation，以下简称注解）以 <code>@</code> 字符开头，后接一个常量值。我们在之前的代码中已多次见过 <code>@override</code>，它表示实例成员的重写，通常是一个类重写/实现了某个方法。</p>
+<pre><code class="language-dart">// ex412.dart
+base class Vehicle { // 1
+  void moveForward(int meters) {
+    // ...
+  }
+}
+
+base class Car implements Vehicle { // 2
+  @override
+  void moveForward(int meters) {
+    // ...
+  }
+}
+</code></pre>
+<p>以下4个注解对所有的Dart代码可用：</p>
+<ul>
+<li><code>@override</code></li>
+<li><code>@Deprecated</code></li>
+<li><code>@deprecated</code></li>
+<li><code>@pragma</code></li>
+</ul>
+<p><code>@Deprecated</code> 标记某个功能已过时。</p>
+<pre><code class="language-dart">// ex481.dart
+class Motorcycle {
+  /// Use [start] instead
+  @Deprecated('Use start instead')
+  void ignite() {
+    start();
+  }
+
+  /// Start the engine
+  void start() {
+    // ...
+  }
+}
+</code></pre>
+<p><code>@deprecated</code> （注意首字母<code>d</code>小写），不携带附加的信息（<code>message</code>）；事实上从源码中可以看出，它的<code>message</code> 被硬编码为<code>"next release"</code>。</p>
+<pre><code class="language-dart">// dart-sdk/lib/core/annotations.dart
+const Deprecated deprecated = Deprecated("next release");
+</code></pre>
+<p><a href="https://api.dart.dev/dart-core/pragma-class.html"><code>@pragma</code></a> 用于与Dart程序协同工作的工具。</p>
+<h2 id="自定义注解"><a class="header" href="#自定义注解">自定义注解</a></h2>
+<p>可以像下面这样自定义注解。</p>
+<pre><code class="language-dart">// ex482.dart
+class Table { // 1
+  final String name;
+  final String pk;
+
+  const Table(this.name, {required this.pk}); // 2
+}
+
+@Table('tb_staff', pk: 'id') // 3
+class Staff {
+  int id;
+  String name;
+  List&lt;String&gt; skills;
+
+  Staff(this.id, {required this.name, this.skills = const []});
+}
+</code></pre>
+<ol>
+<li>这是一个普通的类 <code>Table</code>，其实例变量 <code>name</code> 表示表名，<code>pk</code>表示主键 ;</li>
+<li><code>Table</code>提供了一个常量构造器，对于注解这是必须的;</li>
+<li>使用注解 <code>@Table</code> 对 <code>Staff</code> 类进行标记。</li>
+</ol>
+<h2 id="使用-mirrors"><a class="header" href="#使用-mirrors">使用 mirrors</a></h2>
+<p>mirrors 包是Dart中的反射工具，类似Java中的<code>java.lang.reflect</code>。mirrors中的3个反射函数：</p>
+<pre><code class="language-dart">// dart-sdk/lib/mirrors/mirrors.dart
+external InstanceMirror reflect(dynamic reflectee);
+external ClassMirror reflectClass(Type key);
+external TypeMirror reflectType(Type key, [List&lt;Type&gt;? typeArguments]);
+</code></pre>
+<p><code>reflect</code> 反射一个实例，<code>reflectClass</code> 反射一个类，<code>reflectType</code> 反射一个类型。到底什么是反射（reflection）？下面通过一个示例来说明。</p>
+<pre><code class="language-dart">// ex483.dart
+import 'dart:mirrors';
+
+class _Foo {
+  const _Foo();
+}
+
+class _Bar {
+  const _Bar();
+}
+
+const foo = _Foo();
+const bar = _Bar();
+
+@foo
+@bar
+class Exam {
+  @foo
+  String? str;
+
+  @bar
+  void exam() {}
+}
+
+void main() {
+  var examMirror = reflectClass(Exam); // 1
+  for (var meta in examMirror.metadata) { // 2
+    print(meta.reflectee);
+  }
+  // Output:
+  // Instance of 'Foo'
+  // Instance of 'Bar'
+
+  for (var mem in examMirror.instanceMembers.entries) {
+    print(mem); // 3
+    print('  metadata: ${mem.value.metadata}'); // 4
+  }
+
+  // Output:
+  // MapEntry(Symbol("=="): MethodMirror on '==')
+  //   metadata: [InstanceMirror on Instance of '_Patch', InstanceMirror on Instance of 'pragma', InstanceMirror on Instance of 'pragma', InstanceMirror on Instance of 'pragma', InstanceMirror on Instance of 'pragma']
+  // MapEntry(Symbol("hashCode"): MethodMirror on 'hashCode')
+  //   metadata: [InstanceMirror on Instance of '_Patch']
+  // MapEntry(Symbol("toString"): MethodMirror on 'toString')
+  //   metadata: [InstanceMirror on Instance of '_Patch', InstanceMirror on Instance of 'pragma']
+  // MapEntry(Symbol("noSuchMethod"): MethodMirror on 'noSuchMethod')
+  //   metadata: [InstanceMirror on Instance of 'pragma', InstanceMirror on Instance of 'pragma', InstanceMirror on Instance of '_Patch', InstanceMirror on Instance of 'pragma']
+  // MapEntry(Symbol("runtimeType"): MethodMirror on 'runtimeType')
+  //   metadata: [InstanceMirror on Instance of '_Patch', InstanceMirror on Instance of 'pragma', InstanceMirror on Instance of 'pragma']
+  // MapEntry(Symbol("str"): Instance of '_SyntheticAccessor')
+  //   metadata: []
+  // MapEntry(Symbol("str="): Instance of '_SyntheticAccessor')
+  //   metadata: []
+  // MapEntry(Symbol("exam"): MethodMirror on 'exam')
+  //   metadata: [InstanceMirror on Instance of '_Bar']
+}
+</code></pre>
+<ol>
+<li>反射<code>Exam</code>类;</li>
+<li><code>Exam</code>类的元数据；</li>
+<li>获取<code>Exam</code>类的实例成员；</li>
+<li>获取<code>Exam</code>类的实例成员的元数据。</li>
+</ol>
+<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/metadata">https://dart.dev/language/metadata</a></li>
+</ul>
 
                     </main>
 

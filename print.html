@@ -34,9 +34,9 @@
         <link rel="stylesheet" href="fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="theme/custom.css">
@@ -44,11 +44,10 @@
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root and default themes to javascript -->
+        <!-- Provide site root to javascript -->
         <script>
-            const path_to_root = "";
-            const default_light_theme = "navy";
-            const default_dark_theme = "navy";
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc.js"></script>
@@ -58,8 +57,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                let theme = localStorage.getItem('mdbook-theme');
-                let sidebar = localStorage.getItem('mdbook-sidebar');
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -73,8 +72,7 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
-            let theme;
+            var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -87,8 +85,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            let sidebar = null;
-            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -124,7 +122,6 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -173,12 +170,12 @@
 Dart是Flutter应用的开发语言，它专为客户端优化，支持自动内存管理和面向对象编程。
 这里的跨平台指的是一套代码，可发布成 iOS、Android、macOS、Linux、Windows及Web应用。
 原生应用是指代码最终被编译为平台相关的机器码；对web而言，对应的是javascript+WebAssembly。</p>
-<pre class="mermaid">mindmap
+<pre><code class="language-mermaid">mindmap
   root((Dart))
     自动内存管理
     面向对象编程
     客户端优化
-</pre>
+</code></pre>
 <p>如何你初学编程，一下子听到这么多概念，也许还没开始写一行代码就已经开始糊涂了，没有关系。
 要知道，计算机编程就像英语一样，要掌握它，除了需要兴趣之外，还需要良好的思维模式以及坚持不懈的练习。
 希望你在学习本课程时，打开代码编辑器，跟着一起练习，为以后编程打下坚实的基础。在你掌握了一门编程语言之后，再去学其他编程语言就容易多了。</p>
@@ -290,7 +287,7 @@ Dart SDK version: 3.8.1 (stable) (Wed May 28 00:47:25 2025 -0700) on "linux_x64"
 
 </code></pre>
 <h2 id="配置环境变量"><a class="header" href="#配置环境变量">配置环境变量</a></h2>
-<p>在上述过程过程中， export 设置的环境变量，仅对当前terminal有效；要永久设置这些值，
+<p>在上述过程中， export 设置的环境变量，仅对当前terminal有效；要永久设置这些值，
 将这三条 export 指令添加到首选 shell 使用的 *rc 或 *profile 文件中，例如</p>
 <pre><code class="language-sh">cat &lt;&lt;EOF &gt;&gt; ~/.zshrc
 export PUB_HOSTED_URL=https://mirror.sjtu.edu.cn/dart-pub
@@ -990,7 +987,7 @@ void main() {
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="操作符"><a class="header" href="#操作符">操作符</a></h1>
 <p>计算机程序的表达式由操作符和操作数构成。如<code>1+2</code>这个表达式中，<code>+</code>是操作符，数字<code>1</code>和<code>2</code>是操作数。如果表达式中只有一个操作数，它便是一元表达式；如果有两个操作数，它便是二元表达式；类似地还有三元表达式。一元表达式中的操作符为一元操作符。</p>
-<p>Dart提供了非常丰富的操作符，且支持为类（class，第4-5章内容）定义操作符。</p>
+<p>Dart提供了非常丰富的操作符，且支持为类（class，第4-5章内容）定义<a href="ch01/../ch04/dartpl0405.html">操作符</a>。</p>
 <ul>
 <li><a href="ch01/dartpl0105.html#%E7%AE%97%E6%9C%AF%E6%93%8D%E4%BD%9C%E7%AC%A6">算术操作符</a></li>
 <li><a href="ch01/dartpl0105.html#%E5%85%B3%E7%B3%BB%E6%93%8D%E4%BD%9C%E7%AC%A6">关系操作符</a></li>
@@ -1038,7 +1035,7 @@ void main() {
 <p>关于<code>==</code> 操作符：</p>
 <ol>
 <li>如果 <code>x</code> 或 <code>y</code> 为 <code>null</code>，则只有当它们都是 <code>null</code>，<code>x==y</code> 才返回 <code>true</code>；如果只有一个为 <code>null</code>，则<code>x==y</code> 返回 <code>false</code>。</li>
-<li><code>x == y</code>本质上是调用 <code>x</code>的<code>==</code> 操作符方法（以<code>y</code>作为参数），然后返回其结果， 类似于 <code>x.equals(y)</code> 。</li>
+<li><code>x == y</code>本质上是调用 <code>x</code>的<code>==</code> <a href="ch01/../ch04/dartpl0405.html">操作符方法</a>（以<code>y</code>作为参数），然后返回其结果， 类似于 <code>x.equals(y)</code> 。</li>
 <li>极少情况下，你需要知道<code>x</code>和<code>y</code>是否引用了同一个对象，使用<code>identical(x,y)</code>。</li>
 </ol>
 <blockquote>
@@ -1080,15 +1077,15 @@ void main() {
 }
 </code></pre>
 <h2 id="位操作符"><a class="header" href="#位操作符">位操作符</a></h2>
-<p>Dart可以对数字的每一位（bit）进行操作。</p>
+<p>Dart可以对数字的每一比特位（bit）进行操作。</p>
 <div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
-<tr><td><code>&amp;</code></td><td>与（AND）</td><td><code> 1 &amp; 2</code> <span class="hljs-comment">  <em>//0</em></span></td></tr>
-<tr><td><code>|</code></td><td>或（OR）</td><td><code>1 | 2</code><span class="hljs-comment">  <em>//3</em></span></td></tr>
+<tr><td><code>&amp;</code></td><td>与（AND）</td><td><code> 1 &amp; 2</code> <span class="hljs-comment">  <em>// 0</em></span></td></tr>
+<tr><td><code>|</code></td><td>或（OR）</td><td><code>1 | 2</code><span class="hljs-comment">  <em>// 3</em></span></td></tr>
 <tr><td><code>^</code></td><td>异或（XOR）</td><td><code>2 ^ 3</code><span class="hljs-comment">  <em>//1</em></span></td></tr>
-<tr><td><code>~</code><em><code>expr</code></em></td><td>按位补码（0变为1，1变为0）</td><td><code>～1</code><span class="hljs-comment">  <em>//-2</em></span></td></tr>
-<tr><td><code>&lt;&lt;</code></td><td>左移位</td><td><code>1 &lt;&lt; 10</code><span class="hljs-comment">  <em>//1024</em></span></td></tr>
-<tr><td><code>&gt;&gt;</code></td><td>右移位</td><td><code>1024 &gt;&gt; 9</code><span class="hljs-comment">  <em>//2</em></span></td></tr>
-<tr><td><code>&gt;&gt;&gt;</code></td><td>无符号右移</td><td><code>-1 &gt;&gt;&gt; 61</code><span class="hljs-comment">  <em>//7</em></span></td></tr>
+<tr><td><code>~</code><em><code>expr</code></em></td><td>按位补码（0变为1，1变为0）</td><td><code>~1</code><span class="hljs-comment">  <em>// -2</em></span></td></tr>
+<tr><td><code>&lt;&lt;</code></td><td>左移位</td><td><code>1 &lt;&lt; 10</code><span class="hljs-comment">  <em>// 1024</em></span></td></tr>
+<tr><td><code>&gt;&gt;</code></td><td>右移位</td><td><code>1024 &gt;&gt; 9</code><span class="hljs-comment">  <em>// 2</em></span></td></tr>
+<tr><td><code>&gt;&gt;&gt;</code></td><td>无符号右移</td><td><code>-1 &gt;&gt;&gt; 61</code><span class="hljs-comment">  <em>// 7</em></span></td></tr>
 </tbody></table>
 </div>
 <h2 id="条件表达式"><a class="header" href="#条件表达式">条件表达式</a></h2>
@@ -1105,7 +1102,7 @@ void main() {
 </code></pre>
 <p>条件表达式 <code>condition  ?  expr1  :  expr2</code> ，有 <code>?</code>和<code>:</code>2个操作符，<code>?</code>之前为一个表示条件的布尔表达式<code>condition</code>；如果<code>condition</code>的值为<code>true</code>，该表达式的值就取<code>expr1</code>的值，否则取 <code>expr2</code>的值。</p>
 <h2 id="级联符号"><a class="header" href="#级联符号">级联符号</a></h2>
-<p>Dart的级联符号（<code>..</code> 和 <code>?..</code>）用于对同一个对象进行一系列操作。下面的代码片段：</p>
+<p>Dart的级联符号（<code>..</code> 和 <code>?..</code>）用于对同一个对象进行一连窜操作。下面的代码片段：</p>
 <pre><code class="language-dart">  var sb = StringBuffer();
   sb.write('Hello ');
   sb.write('Dart');
@@ -1140,6 +1137,7 @@ void main() {
 <tr><td><code>...?</code></td><td>与<code>...</code>类似，适用于nullable对象</td><td><code>....?anotherList</code></td></tr>
 </tbody></table>
 </div>
+<p>注：  <code>()</code> 也用于改变表达式的运算优先级。</p>
 <h2 id="操作符优先级"><a class="header" href="#操作符优先级">操作符优先级</a></h2>
 <p>下表中的操作符按优先级从高到低排依次列，第一行中的优先级最高，第二行次之，以此类推； 同一行里的操作符具有相同的优先级。</p>
 <div class="table-wrapper"><table><thead><tr><th>描述</th><th>操作符</th></tr></thead><tbody>
@@ -1192,7 +1190,7 @@ void main() {
 <p>文档注释以<code>///</code>开头（单行文档注释），或以<code>/**</code>开始以<code>*/</code>结束（多行文档注释）。在连续的行上使用 <code>///</code> 与多行文档注释具有相同的效果。</p>
 <pre><code class="language-dart">// ex162.dart
 
-/// A student class encapsulate student information,
+/// A student class encapsulates student information,
 /// including id, name and birthdate.
 /// 
 /// This class is immutable.
@@ -1228,11 +1226,11 @@ void main() {
   }
 }  
 </code></pre>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     B{条件}--&gt;|true| C(代码块)
     C --&gt; E([End])
     B --&gt;|false| E
-</pre>
+</code></pre>
 <p><code>if</code> 有一个可选的<code>else</code>分支。</p>
 <pre><code class="language-dart">  if (isSunny) {
     print("Let's go to the park");
@@ -1240,12 +1238,12 @@ void main() {
     print("It's not sunny");
   }
 </code></pre>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     B{条件}--&gt;|true| C(主分支)
     C --&gt; E([End])
     B --&gt;|false| D(else分支)
     D --&gt; E
-</pre>
+</code></pre>
 <p>还可以使用 <code>else if</code>，像下面这样。</p>
 <pre><code class="language-dart">  if (isSunny) {
     print("Let's go to the park");
@@ -1280,7 +1278,7 @@ void main() {
 </ol>
 <h2 id="switch"><a class="header" href="#switch"><code>switch</code></a></h2>
 <p>如果需要匹配多个case，应使用<code>switch</code> 语句，而非一个又一个的<code>else if</code>。</p>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     A{switch}--&gt;|case1| B(case1)
     A --&gt; |case2| C(case2)
     A --&gt; |case...| D(case...)
@@ -1289,7 +1287,7 @@ void main() {
     C --&gt; Z
     D --&gt; Z
     E --&gt; Z
-</pre>
+</code></pre>
 <pre><code class="language-dart">// ex213.dart
 void main() {
   var status = 'done';
@@ -1406,7 +1404,7 @@ void main() {
   //                       ^
 }
 </code></pre>
-<p>对于一个 <code>boo?</code>类型的变量，它的值是穷举的，即 <code>true</code>、<code>false</code>和 <code>null</code>，Dart编译器将对这类可穷举类型的变量进行详尽性检查。上例的编译错误告诉我们缺少了对 <code>null</code> case 的处理。常见的可穷举类型还有<code>bool</code>、枚举（Enum）和<a href="https://dart.dev/language/class-modifiers#sealed">密封类（sealed class）</a>。</p>
+<p>对于一个 <code>boo?</code>类型的变量，它的值是穷举的，即 <code>true</code>、<code>false</code>和 <code>null</code>，Dart编译器将对这类可穷举类型的变量进行详尽性检查。上例的编译错误告诉我们缺少了对 <code>null</code> case 的处理。常见的可穷举类型还有<code>bool</code>、枚举（Enum）和<a href="ch02/../ch05/dartpl0504.html#sealed">密封类（sealed class）</a>。</p>
 <p>下例演示了针对枚举的详尽性检查。</p>
 <pre><code class="language-dart">// ex218.dart
 void main() {
@@ -1425,7 +1423,7 @@ void main() {
 
 enum Op { plus, minus }
 </code></pre>
-<p>下例演示了针对密封类的详尽性检查。一个<a href="https://dart.dev/language/class-modifiers#sealed">密封类</a>的子类是有限个的，<code>switch</code>语句或表达式将对其子类进行详尽性检查。</p>
+<p>下例演示了针对密封类的详尽性检查。<a href="ch02/../ch05/dartpl0504.html#sealed">密封类</a>的子类数量是有限的，编译器将对其进行<code>switch</code>详尽性检查。</p>
 <pre><code class="language-dart">// ex219.dart
 void main() {
   Op op = Plus(1.0, 2.0);
@@ -1503,14 +1501,14 @@ void main() {
     循环体
   }
 </code></pre>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     A([初始化列表]) --&gt; B{循环条件}
     B --&gt;|true| C(循环体)
     C --&gt;|continue| D(后置操作)
     D --&gt; B
     B ----&gt;|false| E([End])
     C ----&gt;|break| E
-</pre>
+</code></pre>
 <p>后置操作即执行完循环体之后的操作。初始化列表、 循环条件、后置操作，这三部分用分号（<code>;</code>）分割，且每一部分都可以省略（但必须保留分号）。如果循环体只有一条语句，包围循环体的那对花括号（<code>{}</code>） 可以省略，但不建议这么做。</p>
 <p>下面这段代码将打印九九乘法表：</p>
 <pre><code class="language-dart">// ex222.dart
@@ -1577,20 +1575,20 @@ void main() {
 <h2 id="while-和-do-while"><a class="header" href="#while-和-do-while"><code>while</code> 和 <code>do-while</code></a></h2>
 <p><code>while</code> 循环在循环体之前检查循环条件，而<code>do-while</code>则是在循环提之后检查。</p>
 <p><strong><em>while</em></strong> 循环：</p>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     B{循环条件}--&gt;|true| C(循环体)
     C --&gt;|continue| B
     C --&gt;|break|E
     B ----&gt;|false| E([End])
-</pre>
+</code></pre>
 <p><strong><em>do-while</em></strong> 循环：</p>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     C(循环体) --&gt;|continue| B{循环条件}
     B --&gt;|true| C
     C --&gt;|break|E
     B ----&gt;|false| E([End])
 
-</pre>
+</code></pre>
 <p>下面这段代码先打印数字0到9，再打印数字10到1（递减）。</p>
 <pre><code class="language-dart">//ex127.dart
 void main() {
@@ -1655,10 +1653,10 @@ void main() {
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="函数-function"><a class="header" href="#函数-function">函数 （Function）</a></h1>
 <p>本章节将介绍函数的基本概念，位置参数、命名参数、函数类型、匿名函数等内容，将在后续章节陆续介绍。我们已经多次见过<code>main</code>函数，它是程序的入口。抽象地说，函数对输入数据（输入参数列表）进行处理，然后输出其处理结果（返回值）。</p>
-<pre class="mermaid">flowchart LR
+<pre><code class="language-mermaid">flowchart LR
    a(( )) --&gt;|输入参数| B(处理（函数体）)
    B --&gt; |返回值|c(( ))
-</pre>
+</code></pre>
 <p>先来看一个示例程序，计算平面上两点之间的欧式距离:</p>
 <p>\( \sqrt{(x_1-x_2)^2 + (y_1-y_2)^2} \)</p>
 <pre><code class="language-dart">//ex241.dart
@@ -2085,8 +2083,8 @@ int gcd2(int a, int b) {
 <div style="break-before: page; page-break-before: always;"></div><h1 id="异常处理"><a class="header" href="#异常处理">异常处理</a></h1>
 <p>Dart代码可以抛出（<code>throw</code>）和捕获（<code>catch</code>）异常（<code>Exception</code>）。异常代表了程序的某种错误，也就是一些意想不到的事情。引发异常的代码分支及其上下文，即测试中的负向路径。</p>
 <p>Dart的函数或方法不会声明它将抛出哪些异常; Dart也不强制要求捕获异常。如果异常发生了却不被处理，抛出异常的 isolate 将被挂起，且通常会被终止。第7章将详细讨论 isolate，这里将其视为一种内存独立的线程（如 <code>main</code> 函数所在的 main isolate）即可。</p>
-<h2 id="抛出异常-trhow"><a class="header" href="#抛出异常-trhow">抛出异常 （<code>trhow</code>）</a></h2>
-<p>Dart程序可以抛出（<code>trhow</code>）什么？答案是除了<code>null</code>外的任何东西。</p>
+<h2 id="抛出异常-throw"><a class="header" href="#抛出异常-throw">抛出异常 （<code>throw</code>）</a></h2>
+<p>Dart程序可以抛出（<code>throw</code>）什么？答案是除了<code>null</code>外的任何东西。</p>
 <pre><code class="language-dart">// ex281.dart
 void main() {
   throw 'something bad happened';
@@ -3584,7 +3582,7 @@ void main() {
 <h2 id="策略模式"><a class="header" href="#策略模式">策略模式</a></h2>
 <p>callable类可用来实现设计模式里的<a href="https://refactoring.guru/design-patterns/strategy">策略模式</a>。</p>
 <p>比如商场对不同等级的客户有不同的折扣。</p>
-<pre class="mermaid">classDiagram
+<pre><code class="language-mermaid">classDiagram
   ShoppingCart o--&gt; DiscountStrategy 
 
   DiscountStrategy &lt;|-- VipDiscount
@@ -3601,7 +3599,7 @@ void main() {
     + double call(double originalPrice)
   }
 
-</pre>
+</code></pre>
 <pre><code class="language-dart">// ex465.dart
 abstract interface class DiscountStrategy {
   double call(double originalPrice); // 1
@@ -3776,23 +3774,541 @@ void main() {
 <li><a href="https://dart.dev/language/enums">https://dart.dev/language/enums</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="元数据"><a class="header" href="#元数据">元数据</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="继承"><a class="header" href="#继承">继承</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="接口"><a class="header" href="#接口">接口</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="类修饰符"><a class="header" href="#类修饰符">类修饰符</a></h1>
-<p>本文中重点讨论如下类的修饰符及<a href="ch05/dartpl0503.html#%E4%BF%AE%E9%A5%B0%E7%AC%A6%E7%9A%84%E7%BB%84%E5%90%88">它们的组合</a>：</p>
+<p>本章节将讨论Dart的<a href="ch04/dartpl0408.html#%E6%B3%A8%E8%A7%A3">元数据注解</a>及其<a href="ch04/dartpl0408.html#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3">自定义</a>，以及<a href="ch04/dartpl0408.html#%E4%BD%BF%E7%94%A8-mirrors">使用 mirors 包</a>获取元数据等信息。</p>
+<h2 id="注解"><a class="header" href="#注解">注解</a></h2>
+<p>元数据（metadata）用于给代码添加额外的信息，元数据注解（annotation，以下简称注解）以 <code>@</code> 字符开头，后接一个常量值。我们在之前的代码中已多次见过 <code>@override</code>，它表示实例成员的重写，通常是一个类重写/实现了某个方法。</p>
+<pre><code class="language-dart">// ex412.dart
+base class Vehicle { // 1
+  void moveForward(int meters) {
+    // ...
+  }
+}
+
+base class Car implements Vehicle { // 2
+  @override
+  void moveForward(int meters) {
+    // ...
+  }
+}
+</code></pre>
+<p>以下4个注解对所有的Dart代码可用：</p>
 <ul>
-<li><a href="ch05/dartpl0503.html#abstract"><code>abstract</code></a></li>
-<li><a href="ch05/dartpl0503.html#interface"><code>interface</code></a></li>
-<li><a href="ch05/dartpl0503.html#base"><code>base</code></a></li>
-<li><a href="ch05/dartpl0503.html#sealed"><code>sealed</code></a></li>
-<li><a href="ch05/dartpl0503.html#final"><code>final</code></a></li>
+<li><code>@override</code></li>
+<li><code>@Deprecated</code></li>
+<li><code>@deprecated</code></li>
+<li><code>@pragma</code></li>
+</ul>
+<p><code>@Deprecated</code> 标记某个功能已过时。</p>
+<pre><code class="language-dart">// ex481.dart
+class Motorcycle {
+  /// Use [start] instead
+  @Deprecated('Use start instead')
+  void ignite() {
+    start();
+  }
+
+  /// Start the engine
+  void start() {
+    // ...
+  }
+}
+</code></pre>
+<p><code>@deprecated</code> （注意首字母<code>d</code>小写），不携带附加的信息（<code>message</code>）；事实上从源码中可以看出，它的<code>message</code> 被硬编码为<code>"next release"</code>。</p>
+<pre><code class="language-dart">// dart-sdk/lib/core/annotations.dart
+const Deprecated deprecated = Deprecated("next release");
+</code></pre>
+<p><a href="https://api.dart.dev/dart-core/pragma-class.html"><code>@pragma</code></a> 用于与Dart程序协同工作的工具。</p>
+<h2 id="自定义注解"><a class="header" href="#自定义注解">自定义注解</a></h2>
+<p>可以像下面这样自定义注解。</p>
+<pre><code class="language-dart">// ex482.dart
+class Table { // 1
+  final String name;
+  final String pk;
+
+  const Table(this.name, {required this.pk}); // 2
+}
+
+@Table('tb_staff', pk: 'id') // 3
+class Staff {
+  int id;
+  String name;
+  List&lt;String&gt; skills;
+
+  Staff(this.id, {required this.name, this.skills = const []});
+}
+</code></pre>
+<ol>
+<li>这是一个普通的类 <code>Table</code>，其实例变量 <code>name</code> 表示表名，<code>pk</code>表示主键 ;</li>
+<li><code>Table</code>提供了一个常量构造器，对于注解这是必须的;</li>
+<li>使用注解 <code>@Table</code> 对 <code>Staff</code> 类进行标记。</li>
+</ol>
+<h2 id="使用-mirrors"><a class="header" href="#使用-mirrors">使用 mirrors</a></h2>
+<p>mirrors 包是Dart中的反射工具，类似Java中的<code>java.lang.reflect</code>。mirrors中的3个反射函数：</p>
+<pre><code class="language-dart">// dart-sdk/lib/mirrors/mirrors.dart
+external InstanceMirror reflect(dynamic reflectee);
+external ClassMirror reflectClass(Type key);
+external TypeMirror reflectType(Type key, [List&lt;Type&gt;? typeArguments]);
+</code></pre>
+<p><code>reflect</code> 反射一个实例，<code>reflectClass</code> 反射一个类，<code>reflectType</code> 反射一个类型。到底什么是反射（reflection）？下面通过一个示例来说明。</p>
+<pre><code class="language-dart">// ex483.dart
+import 'dart:mirrors';
+
+class _Foo {
+  const _Foo();
+}
+
+class _Bar {
+  const _Bar();
+}
+
+const foo = _Foo();
+const bar = _Bar();
+
+@foo
+@bar
+class Exam {
+  @foo
+  String? str;
+
+  @bar
+  void exam() {}
+}
+
+void main() {
+  var examMirror = reflectClass(Exam); // 1
+  for (var meta in examMirror.metadata) { // 2
+    print(meta.reflectee);
+  }
+  // Output:
+  // Instance of 'Foo'
+  // Instance of 'Bar'
+
+  for (var mem in examMirror.instanceMembers.entries) {
+    print(mem); // 3
+    print('  metadata: ${mem.value.metadata}'); // 4
+  }
+
+  // Output:
+  // MapEntry(Symbol("=="): MethodMirror on '==')
+  //   metadata: [InstanceMirror on Instance of '_Patch', InstanceMirror on Instance of 'pragma', InstanceMirror on Instance of 'pragma', InstanceMirror on Instance of 'pragma', InstanceMirror on Instance of 'pragma']
+  // MapEntry(Symbol("hashCode"): MethodMirror on 'hashCode')
+  //   metadata: [InstanceMirror on Instance of '_Patch']
+  // MapEntry(Symbol("toString"): MethodMirror on 'toString')
+  //   metadata: [InstanceMirror on Instance of '_Patch', InstanceMirror on Instance of 'pragma']
+  // MapEntry(Symbol("noSuchMethod"): MethodMirror on 'noSuchMethod')
+  //   metadata: [InstanceMirror on Instance of 'pragma', InstanceMirror on Instance of 'pragma', InstanceMirror on Instance of '_Patch', InstanceMirror on Instance of 'pragma']
+  // MapEntry(Symbol("runtimeType"): MethodMirror on 'runtimeType')
+  //   metadata: [InstanceMirror on Instance of '_Patch', InstanceMirror on Instance of 'pragma', InstanceMirror on Instance of 'pragma']
+  // MapEntry(Symbol("str"): Instance of '_SyntheticAccessor')
+  //   metadata: []
+  // MapEntry(Symbol("str="): Instance of '_SyntheticAccessor')
+  //   metadata: []
+  // MapEntry(Symbol("exam"): MethodMirror on 'exam')
+  //   metadata: [InstanceMirror on Instance of '_Bar']
+}
+</code></pre>
+<ol>
+<li>反射<code>Exam</code>类;</li>
+<li><code>Exam</code>类的元数据；</li>
+<li>获取<code>Exam</code>类的实例成员；</li>
+<li>获取<code>Exam</code>类的实例成员的元数据。</li>
+</ol>
+<h2 id="参考资料-15"><a class="header" href="#参考资料-15">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/metadata">https://dart.dev/language/metadata</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="继承"><a class="header" href="#继承">继承</a></h1>
+<p>本章节重点介绍类继承的基本概念，包括<a href="ch05/dartpl0501.html#%E5%A3%B0%E6%98%8E%E4%B8%80%E4%B8%AA%E5%AD%90%E7%B1%BB">子类的声明</a>、<a href="ch05/dartpl0501.html#%E5%8D%95%E7%BB%A7%E6%89%BF">单继承</a>、<a href="ch05/dartpl0501.html#%E6%96%B9%E6%B3%95%E9%87%8D%E5%86%99">方法重写</a>、<a href="ch05/dartpl0501.html#nosuchmethod"><code>noSuchMethod()</code></a>等。</p>
+<h2 id="声明一个子类"><a class="header" href="#声明一个子类">声明一个子类</a></h2>
+<p>子类继承父类，意味着子类继承了父类的实例成员，包括实例字段和实例方法。使用<code>extend</code>关键字创建一个子类。</p>
+<pre><code class="language-dart">// ex511.dart
+class Mammal {
+  String name; // 1
+
+  Mammal(this.name); // 2
+
+  void play() =&gt; print('$name is playing'); // 3
+
+  void sleep() =&gt; print('$name is sleeping'); // 3a
+}
+
+// 4
+class Dolphin extends Mammal {
+  Dolphin(super.name); // 5
+}
+
+void main() {
+  var dolphin = Dolphin('Dolphin'); // 6
+  print(dolphin.name); // 7 Output: Dolphin
+  dolphin.play(); // 7a Output: Dolphin is playing
+  dolphin.sleep(); // 7b Output: Dolphin is sleeping
+}
+</code></pre>
+<ol>
+<li><code>Mammal</code> 类有一个实例变量 <code>name</code> ；</li>
+<li>这是 <code>Mammal</code> 类的构造函数；</li>
+<li><code>Mammal</code> 类有2个实例方法，<code>play</code> 和 <code>sleep</code>；</li>
+<li><code>Dolphin</code> 继承了 <code>Mammal</code> 类；</li>
+<li><code>Dolphin</code> 类的构造函数，使用 <code>super</code> 关键字引用父类；</li>
+<li>实例化 Dolphin 类；</li>
+<li><code>Dolphin</code> 类从 <code>Mammal</code> 类继承了实例成员，包括1个实例变量和2个实例方法。</li>
+</ol>
+<p>除了 <code>Null</code> 之外，Dart中的每个类都隐式地继承了 <a href="https://api.flutter.dev/flutter/dart-core/Object-class.html"><code>Object</code></a> 类。此例中的 <code>Mammal</code> 类即：</p>
+<pre><code class="language-dart">class Mammal extends Object {
+  // ... (omitted for brevity)
+}
+</code></pre>
+<p>但这里的 <code>extends Object</code> 完全没必要写出来。</p>
+<h2 id="单继承"><a class="header" href="#单继承">单继承</a></h2>
+<p>Dart只允许单继承，不支持多继承，即一个类只能继承一个父类。</p>
+<pre><code class="language-dart">// ex512.dart
+import 'ex511.dart';
+
+// Error: Each class definition can have at most one extends clause.
+// Try choosing one superclass and define your class to implement (or mix in) the others.
+// class CuteDolphin extends Dolphin, Mammal  {
+//                                  ^
+class CuteDolphin extends Dolphin, Mammal  {
+  CuteDolphin(super.name);
+}
+</code></pre>
+<p>这里 <code>CuteDolphin</code> 试图同时继承 <code>Dolphin</code> 与 <code>Mammal</code> 类，导致编译失败。 解决方法即让 <code>CuteDolphin</code> 只继承 <code>Dolphin</code> 类。</p>
+<pre><code class="language-dart">class CuteDolphin extends Dolphin {
+  CuteDolphin(super.name);
+}
+</code></pre>
+<h2 id="再谈构造函数"><a class="header" href="#再谈构造函数">再谈构造函数</a></h2>
+<p>每个类的生成式构造函数被执行时，一定会或显式或隐式地先执行父类的生成式构造函数，即构造函数的第一行代码是调用父构造函数。</p>
+<pre><code class="language-dart">// ex513.dart
+import 'ex511.dart';
+
+// Error: The implicitly called unnamed constructor from 'Mammal' has required parameters.
+// Try adding an explicit super initializer with the required arguments.
+//   Ape();
+//   ^
+class Ape extends Mammal {
+  Ape();
+}
+
+// Error: The superclass, 'Mammal', has no unnamed constructor that takes no arguments.
+// class Elephant extends Mammal {}
+//       ^
+class Elephant extends Mammal {}
+</code></pre>
+<p><code>Ape</code> 类的构造函数 <code>Ape()</code>，隐式地调用父类的无参构造函数 <code>Mammal()</code> 引起编译错误，编译器提示<code>Mammal</code>类的unnamed构造函数需要required参数。</p>
+<p><code>Elephant</code> 类默认的构造函数<code>Elephant()</code>，隐式地调用父类的无参构造函数 <code>Mammal()</code> ，编译器提示这样的父构造函数不存在。</p>
+<h2 id="方法重写"><a class="header" href="#方法重写">方法重写</a></h2>
+<p>子类可以重写（override）实例方法（包括运算符）、getter 和 setter。使用 <code>@override</code> 注解来表明重写意图。</p>
+<pre><code class="language-dart">// ex514.dart
+import 'ex511.dart';
+
+class Badger extends Mammal {
+  Badger(super.name);
+
+  @override
+  void play() =&gt; print('$name Badger is playing');
+}
+
+void main() {
+  var bader = Badger('B');
+  bader.play(); // Output: B Badger is playing
+}
+</code></pre>
+<p>重写方法（A）的声明必须与被重写方法（B）在以下几个方面相匹配：</p>
+<ul>
+<li>A的返回类型必须与B的相同（或为其子类型）；</li>
+<li>A的参数类型必须与B的相同（或为其超类型）；</li>
+<li>如果B接受 n 个位置参数，则A也必须接受 n 个位置参数；</li>
+<li>泛型方法不能重写非泛型方法，反之亦然（<a href="ch05/../ch06/dartpl0601.html">泛型</a>乃第6章内容）。</li>
+</ul>
+<pre><code class="language-dart">// ex515.dart
+import 'ex511.dart';
+
+class Dog extends Mammal {
+  Dog(super.name);
+
+  Object sing(int times) =&gt; "$name: ${'woof~ ' * times}";
+}
+
+class Corgi extends Dog {
+  Corgi(super.name);
+
+  @override
+  String sing(num times) =&gt; "$name: ${'woooof~ ' * times.toInt()}";
+}
+
+void main() {
+  var corgi = Corgi('Rover');
+  print(corgi.sing(3)); // Output: Rover: woooof~ woooof~ woooof~
+}
+</code></pre>
+<p>请仔细观察此例中 <code>Corgi.sing(int)</code> 实例方法如何重写了 <code>Dog.sing(int)</code> 。</p>
+<blockquote>
+<p><strong><em>NOTE:</em></strong>
+如果重写 <code>==</code>，也应当重写 <code>Object.hashCode</code> getter， 原因与<a href="https://dart.dev/libraries/dart-core#implementing-map-keys">Map的实现</a>有关。</p>
+</blockquote>
+<h2 id="nosuchmethod"><a class="header" href="#nosuchmethod"><code>noSuchMethod()</code></a></h2>
+<p>先看一个例子。</p>
+<pre><code class="language-dart">// ex516.dart
+class Fox {}
+
+void main() {
+  dynamic f = Fox();
+  f.sing();
+  // Unhandled exception:
+  // NoSuchMethodError: Class 'Fox' has no instance method 'sing'.
+  // Receiver: Instance of 'Fox'
+  // Tried calling: sing()
+}
+</code></pre>
+<p>此程序调用一个不存在的方法 'f.sing()'， 引起运行时异常: <code>NoSuchMethodError: Class 'Fox' has no instance method 'sing'</code>，这是<code>Object</code> 类中的 <code>noSuchMethod</code> 方法的默认行为，可以重写它进而实现一些特殊的功能。</p>
+<pre><code class="language-dart">// ex517.dart
+class Gorilla {
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    return """you're invoking ${invocation.memberName}
+  method             : ${invocation.isMethod}  
+  positionalArguments: ${invocation.positionalArguments}
+  namedArguments     : ${invocation.namedArguments}""";
+  }
+}
+
+void main() {
+  dynamic g = Gorilla();
+  print(g.sing('a song'));
+  // Output:
+  // you're invoking Symbol("sing")
+  // method             : true  
+  // positionalArguments: [a song]
+  // namedArguments     : {}
+}
+</code></pre>
+<h2 id="参考资料-16"><a class="header" href="#参考资料-16">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/extend">https://dart.dev/language/extend</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="接口"><a class="header" href="#接口">接口</a></h1>
+<p>接口（interface）即代码之间的契约。 本章节将结合示例讨论Dart中的<a href="ch05/dartpl0502.html#%E9%9A%90%E5%BC%8F%E6%8E%A5%E5%8F%A3">隐式接口</a>、<a href="ch05/dartpl0502.html#%E6%8E%A5%E5%8F%A3%E7%B1%BB">接口类</a>、<a href="ch05/dartpl0502.html#%E7%BA%AF%E6%8E%A5%E5%8F%A3">纯接口</a>等概念。</p>
+<h2 id="隐式接口"><a class="header" href="#隐式接口">隐式接口</a></h2>
+<p>广义上一个library暴露一些成员（函数、类、字段、方法等）给另一个library使用，这些暴露的成员便组成了接口。Dart的普通类隐式地定义了一个接口。</p>
+<pre><code class="language-dart">// ex521.dart
+class Vehicle {
+  void moveForward(double meters) {
+    print('moving forward $meters meters');
+  }
+}
+
+class Car implements Vehicle {
+  @override
+  void moveForward(double meters) {
+    // TODO: implement moveForward
+  }
+}
+</code></pre>
+<p>此例中 <code>Car</code> 实现了 <code>Vehicle</code> , 因此它必须重写 <code>moveForward(double)</code> 方法，否则无法通过编译。<code>Vehicle</code> 隐式地定义了如下接口:</p>
+<pre><code class="language-dart">abstract interface class IVehicle {
+  void moveForward(double meters);
+}
+</code></pre>
+<p><code>abstract interface class</code> 表示<a href="ch05/dartpl0502.html#%E7%BA%AF%E6%8E%A5%E5%8F%A3">纯接口</a>，概念上与Java中的<code>interface</code>对应。</p>
+<h2 id="接口类"><a class="header" href="#接口类">接口类</a></h2>
+<p>使用 <code>interface class</code> 创建一个接口类（或简称接口）。</p>
+<pre><code class="language-dart">// ex522.dart
+interface class Vehicle {
+  void moveForward(double meters) {}
+}
+</code></pre>
+<p>外部library中的类可以实现接口类，但不能继承接口类。</p>
+<pre><code class="language-dart">// ex523.dart
+import './ex522.dart';
+
+class Car implements Vehicle {
+  @override
+  void moveForward(double meters) {
+    // TODO: implement moveForward
+  }
+}
+
+// Error: The class 'Vehicle' can't be extended outside of its library
+// because it's an interface class.
+class Truck extends Vehicle {}
+</code></pre>
+<p>实现接口类，意味着要重写接口类定义的所有公开的实例方法。不能继承接口类，意味着无法通过 <code>super</code>关键字调用接口类定义的实例方法。接口类保证了：</p>
+<ul>
+<li>实现类的某个实例方法A，通过<code>this</code>关键字调用另一个实例方法B时，A与B始终位于同一个library中；</li>
+<li>实现类无法通过<code>super</code>调用接口类中的实例方法，接口类里的实例方法的具体实现不直接影响实现类，这减少了<a href="https://stackoverflow.com/questions/2921397/what-is-the-fragile-base-class-problem">脆弱基类问题（fragile base class problem）</a>。</li>
+</ul>
+<h2 id="纯接口"><a class="header" href="#纯接口">纯接口</a></h2>
+<p>纯接口即抽象接口类（<code>abstract interface class</code>），它的实例方法通常是抽象方法，即只有方法签名没有具体实现。</p>
+<pre><code class="language-dart">// ex524.dart
+abstract interface class Vehicle {
+  void moveForward(double meters);
+}
+</code></pre>
+<p>纯接口中的实例方法只能是抽象方法吗？答案是否定的。</p>
+<pre><code class="language-dart">abstract interface class Vehicle2 {
+  void moveForward(double meters);
+
+  void moveBackward(double meters) {
+     print('move backward $meters meters');
+  }
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="mixin"><a class="header" href="#mixin">Mixin</a></h1>
+<p>Mixin 是一种代码复用技术，旨在为类添加新成员。简单地说，mixin 是可复用的代码片段。 本章节将介绍<a href="ch05/dartpl0503.html#mixin-%E5%9F%BA%E7%A1%80">mixin基础</a>、<a href="ch05/dartpl0503.html#mixin-%E7%B1%BB">mixin类</a>，以及解决<a href="ch05/dartpl0503.html#mixin-%E6%88%90%E5%91%98%E4%BE%9D%E8%B5%96">mixin成员依赖</a>问题的3种策略。</p>
+<h2 id="mixin-基础"><a class="header" href="#mixin-基础">Mixin 基础</a></h2>
+<p>使用 <code>mixin</code> 关键字声明 mixin。</p>
+<pre><code class="language-dart">// ex531.dart
+mixin Starter {
+  var started = false;
+
+  void start() =&gt; started = true;
+}
+</code></pre>
+<p>在声明类时，使用关键字 <code>with</code> 为其添加 mixin。</p>
+<pre><code class="language-dart">// ex532.dart
+import './ex531.dart';
+
+class Game with Starter {}
+
+class Engine with Starter {}
+
+void main() {
+  var g = Game();
+  print(g.started); // Output: false
+  g.start();
+  print(g.started); // Output: true
+}
+</code></pre>
+<p><code>with</code> 子句可与 <code>extends</code> 子句连用，且可以为一个类添加多个mixin。</p>
+<pre><code class="language-dart">// ex533.dart
+import './ex531.dart';
+
+mixin Leveler {
+  int level = 0;
+}
+
+class Fun {}
+
+class Game extends Fun with Starter, Leveler {}
+
+void main() {
+  var g = Game();
+  g.level = 3;
+  g.start();
+  print('${g.level} ${g.started}'); // Output: 3 true
+}
+</code></pre>
+<p>mixin 不能有 <code>extends</code> 或 <code>with</code> 子句，也不能声明构造函数。</p>
+<h2 id="mixin-类"><a class="header" href="#mixin-类">Mixin 类</a></h2>
+<p>使用 <code>mixin class</code> 声明一个 mixin 类。mixin类可同时作为类和mixin使用，但也有更多的限制，实际中它的应用不多。</p>
+<pre><code class="language-dart">// ex534.dart
+mixin class Player {
+  late String playerName;
+}
+</code></pre>
+<p>mixin 类不能有 <code>extends</code> 或 <code>with</code> 或 <code>on</code> 子句，也不能定义生成式构造函数。</p>
+<h2 id="mixin-成员依赖"><a class="header" href="#mixin-成员依赖">Mixin 成员依赖</a></h2>
+<p>有时候一个mixin需要访问一些不由它自己定义的成员（字段/方法）。换句话说，使用该mixin的类需要或显示或隐式地实现某个接口，这个接口正好包含了mixin所需的成员。下面讨论解决成员依赖的3种策略。</p>
+<h3 id="策略1在mixin中定义抽象成员"><a class="header" href="#策略1在mixin中定义抽象成员">策略1：在mixin中定义抽象成员</a></h3>
+<pre><code class="language-dart">// ex535.dart
+mixin Adder {
+  set count(int value); // 1
+  int get count; // 1a
+
+  void add(int amount) =&gt; count += amount; // 2
+}
+
+// 3
+class AddCounter with Adder {
+  @override
+  int count = 0;
+}
+
+void main() {
+  var c = AddCounter();
+  c.add(2);
+  assert(c.count == 2);
+}
+</code></pre>
+<ol>
+<li><code>Adder</code> mixin 为属性<code>count</code>定义了抽象的getter和setter；</li>
+<li><code>Adder.add(int)</code> 方法调用了<code>count</code>的getter和setter；</li>
+<li><code>AddCounter</code> 类使用了 <code>Adder</code> mixin，且实现了<code>count</code>的getter和setter两个抽象方法。</li>
+</ol>
+<h3 id="策略2让mixin实现一个接口"><a class="header" href="#策略2让mixin实现一个接口">策略2：让mixin实现一个接口</a></h3>
+<p>让 mixin 实现一个接口，使用该 mixin 的类也自然地实现了该接口。对上述 <code>Adder</code> mixin 进行重构，对它的两个抽象方法（即<code>count</code>的getter和setter），抽取至一个接口中，形成如下版本。</p>
+<pre><code class="language-dart">// ex536.dart
+abstract interface class Countable {
+  set count(int value); // 1
+  int get count; // 1a
+}
+
+mixin Adder implements Countable {
+  void add(int amount) =&gt; count += amount; // 2
+}
+
+// 3
+class AddCounter with Adder {
+  @override
+  int count = 0;
+}
+</code></pre>
+<ol>
+<li><code>Countable</code> 接口定义了属性<code>count</code>的getter和setter；</li>
+<li><code>Adder</code> mixin 实现了 <code>Countable</code>；</li>
+<li><code>AddCounter</code> 类使用了 <code>Adder</code> mixin，自然地实现了<code>Countable</code>接口。</li>
+</ol>
+<p>可以向下面这样声明<code>AddCounter</code>类：</p>
+<pre><code class="language-dart">class AddCounter with Adder implements Countable {
+ // ... (omitted for brevity)
+}
+</code></pre>
+<h3 id="策略3使用-on-子句定义超类"><a class="header" href="#策略3使用-on-子句定义超类">策略3：使用 <code>on</code> 子句定义超类</a></h3>
+<p>在声明mixin是使用<code>on</code>子句，用以限制mixin应用于哪些类。例如：</p>
+<pre><code class="language-dart">mixin Adder on Counter {
+}
+</code></pre>
+<p>只有Counter的子孙类才可以使用 <code>Adder</code> mixin。同时，<code>Adder</code> 也可以访问 <code>Counter</code> 中的成员（字段/方法）。让<code>Counter</code> 隐式地实现 <code>Countable</code> 接口，形成如下新版本。</p>
+<pre><code class="language-dart">// ex537.dart
+class Counter {
+  int count = 0; // 1
+}
+
+mixin Adder on Counter {
+  void add(int amount) =&gt; count += amount; // 2
+}
+
+class AddCounter extends Counter with Adder {} // 3
+</code></pre>
+<h2 id="参考资料-17"><a class="header" href="#参考资料-17">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/mixins">https://dart.dev/language/mixins</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="类修饰符"><a class="header" href="#类修饰符">类修饰符</a></h1>
+<p>上一章节讨论了<a href="ch05/./dartpl0503.html">Mixin</a> 和 <a href="ch05/./dartpl0503.html#mixin-%E7%B1%BB">Mixin 类</a>。
+本章节将重点讨论类的修饰符及其<a href="ch05/dartpl0504.html#%E4%BF%AE%E9%A5%B0%E7%AC%A6%E7%9A%84%E7%BB%84%E5%90%88">组合</a>：</p>
+<ul>
+<li><a href="ch05/dartpl0504.html#abstract"><code>abstract</code></a></li>
+<li><a href="ch05/dartpl0504.html#interface"><code>interface</code></a></li>
+<li><a href="ch05/dartpl0504.html#base"><code>base</code></a></li>
+<li><a href="ch05/dartpl0504.html#sealed"><code>sealed</code></a></li>
+<li><a href="ch05/dartpl0504.html#final"><code>final</code></a></li>
+<li><a href="ch05/./dartpl0503.html"><code>mixin</code></a></li>
 </ul>
 <h2 id="abstract"><a class="header" href="#abstract">abstract</a></h2>
+<p><code>abstract class</code> 用于声明抽象类，抽象类可包含抽象方法（即只有签名没有具体实现的方法），且不能被实例化。</p>
+<pre><code class="language-dart">// ex447.dart
+abstract class Mammal {
+  void breathe();
+}
+</code></pre>
 <h2 id="interface"><a class="header" href="#interface">interface</a></h2>
+<p>使用 <code>interface class</code> 创建一个接口类（或简称接口），详见<a href="ch05/./dartpl0502.html#%E6%8E%A5%E5%8F%A3%E7%B1%BB">接口</a>一节。</p>
 <h2 id="base"><a class="header" href="#base">base</a></h2>
-<p>每个类（<code>class</code>）都隐式地定义了一个接口（<code>interface</code>），因而可以实现（<code>implements</code>）一个类（即实现类中的方法）。<code>base</code> 类却是为继承而生，在定义它的文件之外，只能被继承，而不能被实现。</p>
-<p><em><code>ex412.dart</code></em>:</p>
-<pre><code class="language-dart">// ex412.dart
+<p>每个类（<code>class</code>）都隐式地定义了一个接口（<code>interface</code>），因而可以实现（<code>implements</code>）一个类（即实现类中的方法）。<code>base</code> 类为继承而生，在定义它的library之外，只能被继承，而不能被实现。</p>
+<p><em><code>ex541.dart</code></em>:</p>
+<pre><code class="language-dart">// ex541.dart
 base class Vehicle { // 1
   void moveForward(int meters) {
     // ...
@@ -3810,9 +4326,9 @@ base class Motorcycle extends Vehicle { // 3
  
 }
 </code></pre>
-<p><em><code>ex412a.dart</code></em>:</p>
-<pre><code class="language-dart">// ex412a.dart
-import 'ex412.dart';
+<p><em><code>ex541a.dart</code></em>:</p>
+<pre><code class="language-dart">// ex541a.dart
+import 'ex541.dart';
 
 base class Truck extends Vehicle { // 4
   int passengers = 4;
@@ -3834,33 +4350,594 @@ base class Train implements Vehicle { // 5
 }
 </code></pre>
 <ol>
-<li><em><code>ex412.dart</code></em>  文件中的<code>Vehicle</code>是一个 <code>base</code> 类，它有一个实例方法 <code>moveForward(int)</code>;</li>
+<li><em><code>ex541.dart</code></em>  文件中的<code>Vehicle</code>是一个 <code>base</code> 类，它有一个实例方法 <code>moveForward(int)</code>;</li>
 <li>同一文件中的 <code>Car</code> 实现了 <code>Vehicle</code>;</li>
 <li>同一文件中的 <code>Motorcycle</code> 继承（<code>extends</code>）了 <code>Vehicle</code>;</li>
-<li>另一文件（ <em><code>ex412a.dart</code></em> ）中的 <code>Truck</code> 继承了  <code>Vehicle</code>;</li>
-<li><em><code>ex412a.dart</code></em> 中的 <code>Train</code> 实现 <code>Vehicle</code>，引发编译错误。</li>
+<li>另一文件（ <em><code>ex541a.dart</code></em> ）中的 <code>Truck</code> 继承了  <code>Vehicle</code>;</li>
+<li>另一文件（ <em><code>ex541a.dart</code></em> ）中的 <code>Train</code> 试图实现 <code>Vehicle</code>，引发编译错误。</li>
 </ol>
 <p><code>base</code> 类有如下特点：</p>
 <ul>
-<li><code>base</code>类的子类/实现类必须使用<code>base</code>或<code>final</code>或<code>sealed</code>修饰，这是为了确保<code>base</code>的语义；</li>
+<li><code>base</code>类的子类/实现类必须使用<code>base</code>或<a href="ch05/dartpl0504.html#final"><code>final</code></a>或<a href="ch05/dartpl0504.html#sealed"><code>sealed</code></a>修饰，这是为了确保<code>base</code>的语义；</li>
 <li><code>base</code>类的子类自动继承了其可见的成员（字段/方法），因此为<code>base</code>类添加新的成员不会破坏子类，除非新成员与子类发生冲突;</li>
 <li>实例化<code>base</code>类的子类，必然导致<code>base</code>类的构造函数被调用。</li>
 </ul>
 <h2 id="sealed"><a class="header" href="#sealed"><code>sealed</code></a></h2>
+<p><code>sealed class</code>用于创建密封类。密封类的子类是可穷举的，且必须与密封类位于同一个libary里。密封类是隐式抽象的，不能被实例化。</p>
+<pre><code class="language-dart">// ex344.dart
+import 'dart:math' as math;
+
+sealed class Shape {}
+
+class Square implements Shape {
+  final double length;
+  Square(this.length);
+}
+
+class Circle implements Shape {
+  final double radius;
+  Circle(this.radius);
+}
+
+double calculateArea(Shape shape) =&gt; switch (shape) {
+  Square(length: var l) =&gt; l * l,
+  Circle(radius: var r) =&gt; math.pi * r * r,
+};
+</code></pre>
+<p>密封类的一个特点是switch详尽性检查。假如还有一个类也实现或继承了 <code>Shape</code>，如：</p>
+<pre><code class="language-dart">class Rectangle extends Shape {}
+</code></pre>
+<p><code>calculateArea(Shape)</code>函数会有编译错误：</p>
+<pre><code class="language-dart"> Error: The type 'Shape' is not exhaustively matched by the switch cases since it doesn't match 'Rectangle()'.
+ - 'Shape' is from 'bin/ch03/ex344.dart'.
+Try adding a wildcard pattern or cases that match 'Rectangle()'.
+double calculateArea(Shape shape) =&gt; switch (shape) {
+                                             ^
+</code></pre>
 <h2 id="final-1"><a class="header" href="#final-1"><code>final</code></a></h2>
+<p>final类不能被外部libary继承或实现。final类的子类或实现类也必须是final类。</p>
+<p><em><code>ex542.dart</code></em></p>
+<pre><code class="language-dart">// ex542.dart
+final class Pet {}
+
+final class Kitty extends Pet {}
+
+final class Garfield implements Pet {}
+</code></pre>
+<p><em><code>ex542a.dart</code></em></p>
+<pre><code class="language-dart">// ex542a.dart
+import 'ex542.dart';
+
+// Error: The class 'Pet' can't be extended outside of its library
+// because it's a final class
+final class Doggy extends Pet {}
+
+// Error: The class 'Pet' can't be implemented outside of its library
+// because it's a final class.
+final class Corgi implements Pet {}
+</code></pre>
+<p>由于final类只能被同一个library中的类继承或实现：</p>
+<ul>
+<li>你可以安全地对其进行修改；</li>
+<li>也不用担心其实例方法被其它的library重写。</li>
+</ul>
 <h2 id="修饰符的组合"><a class="header" href="#修饰符的组合">修饰符的组合</a></h2>
-<h2 id="参考资料-15"><a class="header" href="#参考资料-15">参考资料</a></h2>
+<p>下表列出了有效的修饰符的组合及其特性。</p>
+<div class="table-wrapper"><table><thead><tr><th>声明</th><th>可实例化?</th><th>可继承?</th><th>可实现?</th><th>Mixin?</th><th>可穷举?</th></tr></thead><tbody>
+<tr><td><code>class</code></td><td>✔️</td><td>✔️</td><td>✔️</td><td></td><td></td></tr>
+<tr><td><code>base class</code></td><td>✔️</td><td>✔️</td><td></td><td></td><td></td></tr>
+<tr><td><code>interface class</code></td><td>✔️</td><td></td><td>✔️</td><td></td><td></td></tr>
+<tr><td><code>final class</code></td><td>✔️</td><td></td><td></td><td></td><td></td></tr>
+<tr><td><code>sealed class</code></td><td></td><td></td><td></td><td></td><td>✔️</td></tr>
+<tr><td><code>abstract class</code></td><td></td><td>✔️</td><td>✔️</td><td></td><td></td></tr>
+<tr><td><code>abstract base class</code></td><td></td><td>✔️</td><td></td><td></td><td></td></tr>
+<tr><td><code>abstract interface class</code></td><td></td><td></td><td>✔️</td><td></td><td></td></tr>
+<tr><td><code>abstract final class</code></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td><code>mixin class</code></td><td>✔️</td><td>✔️</td><td>✔️</td><td>✔️</td><td></td></tr>
+<tr><td><code>base mixin class</code></td><td>✔️</td><td>✔️</td><td></td><td>✔️</td><td></td></tr>
+<tr><td><code>abstract mixin class</code></td><td></td><td>✔️</td><td>✔️</td><td>✔️</td><td></td></tr>
+<tr><td><code>abstract base mixin class</code></td><td></td><td>✔️</td><td></td><td>✔️</td><td></td></tr>
+<tr><td><code>mixin</code></td><td></td><td></td><td>✔️</td><td>✔️</td><td></td></tr>
+<tr><td><code>base mixin</code></td><td></td><td></td><td></td><td>✔️</td><td></td></tr>
+</tbody></table>
+</div>
+<h2 id="参考资料-18"><a class="header" href="#参考资料-18">参考资料</a></h2>
 <ul>
 <li><a href="https://dart.dev/language/class-modifiers">https://dart.dev/language/class-modifiers</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="mixin"><a class="header" href="#mixin">Mixin</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="扩展类"><a class="header" href="#扩展类">扩展类</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="扩展方法"><a class="header" href="#扩展方法">扩展方法</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="范型"><a class="header" href="#范型">范型</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="hashcode-与-equals"><a class="header" href="#hashcode-与-equals">hashCode 与 equals</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="列表-list"><a class="header" href="#列表-list">列表 List</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="集合-set"><a class="header" href="#集合-set">集合 Set</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="映射-map"><a class="header" href="#映射-map">映射 Map</a></h1>
+<p>想给一个三方的libray添加一些新功能，比如像下面这样，将一个字符串转换为整数:</p>
+<pre><code class="language-dart">  "1".toInt()
+</code></pre>
+<p>但 <code>String</code> 类中并没有 <code>toInt()</code> 这个方法，而且<code>String</code>类位于Dart核心库中，我们不可能对它进行修改进而添加新方法。这便是扩展方法（extension methods，简称扩展）的用武之地。</p>
+<h2 id="声明扩展"><a class="header" href="#声明扩展">声明扩展</a></h2>
+<p>使用 <code>extension ... on ...</code> 语法声明一个扩展。</p>
+<pre><code class="language-dart">// ex551.dart
+extension NumParse on String {
+  int toInt({int? radix}) =&gt; int.parse(this, radix: radix);
+
+  double toDouble() =&gt; double.parse(this);
+}
+
+void main() {
+  assert(10 == "10".toInt());
+  assert(1.1 == "1.1".toDouble());
+}
+</code></pre>
+<p>这里的<code>NumParse</code>为扩展名，如果<code>NumParse</code>只是在定义它的library中使用，该名称可以省略。</p>
+<pre><code class="language-dart">extension on String {
+  // ... (omitted for brevity)
+}
+</code></pre>
+<h2 id="使用扩展方法"><a class="header" href="#使用扩展方法">使用扩展方法</a></h2>
+<p><code>NumParse</code>为<code>String</code>添加了两个扩展方法 <code>toInt()</code> 和 <code>toDouble()</code>，就像<code>String</code>自身定义的其它方法一样，直接调用它们即可。</p>
+<pre><code class="language-dart">// ex552.dart
+import 'ex551.dart';
+
+void main() {
+  assert(10 == "a".toInt(radix: 16));
+}
+</code></pre>
+<p>假设另一个<code>String</code>的扩展 <code>NumParse2</code>，它定义的方法与<code>NumParse</code>存在冲突:</p>
+<pre><code class="language-dart">// ex551a.dart
+extension NumParse2 on String {
+  int toInt() =&gt; int.parse(this);
+
+  double toDouble() =&gt; double.parse(this);
+
+  num toNum() =&gt; contains('.') ? toDouble() : toInt();
+}
+</code></pre>
+<p>但你的程序又要同时倒入它们所在的library，怎么办？下面介绍避免此类冲突的两种方法。</p>
+<h3 id="方法1使用showhide限制暴露的api"><a class="header" href="#方法1使用showhide限制暴露的api">方法1：使用<code>show</code>/<code>hide</code>限制暴露的API</a></h3>
+<pre><code class="language-dart">// ex553.dart
+import 'ex551.dart';
+import 'ex551a.dart' hide NumParse2;
+
+void main() {
+  print('abc'.toInt(radix: 16)); // Output: 2748
+}
+</code></pre>
+<h3 id="方法2-将扩展看做包装类"><a class="header" href="#方法2-将扩展看做包装类">方法2: 将扩展看做包装类</a></h3>
+<pre><code class="language-dart">// ex554.dart
+import 'ex551.dart';
+import 'ex551a.dart';
+
+void main() {
+  print(NumParse("123").toInt()); // 1 Output: 123
+  print(NumParse2("456").toDouble()); // 2 Output: 456.0
+  print("789".toNum()); // 3 Output: 789
+}
+</code></pre>
+<ol>
+<li>显示地调用 <code>NumParse</code>的<code>toInt()</code>方法，<code>NumParse("123")</code>看起来就像调用了一个构造函数，而<code>NumParse</code>就像一个包装类；</li>
+<li>这行代码与上一行类似；</li>
+<li><code>toNum()</code>方法只在<code>NumParse2</code>扩展中被定义了，因此直接调用也不会产生歧义。</li>
+</ol>
+<p>如果两个扩展的名称相同，就可能要使用 <em>前缀导入</em>，即给导入的libray取一别名。</p>
+<pre><code class="language-dart">// ex555.dart
+import 'ex551.dart' as lib1;
+import 'ex551b.dart' as lib2;
+
+void main() {
+  print(lib1.NumParse('def').toInt(radix: 16)); // Output: 3567
+  print(lib2.NumParse('234').toDouble()); // Output: 234.0
+  print("345".toNum()); // Output: 345
+}
+</code></pre>
+<h2 id="参考资料-19"><a class="header" href="#参考资料-19">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/extension-methods">https://dart.dev/language/extension-methods</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="扩展类型"><a class="header" href="#扩展类型">扩展类型</a></h1>
+<p>扩展类型（Extension types）是一种编译时抽象（仅存在编译时期），是对现有类型的一种静态包装。它们是静态 JS 互操作（<a href="https://dart.dev/interop/js-interop">static JS interop</a>）的重要组件，因为它们可以轻松修改现有类型的接口，而无需产生包装类的成本。</p>
+<p>扩展类型对底层类型（称为<em>表示类型</em>，representation type）对象可用的操作集（或接口）强制进行约束。定义扩展类型时，可以复用表示类型的某些成员、省略/替换其它成员、以及添加新功能，这有点类似于设计模式里的<a href="https://refactoring.guru/design-patterns/facade">外观模式</a>。</p>
+<h2 id="声明"><a class="header" href="#声明">声明</a></h2>
+<p>使用 <code>extension type</code> 关键字声明扩展类型。</p>
+<pre><code class="language-dart">// ex561.dart
+extension type IdNumber(int i) {} // 1
+
+void main() {
+  var id = IdNumber(123); // 2
+  print(id); // 3 Output: 123
+  print(id.i); // 3a Output: 123
+  print(id.runtimeType); // 4 Output: int
+}
+</code></pre>
+<ol>
+<li>声明扩展类型 <code>IdNumber</code>， 其表示类型为 <code>int</code>，同时也隐式地定义了</li>
+</ol>
+<ul>
+<li>构造函数 <code>IdNumber(this.i)</code>，</li>
+<li>实例变量 <code>final int i</code>；</li>
+</ul>
+<ol start="2">
+<li>声明变量 <code>id</code>，赋值为<code>IdNumber(123)</code>；</li>
+<li>分别打印 <code>id</code> 和 <code>id.i</code>；</li>
+<li>打印 <code>id</code>的运行时类型，结果为 <code>int</code>，这印证了<code>IdNumber</code>在编译过程中被抹掉了。</li>
+</ol>
+<h2 id="构造函数-1"><a class="header" href="#构造函数-1">构造函数</a></h2>
+<h3 id="命名构造函数-1"><a class="header" href="#命名构造函数-1">命名构造函数</a></h3>
+<p>除了隐式的构造函数外，还可以为扩展类型定义命名构造函数。</p>
+<pre><code class="language-dart">// ex562.dart
+extension type IdNumber(int i) {
+  IdNumber.of(String str) : i = int.parse(str);
+}
+
+void main() {
+  var x = IdNumber(123);
+  var y = IdNumber.of('123');
+  assert(x == y);
+}
+</code></pre>
+<h3 id="采用命名构造函数的形式声明"><a class="header" href="#采用命名构造函数的形式声明">采用命名构造函数的形式声明</a></h3>
+<p>使用命名构造函数的形式声明扩展类型时，可以灵活的定义不具名构函数（可选的）。</p>
+<pre><code class="language-dart">// ex563.dart
+extension type IdNumber.of(int i) {
+  IdNumber(String str) : i = int.parse(str);
+}
+
+void main() {
+  var x = IdNumber.of(123);
+  var y = IdNumber('123');
+  assert(x == y);
+}
+</code></pre>
+<h3 id="对外隐藏不具名构造函数"><a class="header" href="#对外隐藏不具名构造函数">对外隐藏不具名构造函数</a></h3>
+<pre><code class="language-dart">// ex564.dart
+extension type const IdNumber._(int i) {
+  const IdNumber.of(int i) : this._(i);
+}
+</code></pre>
+<p>此例也演示了扩展类型如何声明 const 构造函数。</p>
+<h3 id="工厂构造函数-1"><a class="header" href="#工厂构造函数-1">工厂构造函数</a></h3>
+<pre><code class="language-dart">// ex565.dart
+extension type IdNumber._(int i) {
+  factory IdNumber.of(int i) =&gt; IdNumber._(i);
+}
+</code></pre>
+<h2 id="成员"><a class="header" href="#成员">成员</a></h2>
+<p>扩展类型不能定义 non-external 实例字段和抽象成员，除此之外可定义下列成员：</p>
+<ul>
+<li>方法</li>
+<li>getter</li>
+<li>setter</li>
+<li>操作符（operators）</li>
+</ul>
+<pre><code class="language-dart">// ex566.dart
+extension type N(int i) {
+  N operator +(N m) =&gt; N(i + m.i);
+  int get n =&gt; i;
+  bool isPositive() =&gt; i &gt; 0;
+}
+
+void main() {
+  var n = N(100);
+  print(n + N(23)); // Output: 123
+  print(n.n); // Output: 100
+  print(n.isPositive()); // Output: true
+}
+</code></pre>
+<h2 id="实现接口"><a class="header" href="#实现接口">实现接口</a></h2>
+<p>扩展类型只可实现：</p>
+<ul>
+<li><a href="ch05/dartpl0506.html#%E5%AE%9E%E7%8E%B0%E8%A1%A8%E7%A4%BA%E7%B1%BB%E5%9E%8B">它的表示类型</a></li>
+<li><a href="ch05/dartpl0506.html#%E5%AE%9E%E7%8E%B0%E8%A1%A8%E7%A4%BA%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%B6%85%E7%B1%BB">它的表示类型的超类</a></li>
+<li><a href="ch05/dartpl0506.html#%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E5%90%8C%E4%B8%80%E8%A1%A8%E7%A4%BA%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%85%B6%E5%AE%83%E6%89%A9%E5%B1%95%E7%B1%BB%E5%9E%8B"><em>基于同一表示类型的</em>其它扩展类型</a></li>
+</ul>
+<h3 id="实现表示类型"><a class="header" href="#实现表示类型">实现表示类型</a></h3>
+<p>一个扩展类型实现它的表示类型时，它便自动拥有了表示类型的所有的成员。</p>
+<pre><code class="language-dart">// ex567.dart
+import 'package:meta/meta.dart';
+
+extension type N(int i) implements int {
+  bool get isPositive =&gt; i &gt; 0;
+
+  @redeclare
+  N operator +(int n) =&gt; N(i + n);
+}
+
+void main() {
+  var a = N(10);
+  var b = N(20);
+  var c = a + b;
+
+  print('${c.runtimeType} $c'); // Output: int 30
+  print('${a - b} ${a * b} ${a / b}'); // Output: -10 200 0.5
+  print('${a.isPositive} ${b.isNegative}'); // Output: true false
+
+  print(a + 1); // Output: 11
+  print(2 + a); // Output: 12
+}
+</code></pre>
+<p>此例中扩展类型 <code>N</code> 是 类型 <code>int</code> 的透明包装，同时：</p>
+<ul>
+<li>添加了新的 getter（<code>isPositive</code>）；</li>
+<li>重新定义了 <code>+</code> 操作符。</li>
+</ul>
+<p>注：<code>meta</code> package 中的注解<code>@redeclare</code>用于告诉编译器<em>你有意地使用与超类相同的成员名称</em>，如果事实并非如此，将收到一个警告。</p>
+<h3 id="实现表示类型的超类"><a class="header" href="#实现表示类型的超类">实现表示类型的超类</a></h3>
+<pre><code class="language-dart">// ex568.dart
+extension type N(int i) implements num {} // 1
+
+void main() {
+  var a = N(10);
+  var b = N(20);
+  var c = a + b; // 2
+  print('${c.runtimeType} $c'); // Output: int 30
+  print(1 &amp; 2); // 3 Output: 0
+
+  print(a &amp; b); // 3a
+  // Error:
+  // The operator '&amp;' isn't defined for the type 'N'.
+  // Try defining the operator '&amp;'.
+}
+</code></pre>
+<ol>
+<li>扩展类型 <code>N</code> 实现了类型 <code>num</code>；</li>
+<li><code>num</code> 定义了 <code>+</code> 操作符，因此 <code>N</code> 也自然地拥有了 <code>+</code> 操作符；</li>
+<li><code>int</code> 定义了 <code>&amp;</code> 操作符，因此 <code>1 &amp; 2</code> 这样的表达式是有效的；<br>
+<code>num</code> 和 <code>N</code> 都没有定义 <code>&amp;</code> 操作符，因而 <code>a &amp; b</code> 将引起编译错误。</li>
+</ol>
+<h3 id="实现基于同一表示类型的其它扩展类型"><a class="header" href="#实现基于同一表示类型的其它扩展类型">实现<em>基于同一表示类型的</em>其它扩展类型</a></h3>
+<pre><code class="language-dart">// ex569.dart
+extension type A(num n) {
+  num get square =&gt; n * n; // 1
+}
+
+extension type B(num n) {
+  num get cube =&gt; n * n * n; // 2
+}
+
+extension type C(num n) implements A, B {} // 3
+
+void main() {
+  var n = C(3);
+  print(n.runtimeType); // Output: int
+  print(n.square); // Output: 9
+  print(n.cube); // Output: 27
+}
+</code></pre>
+<ol>
+<li><code>num</code>的扩展类型 <code>A</code>定义了一个 名为 <code>square</code> 的 getter；</li>
+<li><code>num</code>的扩展类型 <code>B</code>定义了一个 名为 <code>cube</code> 的 getter；</li>
+<li><code>num</code>的扩展类型 <code>C</code>同时实现了<code>A</code>和<code>B</code>，拥有了来自<code>A</code>的<code>square</code>和<code>B</code>的<code>cube</code>，这类似于多重继承。</li>
+</ol>
+<h2 id="参考资料-20"><a class="header" href="#参考资料-20">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/extension-types">https://dart.dev/language/extension-types</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="泛型"><a class="header" href="#泛型">泛型</a></h1>
+<p>泛型即参数化类型，它是一个既常见又重要的编程语言特性。本文将举例说明泛型的优势和具体使用方法。</p>
+<h2 id="类型安全"><a class="header" href="#类型安全">类型安全</a></h2>
+<p>泛型的优势之一是<em>类型安全</em>。</p>
+<pre><code class="language-dart">// ex611.dart
+void main() {
+  var list = [];
+  list.add(1);
+  list.add('A');
+  print('$list ${list.runtimeType}'); // Output: [1, A] List&lt;dynamic&gt;
+}
+</code></pre>
+<p>此例中<code>list</code>的类型为<code>List&lt;dynamic&gt;</code>，表示<code>list</code>可以包含任何类型的数据。如果将<code>list</code>声明为 <code>List&lt;int&gt;</code>将引起编译错误。</p>
+<pre><code class="language-dart">// ex611a.dart
+void main() {
+  var list = &lt;int&gt;[];
+  list.add(1);
+  list.add('A');
+  // Error: The argument type 'String' can't be assigned to the parameter type 'int'.
+}
+</code></pre>
+<h2 id="减少代码重复"><a class="header" href="#减少代码重复">减少代码重复</a></h2>
+<p>泛型的另一个优势是<em>减少代码重复</em>。实战中经常要将来自设备或网络的数据缓存起来。下面的代码创建一个用于缓存<code>String</code>数据的类。</p>
+<pre><code class="language-dart">// ex612.dart
+class StringCache {
+  final String data;
+
+  StringCache(this.data);
+}
+</code></pre>
+<p>使用相同的代码结构可为<code>double</code>、<code>int</code>及其它数据类型的数据创建对应的缓存类。例如:</p>
+<pre><code class="language-dart">// ex612a.dart
+class DoubleCache {
+  final double data;
+
+  DoubleCache(this.data);
+}
+</code></pre>
+<p>通过使用泛型技术我们只需要创建一个类，就可以 cover 此类应用场景。</p>
+<pre><code class="language-dart">// ex613.dart
+class Cache&lt;T&gt; { // 1
+  final T data; // 2
+
+  Cache(this.data);
+}
+
+void main() {
+  var str = Cache('Dart'); // 3
+  var num = Cache(12); // 4
+  assert(str.data == 'Dart');
+  assert(num.data == 12);
+}
+</code></pre>
+<ol>
+<li>泛型的类型参数<code>T</code>写在一对尖括号（<code>&lt;&gt;</code>）中；</li>
+<li>字段<code>data</code>的数据类型被声明为<code>T</code>；</li>
+<li>得益于 Dart 的自动类型推断，<code>Cache('Dart')</code>即<code>Cache&lt;String&gt;('Dart')</code>，类型参数<code>T</code>将在编译时被替换为<code>String</code>；</li>
+<li>同上，<code>Cache(12)</code>即<code>Cache&lt;int&gt;(12)</code>。</li>
+</ol>
+<h2 id="限制参数化类型"><a class="header" href="#限制参数化类型">限制参数化类型</a></h2>
+<p>使用<code>extends</code>关键字让参数化类型为指定类型的子类型。</p>
+<pre><code class="language-dart">// ex614.dart
+class Cache&lt;T extends Object&gt; {
+  final T data;
+
+  Cache(this.data);
+}
+
+void main() {
+  Cache(null);
+  // Error: The argument type 'Null' can't be assigned to the parameter type 'Object'.
+}
+</code></pre>
+<p>此例中的<code>T</code>为 <code>Object</code> 的子类，它不能是 <code>Null</code> 类型。</p>
+<h2 id="泛型方法"><a class="header" href="#泛型方法">泛型方法</a></h2>
+<p>参数化类型也可用在方法或函数里，语法是将类型参数连通一对尖括号，写在方法或函数名后面。</p>
+<pre><code class="language-dart">// ex615.dart
+class Example {
+  static T max&lt;T extends Comparable&lt;T&gt;&gt;(T a, T b) =&gt; a.compareTo(b) &gt; 0 ? a : b;
+}
+
+T min&lt;T extends Comparable&lt;T&gt;&gt;(T a, T b) =&gt; a.compareTo(b) &lt; 0 ? a : b;
+
+void main() {
+  print(Example.max(12, 34)); // Output: 34
+  print(min('apple', 'orange')); // Output: apple
+}
+</code></pre>
+<h2 id="参考资料-21"><a class="header" href="#参考资料-21">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/generics">https://dart.dev/language/generics</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="list列表"><a class="header" href="#list列表">List（列表）</a></h1>
+<p>数组（array）是一组有序的对象集合。Dart 的数组即 List，在之前的章节已经多次出现过。</p>
+<h2 id="list-基础"><a class="header" href="#list-基础">List 基础</a></h2>
+<p>先来看一个简单的示例。</p>
+<pre><code class="language-dart">// ex621.dart
+void main() {
+  var numbers = [1, 2, 3]; // 1 List&lt;int&gt;
+  print(numbers); // 2 Output: [1, 2, 3]
+  assert(1 == numbers[0]); // 3
+  numbers[1] = 9; // 4
+  print(numbers); // 5 Output: [1, 9, 3]
+  print(numbers.length); // 6 Output: 3
+  print(numbers[3]); // 7
+  // Unhandled exception:
+  // RangeError (length): Invalid value: Not in inclusive range 0..2: 3
+}
+</code></pre>
+<ol>
+<li>使用字面量创建一个 List，其元素放在一对中括号（<code>[]</code>）内，并以逗号（<code>,</code>）分割；<code>numbers</code>是一个<code>List&lt;int&gt;</code>；</li>
+<li>打印<code>numbers</code>；</li>
+<li>通过索引(index，从 0 开始的整数，也称为下标)获取对应的元素，<code>numbers[0]</code>返回<code>numbers</code>的第 1 个元素。</li>
+<li>将<code>numbers</code> 的第 2 个元素修改为<code>9</code>；</li>
+<li>再次打印<code>numbers</code>；</li>
+<li>打印<code>numbers</code>的长度（元素个数），结果为 3；</li>
+<li>尝试打印<code>numbers</code>的第 4 个元素，遭遇<code>RangeError</code>，因为下标的最大值为 2（长度-1）。</li>
+</ol>
+<h2 id="常用构造函数"><a class="header" href="#常用构造函数">常用构造函数</a></h2>
+<p>Dart 的 List 有多个实用的构造函数，现举例说明。</p>
+<pre><code class="language-dart">// ex622.dart
+void main() {
+  final empty = List&lt;int&gt;.empty(growable: true); // 1
+  print(empty); // Output: []
+
+  final squares = List.generate(
+    10,
+    (index) =&gt; index * index,
+    growable: true,
+  ); // 2
+  print(squares); // Output: [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+  final zeros = List.filled(5, 0, growable: false); // 3
+  print(zeros); // Output: [0, 0, 0, 0, 0]
+
+  final copy = List.of([3, 2, 1]); // 4
+  print(copy); // Output: [3, 2, 1]
+}
+</code></pre>
+<ol>
+<li><code>List.empty</code> 创建一个空的 List，命名参数<code>growable</code>用于指定创建的 List 是否可以增长，其默认值为<code>false</code>，表示创建一个固定长度（此处为 0）的 List；</li>
+<li><code>List.generate</code> 的第一个参数指定待创建 List 的初始长度；第二个参数是一个函数（称为<code>generator</code>），其签名为<code>E Function(int index)</code>（<code>E</code>为 <code>List</code> 的类型参数）；</li>
+<li><code>List.filled</code>使用指定的数据填充 List，其第一个参数为初始长度，第二个参数乃用于填充的数据；</li>
+<li><code>List.of</code>从一个<code>Iterable</code>对象创建 List。</li>
+</ol>
+<h2 id="集合元素"><a class="header" href="#集合元素">集合元素</a></h2>
+<p>先以 List 为例，简单说明下集合元素。在以<code>[a, b, ...]</code>这样的语法书写 List 时，其中的<code>a</code>、<code>b</code>等称为元素（elements）；每个元素将被求值（evaluated）以产生 0 到多个值（value），这些值随后将被插入到结果 List 中。集合元素分为叶元素（leaf elements）和控制流元素（control flow elements）两类。</p>
+<pre><code class="language-dart">// ex623.dart
+void main() {
+  print([1 * 1, 2 * 2, 3 * 3]); // 1 Output: [1, 4, 9]
+
+  int? a;
+  print([1, 2, a, 3]); // 2 Output: [1, 2, null, 3]
+  print([1, 2, ?a, 3]); // 2a Output: [1, 2, 3]
+
+  final arr = [3, 4];
+  var arr2 = [1, 2, ...arr, 5]; // 3
+  print('${arr2.runtimeType} $arr2'); // Output: List&lt;int&gt; [1, 2, 3, 4, 5]
+
+  List&lt;int&gt;? arr3;
+  print([1, 2, ...?arr3, 3]); // 4 Output: [1, 2, 3]
+}
+</code></pre>
+<ol>
+<li>此行代码展示的是表达式元素（Expression elements），它属于叶元素；</li>
+<li>这行中的<code> ?a</code> 是 Null-aware 元素，请与上一行代码进行对比；</li>
+<li>这行中的 <code>...arr</code> 乃 Spread 元素；</li>
+<li>这行中的 <code>...？arr3</code> 乃 Null-aware Spread 元素。</li>
+</ol>
+<h3 id="if-元素"><a class="header" href="#if-元素"><code>if</code> 元素</a></h3>
+<p><code>if</code>元素 和 <code>for</code>元素 都是控制流元素。下面的示例展示了<code>if</code>元素的各种用法。</p>
+<pre><code class="language-dart">// ex624.dart
+void main() {
+  var present = true;
+  print([0, if (present) 1, 2, 3]); // 1 Output: [0, 1, 2, 3]
+  print([0, if (!present) 1, 2, 3]); // 1a Output: [0, 2, 3]
+
+  var letter = 'A';
+  print([
+    if (letter == 'A') 'apple' else 'orange',
+    'orange',
+  ]); // 2 Output: [apple, orange]
+
+  print([
+    if (letter == 'A') 'apricot' else if (letter == 'O') 'orange',
+    'orange',
+  ]); // 3 Output: [apricot, orange]
+
+  var data = ['apple', 0.2];
+  print([
+    if (data case [var name, var price])
+      'The price of $name is \$$price'
+    else
+       'Error data',
+  ]); // 4 Output: [The price of apple is $0.2]
+}
+</code></pre>
+<h3 id="for-元素"><a class="header" href="#for-元素"><code>for</code> 元素</a></h3>
+<p>如下示例简单展示了<code>for</code>元素的用法。</p>
+<pre><code class="language-dart">// ex625.dart
+void main() {
+  var numbers = [for (var i = 2; i &lt;= 8; i += 2) i, 10]; // 1
+  print(numbers); // Output: [2, 4, 6, 8, 10]
+
+  var squares = [for (var n in numbers) n * n]; // 2
+  print(squares); // Output: [4, 16, 36, 64, 100]
+}
+</code></pre>
+<h3 id="嵌套控制流元素"><a class="header" href="#嵌套控制流元素">嵌套控制流元素</a></h3>
+<p>控制流元素可以互相嵌套。</p>
+<pre><code class="language-dart">// ex626.dart
+void main() {
+  var evens = [
+    for (var i = 0; i &lt; 10; i++)
+      if (i % 2 == 0) i,
+  ];
+  print(evens); // Output: [0, 2, 4, 6, 8]
+
+  var numbers = [
+    for (var i = 0; i &lt; 10; i++)
+      if (i % 3 == 0)
+        for (var j = i; j &lt; i + 3; j++)
+          if (j &lt; 10) j,
+  ];
+  print(numbers); // Output: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+}
+</code></pre>
+<h2 id="常用方法"><a class="header" href="#常用方法">常用方法</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="set集"><a class="header" href="#set集">Set（集）</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="map映射"><a class="header" href="#map映射">Map（映射）</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hashcode-与-操作符"><a class="header" href="#hashcode-与-操作符">hashCode 与 <code>==</code>操作符</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="transform-方法"><a class="header" href="#transform-方法">Transform 方法</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="异步编程概述"><a class="header" href="#异步编程概述">异步编程概述</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="future"><a class="header" href="#future">Future</a></h1>
@@ -3874,7 +4951,7 @@ base class Train implements Vehicle { // 5
 <div style="break-before: page; page-break-before: always;"></div><h1 id="solid编码准则"><a class="header" href="#solid编码准则">SOLID编码准则</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="编写dart命令行程序"><a class="header" href="#编写dart命令行程序">编写Dart命令行程序</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="编写dart服务端编程"><a class="header" href="#编写dart服务端编程">编写Dart服务端编程</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="dart-常用package介绍"><a class="header" href="#dart-常用package介绍">Dart 常用package介绍</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="dart-常用-package"><a class="header" href="#dart-常用-package">Dart 常用 package</a></h1>
 
                     </main>
 

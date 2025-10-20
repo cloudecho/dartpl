@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Mixin - 从0开始学Dart</title>
+        <title>类修饰符 - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -33,9 +33,9 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
@@ -43,11 +43,10 @@
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root and default themes to javascript -->
+        <!-- Provide site root to javascript -->
         <script>
-            const path_to_root = "../";
-            const default_light_theme = "navy";
-            const default_dark_theme = "navy";
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -57,8 +56,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                let theme = localStorage.getItem('mdbook-theme');
-                let sidebar = localStorage.getItem('mdbook-sidebar');
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -72,8 +71,7 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
-            let theme;
+            var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -86,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            let sidebar = null;
-            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -123,7 +121,6 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -167,7 +164,166 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="mixin"><a class="header" href="#mixin">Mixin</a></h1>
+                        <h1 id="类修饰符"><a class="header" href="#类修饰符">类修饰符</a></h1>
+<p>上一章节讨论了<a href="./dartpl0503.html">Mixin</a> 和 <a href="./dartpl0503.html#mixin-%E7%B1%BB">Mixin 类</a>。
+本章节将重点讨论类的修饰符及其<a href="#%E4%BF%AE%E9%A5%B0%E7%AC%A6%E7%9A%84%E7%BB%84%E5%90%88">组合</a>：</p>
+<ul>
+<li><a href="#abstract"><code>abstract</code></a></li>
+<li><a href="#interface"><code>interface</code></a></li>
+<li><a href="#base"><code>base</code></a></li>
+<li><a href="#sealed"><code>sealed</code></a></li>
+<li><a href="#final"><code>final</code></a></li>
+<li><a href="./dartpl0503.html"><code>mixin</code></a></li>
+</ul>
+<h2 id="abstract"><a class="header" href="#abstract">abstract</a></h2>
+<p><code>abstract class</code> 用于声明抽象类，抽象类可包含抽象方法（即只有签名没有具体实现的方法），且不能被实例化。</p>
+<pre><code class="language-dart">// ex447.dart
+abstract class Mammal {
+  void breathe();
+}
+</code></pre>
+<h2 id="interface"><a class="header" href="#interface">interface</a></h2>
+<p>使用 <code>interface class</code> 创建一个接口类（或简称接口），详见<a href="./dartpl0502.html#%E6%8E%A5%E5%8F%A3%E7%B1%BB">接口</a>一节。</p>
+<h2 id="base"><a class="header" href="#base">base</a></h2>
+<p>每个类（<code>class</code>）都隐式地定义了一个接口（<code>interface</code>），因而可以实现（<code>implements</code>）一个类（即实现类中的方法）。<code>base</code> 类为继承而生，在定义它的library之外，只能被继承，而不能被实现。</p>
+<p><em><code>ex541.dart</code></em>:</p>
+<pre><code class="language-dart">// ex541.dart
+base class Vehicle { // 1
+  void moveForward(int meters) {
+    // ...
+  }
+}
+
+base class Car implements Vehicle { // 2
+  @override
+  void moveForward(int meters) {
+    // ...
+  }
+}
+
+base class Motorcycle extends Vehicle { // 3
+ 
+}
+</code></pre>
+<p><em><code>ex541a.dart</code></em>:</p>
+<pre><code class="language-dart">// ex541a.dart
+import 'ex541.dart';
+
+base class Truck extends Vehicle { // 4
+  int passengers = 4;
+
+  @override
+  void moveForward(int meters) {
+    // ...
+  }
+}
+
+// ERROR: 
+// The class 'Vehicle' can't be implemented outside of its library 
+// because it's a base class.
+base class Train implements Vehicle { // 5
+  @override
+  void moveForward(int meters) {
+    // ...
+  }
+}
+</code></pre>
+<ol>
+<li><em><code>ex541.dart</code></em>  文件中的<code>Vehicle</code>是一个 <code>base</code> 类，它有一个实例方法 <code>moveForward(int)</code>;</li>
+<li>同一文件中的 <code>Car</code> 实现了 <code>Vehicle</code>;</li>
+<li>同一文件中的 <code>Motorcycle</code> 继承（<code>extends</code>）了 <code>Vehicle</code>;</li>
+<li>另一文件（ <em><code>ex541a.dart</code></em> ）中的 <code>Truck</code> 继承了  <code>Vehicle</code>;</li>
+<li>另一文件（ <em><code>ex541a.dart</code></em> ）中的 <code>Train</code> 试图实现 <code>Vehicle</code>，引发编译错误。</li>
+</ol>
+<p><code>base</code> 类有如下特点：</p>
+<ul>
+<li><code>base</code>类的子类/实现类必须使用<code>base</code>或<a href="#final"><code>final</code></a>或<a href="#sealed"><code>sealed</code></a>修饰，这是为了确保<code>base</code>的语义；</li>
+<li><code>base</code>类的子类自动继承了其可见的成员（字段/方法），因此为<code>base</code>类添加新的成员不会破坏子类，除非新成员与子类发生冲突;</li>
+<li>实例化<code>base</code>类的子类，必然导致<code>base</code>类的构造函数被调用。</li>
+</ul>
+<h2 id="sealed"><a class="header" href="#sealed"><code>sealed</code></a></h2>
+<p><code>sealed class</code>用于创建密封类。密封类的子类是可穷举的，且必须与密封类位于同一个libary里。密封类是隐式抽象的，不能被实例化。</p>
+<pre><code class="language-dart">// ex344.dart
+import 'dart:math' as math;
+
+sealed class Shape {}
+
+class Square implements Shape {
+  final double length;
+  Square(this.length);
+}
+
+class Circle implements Shape {
+  final double radius;
+  Circle(this.radius);
+}
+
+double calculateArea(Shape shape) =&gt; switch (shape) {
+  Square(length: var l) =&gt; l * l,
+  Circle(radius: var r) =&gt; math.pi * r * r,
+};
+</code></pre>
+<p>密封类的一个特点是switch详尽性检查。假如还有一个类也实现或继承了 <code>Shape</code>，如：</p>
+<pre><code class="language-dart">class Rectangle extends Shape {}
+</code></pre>
+<p><code>calculateArea(Shape)</code>函数会有编译错误：</p>
+<pre><code class="language-dart"> Error: The type 'Shape' is not exhaustively matched by the switch cases since it doesn't match 'Rectangle()'.
+ - 'Shape' is from 'bin/ch03/ex344.dart'.
+Try adding a wildcard pattern or cases that match 'Rectangle()'.
+double calculateArea(Shape shape) =&gt; switch (shape) {
+                                             ^
+</code></pre>
+<h2 id="final"><a class="header" href="#final"><code>final</code></a></h2>
+<p>final类不能被外部libary继承或实现。final类的子类或实现类也必须是final类。</p>
+<p><em><code>ex542.dart</code></em></p>
+<pre><code class="language-dart">// ex542.dart
+final class Pet {}
+
+final class Kitty extends Pet {}
+
+final class Garfield implements Pet {}
+</code></pre>
+<p><em><code>ex542a.dart</code></em></p>
+<pre><code class="language-dart">// ex542a.dart
+import 'ex542.dart';
+
+// Error: The class 'Pet' can't be extended outside of its library
+// because it's a final class
+final class Doggy extends Pet {}
+
+// Error: The class 'Pet' can't be implemented outside of its library
+// because it's a final class.
+final class Corgi implements Pet {}
+</code></pre>
+<p>由于final类只能被同一个library中的类继承或实现：</p>
+<ul>
+<li>你可以安全地对其进行修改；</li>
+<li>也不用担心其实例方法被其它的library重写。</li>
+</ul>
+<h2 id="修饰符的组合"><a class="header" href="#修饰符的组合">修饰符的组合</a></h2>
+<p>下表列出了有效的修饰符的组合及其特性。</p>
+<div class="table-wrapper"><table><thead><tr><th>声明</th><th>可实例化?</th><th>可继承?</th><th>可实现?</th><th>Mixin?</th><th>可穷举?</th></tr></thead><tbody>
+<tr><td><code>class</code></td><td>✔️</td><td>✔️</td><td>✔️</td><td></td><td></td></tr>
+<tr><td><code>base class</code></td><td>✔️</td><td>✔️</td><td></td><td></td><td></td></tr>
+<tr><td><code>interface class</code></td><td>✔️</td><td></td><td>✔️</td><td></td><td></td></tr>
+<tr><td><code>final class</code></td><td>✔️</td><td></td><td></td><td></td><td></td></tr>
+<tr><td><code>sealed class</code></td><td></td><td></td><td></td><td></td><td>✔️</td></tr>
+<tr><td><code>abstract class</code></td><td></td><td>✔️</td><td>✔️</td><td></td><td></td></tr>
+<tr><td><code>abstract base class</code></td><td></td><td>✔️</td><td></td><td></td><td></td></tr>
+<tr><td><code>abstract interface class</code></td><td></td><td></td><td>✔️</td><td></td><td></td></tr>
+<tr><td><code>abstract final class</code></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td><code>mixin class</code></td><td>✔️</td><td>✔️</td><td>✔️</td><td>✔️</td><td></td></tr>
+<tr><td><code>base mixin class</code></td><td>✔️</td><td>✔️</td><td></td><td>✔️</td><td></td></tr>
+<tr><td><code>abstract mixin class</code></td><td></td><td>✔️</td><td>✔️</td><td>✔️</td><td></td></tr>
+<tr><td><code>abstract base mixin class</code></td><td></td><td>✔️</td><td></td><td>✔️</td><td></td></tr>
+<tr><td><code>mixin</code></td><td></td><td></td><td>✔️</td><td>✔️</td><td></td></tr>
+<tr><td><code>base mixin</code></td><td></td><td></td><td></td><td>✔️</td><td></td></tr>
+</tbody></table>
+</div>
+<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/class-modifiers">https://dart.dev/language/class-modifiers</a></li>
+</ul>
 
                     </main>
 

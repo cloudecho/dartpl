@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>hashCode 与 equals - 从0开始学Dart</title>
+        <title>List（列表） - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -33,9 +33,9 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
@@ -43,11 +43,10 @@
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root and default themes to javascript -->
+        <!-- Provide site root to javascript -->
         <script>
-            const path_to_root = "../";
-            const default_light_theme = "navy";
-            const default_dark_theme = "navy";
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -57,8 +56,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                let theme = localStorage.getItem('mdbook-theme');
-                let sidebar = localStorage.getItem('mdbook-sidebar');
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -72,8 +71,7 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
-            let theme;
+            var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -86,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            let sidebar = null;
-            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -123,7 +121,6 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -167,7 +164,142 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="hashcode-与-equals"><a class="header" href="#hashcode-与-equals">hashCode 与 equals</a></h1>
+                        <h1 id="list列表"><a class="header" href="#list列表">List（列表）</a></h1>
+<p>数组（array）是一组有序的对象集合。Dart 的数组即 List，在之前的章节已经多次出现过。</p>
+<h2 id="list-基础"><a class="header" href="#list-基础">List 基础</a></h2>
+<p>先来看一个简单的示例。</p>
+<pre><code class="language-dart">// ex621.dart
+void main() {
+  var numbers = [1, 2, 3]; // 1 List&lt;int&gt;
+  print(numbers); // 2 Output: [1, 2, 3]
+  assert(1 == numbers[0]); // 3
+  numbers[1] = 9; // 4
+  print(numbers); // 5 Output: [1, 9, 3]
+  print(numbers.length); // 6 Output: 3
+  print(numbers[3]); // 7
+  // Unhandled exception:
+  // RangeError (length): Invalid value: Not in inclusive range 0..2: 3
+}
+</code></pre>
+<ol>
+<li>使用字面量创建一个 List，其元素放在一对中括号（<code>[]</code>）内，并以逗号（<code>,</code>）分割；<code>numbers</code>是一个<code>List&lt;int&gt;</code>；</li>
+<li>打印<code>numbers</code>；</li>
+<li>通过索引(index，从 0 开始的整数，也称为下标)获取对应的元素，<code>numbers[0]</code>返回<code>numbers</code>的第 1 个元素。</li>
+<li>将<code>numbers</code> 的第 2 个元素修改为<code>9</code>；</li>
+<li>再次打印<code>numbers</code>；</li>
+<li>打印<code>numbers</code>的长度（元素个数），结果为 3；</li>
+<li>尝试打印<code>numbers</code>的第 4 个元素，遭遇<code>RangeError</code>，因为下标的最大值为 2（长度-1）。</li>
+</ol>
+<h2 id="常用构造函数"><a class="header" href="#常用构造函数">常用构造函数</a></h2>
+<p>Dart 的 List 有多个实用的构造函数，现举例说明。</p>
+<pre><code class="language-dart">// ex622.dart
+void main() {
+  final empty = List&lt;int&gt;.empty(growable: true); // 1
+  print(empty); // Output: []
+
+  final squares = List.generate(
+    10,
+    (index) =&gt; index * index,
+    growable: true,
+  ); // 2
+  print(squares); // Output: [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+  final zeros = List.filled(5, 0, growable: false); // 3
+  print(zeros); // Output: [0, 0, 0, 0, 0]
+
+  final copy = List.of([3, 2, 1]); // 4
+  print(copy); // Output: [3, 2, 1]
+}
+</code></pre>
+<ol>
+<li><code>List.empty</code> 创建一个空的 List，命名参数<code>growable</code>用于指定创建的 List 是否可以增长，其默认值为<code>false</code>，表示创建一个固定长度（此处为 0）的 List；</li>
+<li><code>List.generate</code> 的第一个参数指定待创建 List 的初始长度；第二个参数是一个函数（称为<code>generator</code>），其签名为<code>E Function(int index)</code>（<code>E</code>为 <code>List</code> 的类型参数）；</li>
+<li><code>List.filled</code>使用指定的数据填充 List，其第一个参数为初始长度，第二个参数乃用于填充的数据；</li>
+<li><code>List.of</code>从一个<code>Iterable</code>对象创建 List。</li>
+</ol>
+<h2 id="集合元素"><a class="header" href="#集合元素">集合元素</a></h2>
+<p>先以 List 为例，简单说明下集合元素。在以<code>[a, b, ...]</code>这样的语法书写 List 时，其中的<code>a</code>、<code>b</code>等称为元素（elements）；每个元素将被求值（evaluated）以产生 0 到多个值（value），这些值随后将被插入到结果 List 中。集合元素分为叶元素（leaf elements）和控制流元素（control flow elements）两类。</p>
+<pre><code class="language-dart">// ex623.dart
+void main() {
+  print([1 * 1, 2 * 2, 3 * 3]); // 1 Output: [1, 4, 9]
+
+  int? a;
+  print([1, 2, a, 3]); // 2 Output: [1, 2, null, 3]
+  print([1, 2, ?a, 3]); // 2a Output: [1, 2, 3]
+
+  final arr = [3, 4];
+  var arr2 = [1, 2, ...arr, 5]; // 3
+  print('${arr2.runtimeType} $arr2'); // Output: List&lt;int&gt; [1, 2, 3, 4, 5]
+
+  List&lt;int&gt;? arr3;
+  print([1, 2, ...?arr3, 3]); // 4 Output: [1, 2, 3]
+}
+</code></pre>
+<ol>
+<li>此行代码展示的是表达式元素（Expression elements），它属于叶元素；</li>
+<li>这行中的<code> ?a</code> 是 Null-aware 元素，请与上一行代码进行对比；</li>
+<li>这行中的 <code>...arr</code> 乃 Spread 元素；</li>
+<li>这行中的 <code>...？arr3</code> 乃 Null-aware Spread 元素。</li>
+</ol>
+<h3 id="if-元素"><a class="header" href="#if-元素"><code>if</code> 元素</a></h3>
+<p><code>if</code>元素 和 <code>for</code>元素 都是控制流元素。下面的示例展示了<code>if</code>元素的各种用法。</p>
+<pre><code class="language-dart">// ex624.dart
+void main() {
+  var present = true;
+  print([0, if (present) 1, 2, 3]); // 1 Output: [0, 1, 2, 3]
+  print([0, if (!present) 1, 2, 3]); // 1a Output: [0, 2, 3]
+
+  var letter = 'A';
+  print([
+    if (letter == 'A') 'apple' else 'orange',
+    'orange',
+  ]); // 2 Output: [apple, orange]
+
+  print([
+    if (letter == 'A') 'apricot' else if (letter == 'O') 'orange',
+    'orange',
+  ]); // 3 Output: [apricot, orange]
+
+  var data = ['apple', 0.2];
+  print([
+    if (data case [var name, var price])
+      'The price of $name is \$$price'
+    else
+       'Error data',
+  ]); // 4 Output: [The price of apple is $0.2]
+}
+</code></pre>
+<h3 id="for-元素"><a class="header" href="#for-元素"><code>for</code> 元素</a></h3>
+<p>如下示例简单展示了<code>for</code>元素的用法。</p>
+<pre><code class="language-dart">// ex625.dart
+void main() {
+  var numbers = [for (var i = 2; i &lt;= 8; i += 2) i, 10]; // 1
+  print(numbers); // Output: [2, 4, 6, 8, 10]
+
+  var squares = [for (var n in numbers) n * n]; // 2
+  print(squares); // Output: [4, 16, 36, 64, 100]
+}
+</code></pre>
+<h3 id="嵌套控制流元素"><a class="header" href="#嵌套控制流元素">嵌套控制流元素</a></h3>
+<p>控制流元素可以互相嵌套。</p>
+<pre><code class="language-dart">// ex626.dart
+void main() {
+  var evens = [
+    for (var i = 0; i &lt; 10; i++)
+      if (i % 2 == 0) i,
+  ];
+  print(evens); // Output: [0, 2, 4, 6, 8]
+
+  var numbers = [
+    for (var i = 0; i &lt; 10; i++)
+      if (i % 3 == 0)
+        for (var j = i; j &lt; i + 3; j++)
+          if (j &lt; 10) j,
+  ];
+  print(numbers); // Output: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+}
+</code></pre>
+<h2 id="常用方法"><a class="header" href="#常用方法">常用方法</a></h2>
 
                     </main>
 

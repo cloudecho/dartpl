@@ -33,9 +33,9 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
@@ -43,11 +43,10 @@
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root and default themes to javascript -->
+        <!-- Provide site root to javascript -->
         <script>
-            const path_to_root = "../";
-            const default_light_theme = "navy";
-            const default_dark_theme = "navy";
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -57,8 +56,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                let theme = localStorage.getItem('mdbook-theme');
-                let sidebar = localStorage.getItem('mdbook-sidebar');
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -72,8 +71,7 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
-            let theme;
+            var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -86,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            let sidebar = null;
-            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -123,7 +121,6 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -169,7 +166,7 @@
                     <main>
                         <h1 id="操作符"><a class="header" href="#操作符">操作符</a></h1>
 <p>计算机程序的表达式由操作符和操作数构成。如<code>1+2</code>这个表达式中，<code>+</code>是操作符，数字<code>1</code>和<code>2</code>是操作数。如果表达式中只有一个操作数，它便是一元表达式；如果有两个操作数，它便是二元表达式；类似地还有三元表达式。一元表达式中的操作符为一元操作符。</p>
-<p>Dart提供了非常丰富的操作符，且支持为类（class，第4-5章内容）定义操作符。</p>
+<p>Dart提供了非常丰富的操作符，且支持为类（class，第4-5章内容）定义<a href="../ch04/dartpl0405.html">操作符</a>。</p>
 <ul>
 <li><a href="#%E7%AE%97%E6%9C%AF%E6%93%8D%E4%BD%9C%E7%AC%A6">算术操作符</a></li>
 <li><a href="#%E5%85%B3%E7%B3%BB%E6%93%8D%E4%BD%9C%E7%AC%A6">关系操作符</a></li>
@@ -217,7 +214,7 @@ void main() {
 <p>关于<code>==</code> 操作符：</p>
 <ol>
 <li>如果 <code>x</code> 或 <code>y</code> 为 <code>null</code>，则只有当它们都是 <code>null</code>，<code>x==y</code> 才返回 <code>true</code>；如果只有一个为 <code>null</code>，则<code>x==y</code> 返回 <code>false</code>。</li>
-<li><code>x == y</code>本质上是调用 <code>x</code>的<code>==</code> 操作符方法（以<code>y</code>作为参数），然后返回其结果， 类似于 <code>x.equals(y)</code> 。</li>
+<li><code>x == y</code>本质上是调用 <code>x</code>的<code>==</code> <a href="../ch04/dartpl0405.html">操作符方法</a>（以<code>y</code>作为参数），然后返回其结果， 类似于 <code>x.equals(y)</code> 。</li>
 <li>极少情况下，你需要知道<code>x</code>和<code>y</code>是否引用了同一个对象，使用<code>identical(x,y)</code>。</li>
 </ol>
 <blockquote>
@@ -259,15 +256,15 @@ void main() {
 }
 </code></pre>
 <h2 id="位操作符"><a class="header" href="#位操作符">位操作符</a></h2>
-<p>Dart可以对数字的每一位（bit）进行操作。</p>
+<p>Dart可以对数字的每一比特位（bit）进行操作。</p>
 <div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
-<tr><td><code>&amp;</code></td><td>与（AND）</td><td><code> 1 &amp; 2</code> <span class="hljs-comment">  <em>//0</em></span></td></tr>
-<tr><td><code>|</code></td><td>或（OR）</td><td><code>1 | 2</code><span class="hljs-comment">  <em>//3</em></span></td></tr>
+<tr><td><code>&amp;</code></td><td>与（AND）</td><td><code> 1 &amp; 2</code> <span class="hljs-comment">  <em>// 0</em></span></td></tr>
+<tr><td><code>|</code></td><td>或（OR）</td><td><code>1 | 2</code><span class="hljs-comment">  <em>// 3</em></span></td></tr>
 <tr><td><code>^</code></td><td>异或（XOR）</td><td><code>2 ^ 3</code><span class="hljs-comment">  <em>//1</em></span></td></tr>
-<tr><td><code>~</code><em><code>expr</code></em></td><td>按位补码（0变为1，1变为0）</td><td><code>～1</code><span class="hljs-comment">  <em>//-2</em></span></td></tr>
-<tr><td><code>&lt;&lt;</code></td><td>左移位</td><td><code>1 &lt;&lt; 10</code><span class="hljs-comment">  <em>//1024</em></span></td></tr>
-<tr><td><code>&gt;&gt;</code></td><td>右移位</td><td><code>1024 &gt;&gt; 9</code><span class="hljs-comment">  <em>//2</em></span></td></tr>
-<tr><td><code>&gt;&gt;&gt;</code></td><td>无符号右移</td><td><code>-1 &gt;&gt;&gt; 61</code><span class="hljs-comment">  <em>//7</em></span></td></tr>
+<tr><td><code>~</code><em><code>expr</code></em></td><td>按位补码（0变为1，1变为0）</td><td><code>~1</code><span class="hljs-comment">  <em>// -2</em></span></td></tr>
+<tr><td><code>&lt;&lt;</code></td><td>左移位</td><td><code>1 &lt;&lt; 10</code><span class="hljs-comment">  <em>// 1024</em></span></td></tr>
+<tr><td><code>&gt;&gt;</code></td><td>右移位</td><td><code>1024 &gt;&gt; 9</code><span class="hljs-comment">  <em>// 2</em></span></td></tr>
+<tr><td><code>&gt;&gt;&gt;</code></td><td>无符号右移</td><td><code>-1 &gt;&gt;&gt; 61</code><span class="hljs-comment">  <em>// 7</em></span></td></tr>
 </tbody></table>
 </div>
 <h2 id="条件表达式"><a class="header" href="#条件表达式">条件表达式</a></h2>
@@ -284,7 +281,7 @@ void main() {
 </code></pre>
 <p>条件表达式 <code>condition  ?  expr1  :  expr2</code> ，有 <code>?</code>和<code>:</code>2个操作符，<code>?</code>之前为一个表示条件的布尔表达式<code>condition</code>；如果<code>condition</code>的值为<code>true</code>，该表达式的值就取<code>expr1</code>的值，否则取 <code>expr2</code>的值。</p>
 <h2 id="级联符号"><a class="header" href="#级联符号">级联符号</a></h2>
-<p>Dart的级联符号（<code>..</code> 和 <code>?..</code>）用于对同一个对象进行一系列操作。下面的代码片段：</p>
+<p>Dart的级联符号（<code>..</code> 和 <code>?..</code>）用于对同一个对象进行一连窜操作。下面的代码片段：</p>
 <pre><code class="language-dart">  var sb = StringBuffer();
   sb.write('Hello ');
   sb.write('Dart');
@@ -319,6 +316,7 @@ void main() {
 <tr><td><code>...?</code></td><td>与<code>...</code>类似，适用于nullable对象</td><td><code>....?anotherList</code></td></tr>
 </tbody></table>
 </div>
+<p>注：  <code>()</code> 也用于改变表达式的运算优先级。</p>
 <h2 id="操作符优先级"><a class="header" href="#操作符优先级">操作符优先级</a></h2>
 <p>下表中的操作符按优先级从高到低排依次列，第一行中的优先级最高，第二行次之，以此类推； 同一行里的操作符具有相同的优先级。</p>
 <div class="table-wrapper"><table><thead><tr><th>描述</th><th>操作符</th></tr></thead><tbody>

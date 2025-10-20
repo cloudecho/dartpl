@@ -33,9 +33,9 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
@@ -43,11 +43,10 @@
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root and default themes to javascript -->
+        <!-- Provide site root to javascript -->
         <script>
-            const path_to_root = "../";
-            const default_light_theme = "navy";
-            const default_dark_theme = "navy";
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -57,8 +56,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                let theme = localStorage.getItem('mdbook-theme');
-                let sidebar = localStorage.getItem('mdbook-sidebar');
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -72,8 +71,7 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
-            let theme;
+            var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -86,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            let sidebar = null;
-            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -123,7 +121,6 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -168,6 +165,175 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="继承"><a class="header" href="#继承">继承</a></h1>
+<p>本章节重点介绍类继承的基本概念，包括<a href="#%E5%A3%B0%E6%98%8E%E4%B8%80%E4%B8%AA%E5%AD%90%E7%B1%BB">子类的声明</a>、<a href="#%E5%8D%95%E7%BB%A7%E6%89%BF">单继承</a>、<a href="#%E6%96%B9%E6%B3%95%E9%87%8D%E5%86%99">方法重写</a>、<a href="#nosuchmethod"><code>noSuchMethod()</code></a>等。</p>
+<h2 id="声明一个子类"><a class="header" href="#声明一个子类">声明一个子类</a></h2>
+<p>子类继承父类，意味着子类继承了父类的实例成员，包括实例字段和实例方法。使用<code>extend</code>关键字创建一个子类。</p>
+<pre><code class="language-dart">// ex511.dart
+class Mammal {
+  String name; // 1
+
+  Mammal(this.name); // 2
+
+  void play() =&gt; print('$name is playing'); // 3
+
+  void sleep() =&gt; print('$name is sleeping'); // 3a
+}
+
+// 4
+class Dolphin extends Mammal {
+  Dolphin(super.name); // 5
+}
+
+void main() {
+  var dolphin = Dolphin('Dolphin'); // 6
+  print(dolphin.name); // 7 Output: Dolphin
+  dolphin.play(); // 7a Output: Dolphin is playing
+  dolphin.sleep(); // 7b Output: Dolphin is sleeping
+}
+</code></pre>
+<ol>
+<li><code>Mammal</code> 类有一个实例变量 <code>name</code> ；</li>
+<li>这是 <code>Mammal</code> 类的构造函数；</li>
+<li><code>Mammal</code> 类有2个实例方法，<code>play</code> 和 <code>sleep</code>；</li>
+<li><code>Dolphin</code> 继承了 <code>Mammal</code> 类；</li>
+<li><code>Dolphin</code> 类的构造函数，使用 <code>super</code> 关键字引用父类；</li>
+<li>实例化 Dolphin 类；</li>
+<li><code>Dolphin</code> 类从 <code>Mammal</code> 类继承了实例成员，包括1个实例变量和2个实例方法。</li>
+</ol>
+<p>除了 <code>Null</code> 之外，Dart中的每个类都隐式地继承了 <a href="https://api.flutter.dev/flutter/dart-core/Object-class.html"><code>Object</code></a> 类。此例中的 <code>Mammal</code> 类即：</p>
+<pre><code class="language-dart">class Mammal extends Object {
+  // ... (omitted for brevity)
+}
+</code></pre>
+<p>但这里的 <code>extends Object</code> 完全没必要写出来。</p>
+<h2 id="单继承"><a class="header" href="#单继承">单继承</a></h2>
+<p>Dart只允许单继承，不支持多继承，即一个类只能继承一个父类。</p>
+<pre><code class="language-dart">// ex512.dart
+import 'ex511.dart';
+
+// Error: Each class definition can have at most one extends clause.
+// Try choosing one superclass and define your class to implement (or mix in) the others.
+// class CuteDolphin extends Dolphin, Mammal  {
+//                                  ^
+class CuteDolphin extends Dolphin, Mammal  {
+  CuteDolphin(super.name);
+}
+</code></pre>
+<p>这里 <code>CuteDolphin</code> 试图同时继承 <code>Dolphin</code> 与 <code>Mammal</code> 类，导致编译失败。 解决方法即让 <code>CuteDolphin</code> 只继承 <code>Dolphin</code> 类。</p>
+<pre><code class="language-dart">class CuteDolphin extends Dolphin {
+  CuteDolphin(super.name);
+}
+</code></pre>
+<h2 id="再谈构造函数"><a class="header" href="#再谈构造函数">再谈构造函数</a></h2>
+<p>每个类的生成式构造函数被执行时，一定会或显式或隐式地先执行父类的生成式构造函数，即构造函数的第一行代码是调用父构造函数。</p>
+<pre><code class="language-dart">// ex513.dart
+import 'ex511.dart';
+
+// Error: The implicitly called unnamed constructor from 'Mammal' has required parameters.
+// Try adding an explicit super initializer with the required arguments.
+//   Ape();
+//   ^
+class Ape extends Mammal {
+  Ape();
+}
+
+// Error: The superclass, 'Mammal', has no unnamed constructor that takes no arguments.
+// class Elephant extends Mammal {}
+//       ^
+class Elephant extends Mammal {}
+</code></pre>
+<p><code>Ape</code> 类的构造函数 <code>Ape()</code>，隐式地调用父类的无参构造函数 <code>Mammal()</code> 引起编译错误，编译器提示<code>Mammal</code>类的unnamed构造函数需要required参数。</p>
+<p><code>Elephant</code> 类默认的构造函数<code>Elephant()</code>，隐式地调用父类的无参构造函数 <code>Mammal()</code> ，编译器提示这样的父构造函数不存在。</p>
+<h2 id="方法重写"><a class="header" href="#方法重写">方法重写</a></h2>
+<p>子类可以重写（override）实例方法（包括运算符）、getter 和 setter。使用 <code>@override</code> 注解来表明重写意图。</p>
+<pre><code class="language-dart">// ex514.dart
+import 'ex511.dart';
+
+class Badger extends Mammal {
+  Badger(super.name);
+
+  @override
+  void play() =&gt; print('$name Badger is playing');
+}
+
+void main() {
+  var bader = Badger('B');
+  bader.play(); // Output: B Badger is playing
+}
+</code></pre>
+<p>重写方法（A）的声明必须与被重写方法（B）在以下几个方面相匹配：</p>
+<ul>
+<li>A的返回类型必须与B的相同（或为其子类型）；</li>
+<li>A的参数类型必须与B的相同（或为其超类型）；</li>
+<li>如果B接受 n 个位置参数，则A也必须接受 n 个位置参数；</li>
+<li>泛型方法不能重写非泛型方法，反之亦然（<a href="../ch06/dartpl0601.html">泛型</a>乃第6章内容）。</li>
+</ul>
+<pre><code class="language-dart">// ex515.dart
+import 'ex511.dart';
+
+class Dog extends Mammal {
+  Dog(super.name);
+
+  Object sing(int times) =&gt; "$name: ${'woof~ ' * times}";
+}
+
+class Corgi extends Dog {
+  Corgi(super.name);
+
+  @override
+  String sing(num times) =&gt; "$name: ${'woooof~ ' * times.toInt()}";
+}
+
+void main() {
+  var corgi = Corgi('Rover');
+  print(corgi.sing(3)); // Output: Rover: woooof~ woooof~ woooof~
+}
+</code></pre>
+<p>请仔细观察此例中 <code>Corgi.sing(int)</code> 实例方法如何重写了 <code>Dog.sing(int)</code> 。</p>
+<blockquote>
+<p><strong><em>NOTE:</em></strong>
+如果重写 <code>==</code>，也应当重写 <code>Object.hashCode</code> getter， 原因与<a href="https://dart.dev/libraries/dart-core#implementing-map-keys">Map的实现</a>有关。</p>
+</blockquote>
+<h2 id="nosuchmethod"><a class="header" href="#nosuchmethod"><code>noSuchMethod()</code></a></h2>
+<p>先看一个例子。</p>
+<pre><code class="language-dart">// ex516.dart
+class Fox {}
+
+void main() {
+  dynamic f = Fox();
+  f.sing();
+  // Unhandled exception:
+  // NoSuchMethodError: Class 'Fox' has no instance method 'sing'.
+  // Receiver: Instance of 'Fox'
+  // Tried calling: sing()
+}
+</code></pre>
+<p>此程序调用一个不存在的方法 'f.sing()'， 引起运行时异常: <code>NoSuchMethodError: Class 'Fox' has no instance method 'sing'</code>，这是<code>Object</code> 类中的 <code>noSuchMethod</code> 方法的默认行为，可以重写它进而实现一些特殊的功能。</p>
+<pre><code class="language-dart">// ex517.dart
+class Gorilla {
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    return """you're invoking ${invocation.memberName}
+  method             : ${invocation.isMethod}  
+  positionalArguments: ${invocation.positionalArguments}
+  namedArguments     : ${invocation.namedArguments}""";
+  }
+}
+
+void main() {
+  dynamic g = Gorilla();
+  print(g.sing('a song'));
+  // Output:
+  // you're invoking Symbol("sing")
+  // method             : true  
+  // positionalArguments: [a song]
+  // namedArguments     : {}
+}
+</code></pre>
+<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/extend">https://dart.dev/language/extend</a></li>
+</ul>
 
                     </main>
 

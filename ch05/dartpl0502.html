@@ -33,9 +33,9 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
@@ -43,11 +43,10 @@
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root and default themes to javascript -->
+        <!-- Provide site root to javascript -->
         <script>
-            const path_to_root = "../";
-            const default_light_theme = "navy";
-            const default_dark_theme = "navy";
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -57,8 +56,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                let theme = localStorage.getItem('mdbook-theme');
-                let sidebar = localStorage.getItem('mdbook-sidebar');
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -72,8 +71,7 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
-            let theme;
+            var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -86,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            let sidebar = null;
-            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -123,7 +121,6 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -168,6 +165,72 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="接口"><a class="header" href="#接口">接口</a></h1>
+<p>接口（interface）即代码之间的契约。 本章节将结合示例讨论Dart中的<a href="#%E9%9A%90%E5%BC%8F%E6%8E%A5%E5%8F%A3">隐式接口</a>、<a href="#%E6%8E%A5%E5%8F%A3%E7%B1%BB">接口类</a>、<a href="#%E7%BA%AF%E6%8E%A5%E5%8F%A3">纯接口</a>等概念。</p>
+<h2 id="隐式接口"><a class="header" href="#隐式接口">隐式接口</a></h2>
+<p>广义上一个library暴露一些成员（函数、类、字段、方法等）给另一个library使用，这些暴露的成员便组成了接口。Dart的普通类隐式地定义了一个接口。</p>
+<pre><code class="language-dart">// ex521.dart
+class Vehicle {
+  void moveForward(double meters) {
+    print('moving forward $meters meters');
+  }
+}
+
+class Car implements Vehicle {
+  @override
+  void moveForward(double meters) {
+    // TODO: implement moveForward
+  }
+}
+</code></pre>
+<p>此例中 <code>Car</code> 实现了 <code>Vehicle</code> , 因此它必须重写 <code>moveForward(double)</code> 方法，否则无法通过编译。<code>Vehicle</code> 隐式地定义了如下接口:</p>
+<pre><code class="language-dart">abstract interface class IVehicle {
+  void moveForward(double meters);
+}
+</code></pre>
+<p><code>abstract interface class</code> 表示<a href="#%E7%BA%AF%E6%8E%A5%E5%8F%A3">纯接口</a>，概念上与Java中的<code>interface</code>对应。</p>
+<h2 id="接口类"><a class="header" href="#接口类">接口类</a></h2>
+<p>使用 <code>interface class</code> 创建一个接口类（或简称接口）。</p>
+<pre><code class="language-dart">// ex522.dart
+interface class Vehicle {
+  void moveForward(double meters) {}
+}
+</code></pre>
+<p>外部library中的类可以实现接口类，但不能继承接口类。</p>
+<pre><code class="language-dart">// ex523.dart
+import './ex522.dart';
+
+class Car implements Vehicle {
+  @override
+  void moveForward(double meters) {
+    // TODO: implement moveForward
+  }
+}
+
+// Error: The class 'Vehicle' can't be extended outside of its library
+// because it's an interface class.
+class Truck extends Vehicle {}
+</code></pre>
+<p>实现接口类，意味着要重写接口类定义的所有公开的实例方法。不能继承接口类，意味着无法通过 <code>super</code>关键字调用接口类定义的实例方法。接口类保证了：</p>
+<ul>
+<li>实现类的某个实例方法A，通过<code>this</code>关键字调用另一个实例方法B时，A与B始终位于同一个library中；</li>
+<li>实现类无法通过<code>super</code>调用接口类中的实例方法，接口类里的实例方法的具体实现不直接影响实现类，这减少了<a href="https://stackoverflow.com/questions/2921397/what-is-the-fragile-base-class-problem">脆弱基类问题（fragile base class problem）</a>。</li>
+</ul>
+<h2 id="纯接口"><a class="header" href="#纯接口">纯接口</a></h2>
+<p>纯接口即抽象接口类（<code>abstract interface class</code>），它的实例方法通常是抽象方法，即只有方法签名没有具体实现。</p>
+<pre><code class="language-dart">// ex524.dart
+abstract interface class Vehicle {
+  void moveForward(double meters);
+}
+</code></pre>
+<p>纯接口中的实例方法只能是抽象方法吗？答案是否定的。</p>
+<pre><code class="language-dart">abstract interface class Vehicle2 {
+  void moveForward(double meters);
+
+  void moveBackward(double meters) {
+     print('move backward $meters meters');
+  }
+}
+</code></pre>
 
                     </main>
 

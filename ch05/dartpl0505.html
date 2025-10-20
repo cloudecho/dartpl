@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>扩展类 - 从0开始学Dart</title>
+        <title>扩展方法 - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -33,9 +33,9 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
@@ -43,11 +43,10 @@
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root and default themes to javascript -->
+        <!-- Provide site root to javascript -->
         <script>
-            const path_to_root = "../";
-            const default_light_theme = "navy";
-            const default_dark_theme = "navy";
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -57,8 +56,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                let theme = localStorage.getItem('mdbook-theme');
-                let sidebar = localStorage.getItem('mdbook-sidebar');
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -72,8 +71,7 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
-            let theme;
+            var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -86,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            let sidebar = null;
-            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -123,7 +121,6 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -167,7 +164,90 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="扩展类"><a class="header" href="#扩展类">扩展类</a></h1>
+                        <h1 id="扩展方法"><a class="header" href="#扩展方法">扩展方法</a></h1>
+<p>想给一个三方的libray添加一些新功能，比如像下面这样，将一个字符串转换为整数:</p>
+<pre><code class="language-dart">  "1".toInt()
+</code></pre>
+<p>但 <code>String</code> 类中并没有 <code>toInt()</code> 这个方法，而且<code>String</code>类位于Dart核心库中，我们不可能对它进行修改进而添加新方法。这便是扩展方法（extension methods，简称扩展）的用武之地。</p>
+<h2 id="声明扩展"><a class="header" href="#声明扩展">声明扩展</a></h2>
+<p>使用 <code>extension ... on ...</code> 语法声明一个扩展。</p>
+<pre><code class="language-dart">// ex551.dart
+extension NumParse on String {
+  int toInt({int? radix}) =&gt; int.parse(this, radix: radix);
+
+  double toDouble() =&gt; double.parse(this);
+}
+
+void main() {
+  assert(10 == "10".toInt());
+  assert(1.1 == "1.1".toDouble());
+}
+</code></pre>
+<p>这里的<code>NumParse</code>为扩展名，如果<code>NumParse</code>只是在定义它的library中使用，该名称可以省略。</p>
+<pre><code class="language-dart">extension on String {
+  // ... (omitted for brevity)
+}
+</code></pre>
+<h2 id="使用扩展方法"><a class="header" href="#使用扩展方法">使用扩展方法</a></h2>
+<p><code>NumParse</code>为<code>String</code>添加了两个扩展方法 <code>toInt()</code> 和 <code>toDouble()</code>，就像<code>String</code>自身定义的其它方法一样，直接调用它们即可。</p>
+<pre><code class="language-dart">// ex552.dart
+import 'ex551.dart';
+
+void main() {
+  assert(10 == "a".toInt(radix: 16));
+}
+</code></pre>
+<p>假设另一个<code>String</code>的扩展 <code>NumParse2</code>，它定义的方法与<code>NumParse</code>存在冲突:</p>
+<pre><code class="language-dart">// ex551a.dart
+extension NumParse2 on String {
+  int toInt() =&gt; int.parse(this);
+
+  double toDouble() =&gt; double.parse(this);
+
+  num toNum() =&gt; contains('.') ? toDouble() : toInt();
+}
+</code></pre>
+<p>但你的程序又要同时倒入它们所在的library，怎么办？下面介绍避免此类冲突的两种方法。</p>
+<h3 id="方法1使用showhide限制暴露的api"><a class="header" href="#方法1使用showhide限制暴露的api">方法1：使用<code>show</code>/<code>hide</code>限制暴露的API</a></h3>
+<pre><code class="language-dart">// ex553.dart
+import 'ex551.dart';
+import 'ex551a.dart' hide NumParse2;
+
+void main() {
+  print('abc'.toInt(radix: 16)); // Output: 2748
+}
+</code></pre>
+<h3 id="方法2-将扩展看做包装类"><a class="header" href="#方法2-将扩展看做包装类">方法2: 将扩展看做包装类</a></h3>
+<pre><code class="language-dart">// ex554.dart
+import 'ex551.dart';
+import 'ex551a.dart';
+
+void main() {
+  print(NumParse("123").toInt()); // 1 Output: 123
+  print(NumParse2("456").toDouble()); // 2 Output: 456.0
+  print("789".toNum()); // 3 Output: 789
+}
+</code></pre>
+<ol>
+<li>显示地调用 <code>NumParse</code>的<code>toInt()</code>方法，<code>NumParse("123")</code>看起来就像调用了一个构造函数，而<code>NumParse</code>就像一个包装类；</li>
+<li>这行代码与上一行类似；</li>
+<li><code>toNum()</code>方法只在<code>NumParse2</code>扩展中被定义了，因此直接调用也不会产生歧义。</li>
+</ol>
+<p>如果两个扩展的名称相同，就可能要使用 <em>前缀导入</em>，即给导入的libray取一别名。</p>
+<pre><code class="language-dart">// ex555.dart
+import 'ex551.dart' as lib1;
+import 'ex551b.dart' as lib2;
+
+void main() {
+  print(lib1.NumParse('def').toInt(radix: 16)); // Output: 3567
+  print(lib2.NumParse('234').toDouble()); // Output: 234.0
+  print("345".toNum()); // Output: 345
+}
+</code></pre>
+<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
+<ul>
+<li><a href="https://dart.dev/language/extension-methods">https://dart.dev/language/extension-methods</a></li>
+</ul>
 
                     </main>
 

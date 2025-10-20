@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>类修饰符 - 从0开始学Dart</title>
+        <title>Mixin - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -33,9 +33,9 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
@@ -43,11 +43,10 @@
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root and default themes to javascript -->
+        <!-- Provide site root to javascript -->
         <script>
-            const path_to_root = "../";
-            const default_light_theme = "navy";
-            const default_dark_theme = "navy";
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -57,8 +56,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                let theme = localStorage.getItem('mdbook-theme');
-                let sidebar = localStorage.getItem('mdbook-sidebar');
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -72,8 +71,7 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
-            let theme;
+            var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -86,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            let sidebar = null;
-            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -123,7 +121,6 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -167,80 +164,136 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="类修饰符"><a class="header" href="#类修饰符">类修饰符</a></h1>
-<p>本文中重点讨论如下类的修饰符及<a href="#%E4%BF%AE%E9%A5%B0%E7%AC%A6%E7%9A%84%E7%BB%84%E5%90%88">它们的组合</a>：</p>
-<ul>
-<li><a href="#abstract"><code>abstract</code></a></li>
-<li><a href="#interface"><code>interface</code></a></li>
-<li><a href="#base"><code>base</code></a></li>
-<li><a href="#sealed"><code>sealed</code></a></li>
-<li><a href="#final"><code>final</code></a></li>
-</ul>
-<h2 id="abstract"><a class="header" href="#abstract">abstract</a></h2>
-<h2 id="interface"><a class="header" href="#interface">interface</a></h2>
-<h2 id="base"><a class="header" href="#base">base</a></h2>
-<p>每个类（<code>class</code>）都隐式地定义了一个接口（<code>interface</code>），因而可以实现（<code>implements</code>）一个类（即实现类中的方法）。<code>base</code> 类却是为继承而生，在定义它的文件之外，只能被继承，而不能被实现。</p>
-<p><em><code>ex412.dart</code></em>:</p>
-<pre><code class="language-dart">// ex412.dart
-base class Vehicle { // 1
-  void moveForward(int meters) {
-    // ...
-  }
-}
+                        <h1 id="mixin"><a class="header" href="#mixin">Mixin</a></h1>
+<p>Mixin 是一种代码复用技术，旨在为类添加新成员。简单地说，mixin 是可复用的代码片段。 本章节将介绍<a href="#mixin-%E5%9F%BA%E7%A1%80">mixin基础</a>、<a href="#mixin-%E7%B1%BB">mixin类</a>，以及解决<a href="#mixin-%E6%88%90%E5%91%98%E4%BE%9D%E8%B5%96">mixin成员依赖</a>问题的3种策略。</p>
+<h2 id="mixin-基础"><a class="header" href="#mixin-基础">Mixin 基础</a></h2>
+<p>使用 <code>mixin</code> 关键字声明 mixin。</p>
+<pre><code class="language-dart">// ex531.dart
+mixin Starter {
+  var started = false;
 
-base class Car implements Vehicle { // 2
-  @override
-  void moveForward(int meters) {
-    // ...
-  }
-}
-
-base class Motorcycle extends Vehicle { // 3
- 
+  void start() =&gt; started = true;
 }
 </code></pre>
-<p><em><code>ex412a.dart</code></em>:</p>
-<pre><code class="language-dart">// ex412a.dart
-import 'ex412.dart';
+<p>在声明类时，使用关键字 <code>with</code> 为其添加 mixin。</p>
+<pre><code class="language-dart">// ex532.dart
+import './ex531.dart';
 
-base class Truck extends Vehicle { // 4
-  int passengers = 4;
+class Game with Starter {}
 
-  @override
-  void moveForward(int meters) {
-    // ...
-  }
+class Engine with Starter {}
+
+void main() {
+  var g = Game();
+  print(g.started); // Output: false
+  g.start();
+  print(g.started); // Output: true
+}
+</code></pre>
+<p><code>with</code> 子句可与 <code>extends</code> 子句连用，且可以为一个类添加多个mixin。</p>
+<pre><code class="language-dart">// ex533.dart
+import './ex531.dart';
+
+mixin Leveler {
+  int level = 0;
 }
 
-// ERROR: 
-// The class 'Vehicle' can't be implemented outside of its library 
-// because it's a base class.
-base class Train implements Vehicle { // 5
+class Fun {}
+
+class Game extends Fun with Starter, Leveler {}
+
+void main() {
+  var g = Game();
+  g.level = 3;
+  g.start();
+  print('${g.level} ${g.started}'); // Output: 3 true
+}
+</code></pre>
+<p>mixin 不能有 <code>extends</code> 或 <code>with</code> 子句，也不能声明构造函数。</p>
+<h2 id="mixin-类"><a class="header" href="#mixin-类">Mixin 类</a></h2>
+<p>使用 <code>mixin class</code> 声明一个 mixin 类。mixin类可同时作为类和mixin使用，但也有更多的限制，实际中它的应用不多。</p>
+<pre><code class="language-dart">// ex534.dart
+mixin class Player {
+  late String playerName;
+}
+</code></pre>
+<p>mixin 类不能有 <code>extends</code> 或 <code>with</code> 或 <code>on</code> 子句，也不能定义生成式构造函数。</p>
+<h2 id="mixin-成员依赖"><a class="header" href="#mixin-成员依赖">Mixin 成员依赖</a></h2>
+<p>有时候一个mixin需要访问一些不由它自己定义的成员（字段/方法）。换句话说，使用该mixin的类需要或显示或隐式地实现某个接口，这个接口正好包含了mixin所需的成员。下面讨论解决成员依赖的3种策略。</p>
+<h3 id="策略1在mixin中定义抽象成员"><a class="header" href="#策略1在mixin中定义抽象成员">策略1：在mixin中定义抽象成员</a></h3>
+<pre><code class="language-dart">// ex535.dart
+mixin Adder {
+  set count(int value); // 1
+  int get count; // 1a
+
+  void add(int amount) =&gt; count += amount; // 2
+}
+
+// 3
+class AddCounter with Adder {
   @override
-  void moveForward(int meters) {
-    // ...
-  }
+  int count = 0;
+}
+
+void main() {
+  var c = AddCounter();
+  c.add(2);
+  assert(c.count == 2);
 }
 </code></pre>
 <ol>
-<li><em><code>ex412.dart</code></em>  文件中的<code>Vehicle</code>是一个 <code>base</code> 类，它有一个实例方法 <code>moveForward(int)</code>;</li>
-<li>同一文件中的 <code>Car</code> 实现了 <code>Vehicle</code>;</li>
-<li>同一文件中的 <code>Motorcycle</code> 继承（<code>extends</code>）了 <code>Vehicle</code>;</li>
-<li>另一文件（ <em><code>ex412a.dart</code></em> ）中的 <code>Truck</code> 继承了  <code>Vehicle</code>;</li>
-<li><em><code>ex412a.dart</code></em> 中的 <code>Train</code> 实现 <code>Vehicle</code>，引发编译错误。</li>
+<li><code>Adder</code> mixin 为属性<code>count</code>定义了抽象的getter和setter；</li>
+<li><code>Adder.add(int)</code> 方法调用了<code>count</code>的getter和setter；</li>
+<li><code>AddCounter</code> 类使用了 <code>Adder</code> mixin，且实现了<code>count</code>的getter和setter两个抽象方法。</li>
 </ol>
-<p><code>base</code> 类有如下特点：</p>
-<ul>
-<li><code>base</code>类的子类/实现类必须使用<code>base</code>或<code>final</code>或<code>sealed</code>修饰，这是为了确保<code>base</code>的语义；</li>
-<li><code>base</code>类的子类自动继承了其可见的成员（字段/方法），因此为<code>base</code>类添加新的成员不会破坏子类，除非新成员与子类发生冲突;</li>
-<li>实例化<code>base</code>类的子类，必然导致<code>base</code>类的构造函数被调用。</li>
-</ul>
-<h2 id="sealed"><a class="header" href="#sealed"><code>sealed</code></a></h2>
-<h2 id="final"><a class="header" href="#final"><code>final</code></a></h2>
-<h2 id="修饰符的组合"><a class="header" href="#修饰符的组合">修饰符的组合</a></h2>
+<h3 id="策略2让mixin实现一个接口"><a class="header" href="#策略2让mixin实现一个接口">策略2：让mixin实现一个接口</a></h3>
+<p>让 mixin 实现一个接口，使用该 mixin 的类也自然地实现了该接口。对上述 <code>Adder</code> mixin 进行重构，对它的两个抽象方法（即<code>count</code>的getter和setter），抽取至一个接口中，形成如下版本。</p>
+<pre><code class="language-dart">// ex536.dart
+abstract interface class Countable {
+  set count(int value); // 1
+  int get count; // 1a
+}
+
+mixin Adder implements Countable {
+  void add(int amount) =&gt; count += amount; // 2
+}
+
+// 3
+class AddCounter with Adder {
+  @override
+  int count = 0;
+}
+</code></pre>
+<ol>
+<li><code>Countable</code> 接口定义了属性<code>count</code>的getter和setter；</li>
+<li><code>Adder</code> mixin 实现了 <code>Countable</code>；</li>
+<li><code>AddCounter</code> 类使用了 <code>Adder</code> mixin，自然地实现了<code>Countable</code>接口。</li>
+</ol>
+<p>可以向下面这样声明<code>AddCounter</code>类：</p>
+<pre><code class="language-dart">class AddCounter with Adder implements Countable {
+ // ... (omitted for brevity)
+}
+</code></pre>
+<h3 id="策略3使用-on-子句定义超类"><a class="header" href="#策略3使用-on-子句定义超类">策略3：使用 <code>on</code> 子句定义超类</a></h3>
+<p>在声明mixin是使用<code>on</code>子句，用以限制mixin应用于哪些类。例如：</p>
+<pre><code class="language-dart">mixin Adder on Counter {
+}
+</code></pre>
+<p>只有Counter的子孙类才可以使用 <code>Adder</code> mixin。同时，<code>Adder</code> 也可以访问 <code>Counter</code> 中的成员（字段/方法）。让<code>Counter</code> 隐式地实现 <code>Countable</code> 接口，形成如下新版本。</p>
+<pre><code class="language-dart">// ex537.dart
+class Counter {
+  int count = 0; // 1
+}
+
+mixin Adder on Counter {
+  void add(int amount) =&gt; count += amount; // 2
+}
+
+class AddCounter extends Counter with Adder {} // 3
+</code></pre>
 <h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
 <ul>
-<li><a href="https://dart.dev/language/class-modifiers">https://dart.dev/language/class-modifiers</a></li>
+<li><a href="https://dart.dev/language/mixins">https://dart.dev/language/mixins</a></li>
 </ul>
 
                     </main>
