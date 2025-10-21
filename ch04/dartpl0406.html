@@ -253,7 +253,7 @@ void main() {
 <h2 id="策略模式"><a class="header" href="#策略模式">策略模式</a></h2>
 <p>callable类可用来实现设计模式里的<a href="https://refactoring.guru/design-patterns/strategy">策略模式</a>。</p>
 <p>比如商场对不同等级的客户有不同的折扣。</p>
-<pre><code class="language-mermaid">classDiagram
+<pre class="mermaid">classDiagram
   ShoppingCart o--&gt; DiscountStrategy 
 
   DiscountStrategy &lt;|-- VipDiscount
@@ -270,7 +270,7 @@ void main() {
     + double call(double originalPrice)
   }
 
-</code></pre>
+</pre>
 <pre><code class="language-dart">// ex465.dart
 abstract interface class DiscountStrategy {
   double call(double originalPrice); // 1

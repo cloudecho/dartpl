@@ -166,32 +166,32 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="前言"><a class="header" href="#前言">前言</a></h1>
-<p>如果你正在寻找一个跨平台的原生应用开发方案，你可能已经了解过Flutter，ReactNative等。
-Dart是Flutter应用的开发语言，它专为客户端优化，支持自动内存管理和面向对象编程。
-这里的跨平台指的是一套代码，可发布成 iOS、Android、macOS、Linux、Windows及Web应用。
-原生应用是指代码最终被编译为平台相关的机器码；对web而言，对应的是javascript+WebAssembly。</p>
-<pre><code class="language-mermaid">mindmap
+<p>如果你正在寻找一个跨平台的原生应用开发方案，你可能已经了解过 Flutter，ReactNative 等。
+Dart 是 Flutter 应用的开发语言，它专为客户端优化，支持自动内存管理和面向对象编程。
+这里的跨平台指的是一套代码，可发布成 iOS、Android、macOS、Linux、Windows 及 Web 应用。
+原生应用是指代码最终被编译为平台相关的机器码；对 web 而言，对应的是 javascript+WebAssembly。</p>
+<pre class="mermaid">mindmap
   root((Dart))
-    自动内存管理
-    面向对象编程
-    客户端优化
-</code></pre>
+    (自动内存管理)
+    (面向对象编程)
+    (客户端优化)
+</pre>
 <p>如何你初学编程，一下子听到这么多概念，也许还没开始写一行代码就已经开始糊涂了，没有关系。
 要知道，计算机编程就像英语一样，要掌握它，除了需要兴趣之外，还需要良好的思维模式以及坚持不懈的练习。
 希望你在学习本课程时，打开代码编辑器，跟着一起练习，为以后编程打下坚实的基础。在你掌握了一门编程语言之后，再去学其他编程语言就容易多了。</p>
 <h2 id="读者范围"><a class="header" href="#读者范围">读者范围</a></h2>
-<p>本课程将详细介绍Dart 3编程语言 ，从基本语法与控制结构到异步编程，从面向对象编程到编码准则；课程内容由浅入深，既有理论讲解又有代码示例 。相信无论你是编程新手还是具有一定经验的程序员，你都可以从本课程中获益。</p>
+<p>本课程将详细介绍 Dart 3 编程语言 ，从基本语法与控制结构到异步编程，从面向对象编程到编码准则；课程内容由浅入深，既有理论讲解又有代码示例 。相信无论你是编程新手还是具有一定经验的程序员，你都可以从本课程中获益。</p>
 <h2 id="课程内容简介"><a class="header" href="#课程内容简介">课程内容简介</a></h2>
-<p>第1章，从0开始搭建开发环境，学习 dart变量与数据类型及操作符。</p>
-<p>第2章，控制流、函数及异常处理。</p>
-<p>第3章，Dart 强大的模式匹配功能。</p>
-<p>第4-5章，Dart 的 面向对象编程(OOP)，第4章学习用于封装信息的class（类）的构造，第5章学习类的继承及扩展。</p>
-<p>第6章，集合与泛型。</p>
-<p>第7章，异步编程。</p>
-<p>第8章，单元测试。</p>
-<p>附录包括dart命令行工具、编码准则、Dart命令行及服务端编程，以及常用package介绍。</p>
-<p>本课程中的代码可免费下载，使用的dart版本为3.8+。</p>
-<p>最后，希望本课程能对你的dart学习之旅助一臂之力，祝你学习愉快。</p>
+<p>第 1 章，从 0 开始搭建开发环境，学习 dart 变量与数据类型及操作符。</p>
+<p>第 2 章，控制流、函数及异常处理。</p>
+<p>第 3 章，Dart 强大的模式匹配功能。</p>
+<p>第 4-5 章，Dart 的 面向对象编程(OOP)，第 4 章学习用于封装信息的 class（类）的构造，第 5 章学习类的继承及扩展。</p>
+<p>第 6 章，集合与泛型。</p>
+<p>第 7 章，异步编程。</p>
+<p>第 8 章，单元测试。</p>
+<p>附录包括 dart 命令行工具、编码准则、Dart 命令行及服务端编程，以及常用 package 介绍。</p>
+<p>本课程中的代码可免费下载，使用的 dart 版本为 3.8+。</p>
+<p>最后，希望本课程能对你的 dart 学习之旅助一臂之力，祝你学习愉快。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="hello-dart-搭建开发环境"><a class="header" href="#hello-dart-搭建开发环境">Hello Dart: 搭建开发环境</a></h1>
 <p>搭建开发环境是我们编程的起点，新手有可能卡在这一步。如果你是经验丰富的程序员，可以直接跳过。搭建开发环境需要考虑的两个主要问题是开发机的操作系统与网络环境。</p>
 <p>我们的开发电脑的操作系统可能是下列之一:</p>
@@ -1226,11 +1226,11 @@ void main() {
   }
 }  
 </code></pre>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     B{条件}--&gt;|true| C(代码块)
     C --&gt; E([End])
     B --&gt;|false| E
-</code></pre>
+</pre>
 <p><code>if</code> 有一个可选的<code>else</code>分支。</p>
 <pre><code class="language-dart">  if (isSunny) {
     print("Let's go to the park");
@@ -1238,12 +1238,12 @@ void main() {
     print("It's not sunny");
   }
 </code></pre>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     B{条件}--&gt;|true| C(主分支)
     C --&gt; E([End])
     B --&gt;|false| D(else分支)
     D --&gt; E
-</code></pre>
+</pre>
 <p>还可以使用 <code>else if</code>，像下面这样。</p>
 <pre><code class="language-dart">  if (isSunny) {
     print("Let's go to the park");
@@ -1278,7 +1278,7 @@ void main() {
 </ol>
 <h2 id="switch"><a class="header" href="#switch"><code>switch</code></a></h2>
 <p>如果需要匹配多个case，应使用<code>switch</code> 语句，而非一个又一个的<code>else if</code>。</p>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     A{switch}--&gt;|case1| B(case1)
     A --&gt; |case2| C(case2)
     A --&gt; |case...| D(case...)
@@ -1287,7 +1287,7 @@ void main() {
     C --&gt; Z
     D --&gt; Z
     E --&gt; Z
-</code></pre>
+</pre>
 <pre><code class="language-dart">// ex213.dart
 void main() {
   var status = 'done';
@@ -1501,14 +1501,14 @@ void main() {
     循环体
   }
 </code></pre>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     A([初始化列表]) --&gt; B{循环条件}
     B --&gt;|true| C(循环体)
     C --&gt;|continue| D(后置操作)
     D --&gt; B
     B ----&gt;|false| E([End])
     C ----&gt;|break| E
-</code></pre>
+</pre>
 <p>后置操作即执行完循环体之后的操作。初始化列表、 循环条件、后置操作，这三部分用分号（<code>;</code>）分割，且每一部分都可以省略（但必须保留分号）。如果循环体只有一条语句，包围循环体的那对花括号（<code>{}</code>） 可以省略，但不建议这么做。</p>
 <p>下面这段代码将打印九九乘法表：</p>
 <pre><code class="language-dart">// ex222.dart
@@ -1575,20 +1575,20 @@ void main() {
 <h2 id="while-和-do-while"><a class="header" href="#while-和-do-while"><code>while</code> 和 <code>do-while</code></a></h2>
 <p><code>while</code> 循环在循环体之前检查循环条件，而<code>do-while</code>则是在循环提之后检查。</p>
 <p><strong><em>while</em></strong> 循环：</p>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     B{循环条件}--&gt;|true| C(循环体)
     C --&gt;|continue| B
     C --&gt;|break|E
     B ----&gt;|false| E([End])
-</code></pre>
+</pre>
 <p><strong><em>do-while</em></strong> 循环：</p>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     C(循环体) --&gt;|continue| B{循环条件}
     B --&gt;|true| C
     C --&gt;|break|E
     B ----&gt;|false| E([End])
 
-</code></pre>
+</pre>
 <p>下面这段代码先打印数字0到9，再打印数字10到1（递减）。</p>
 <pre><code class="language-dart">//ex127.dart
 void main() {
@@ -1653,10 +1653,10 @@ void main() {
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="函数-function"><a class="header" href="#函数-function">函数 （Function）</a></h1>
 <p>本章节将介绍函数的基本概念，位置参数、命名参数、函数类型、匿名函数等内容，将在后续章节陆续介绍。我们已经多次见过<code>main</code>函数，它是程序的入口。抽象地说，函数对输入数据（输入参数列表）进行处理，然后输出其处理结果（返回值）。</p>
-<pre><code class="language-mermaid">flowchart LR
+<pre class="mermaid">flowchart LR
    a(( )) --&gt;|输入参数| B(处理（函数体）)
    B --&gt; |返回值|c(( ))
-</code></pre>
+</pre>
 <p>先来看一个示例程序，计算平面上两点之间的欧式距离:</p>
 <p>\( \sqrt{(x_1-x_2)^2 + (y_1-y_2)^2} \)</p>
 <pre><code class="language-dart">//ex241.dart
@@ -3582,7 +3582,7 @@ void main() {
 <h2 id="策略模式"><a class="header" href="#策略模式">策略模式</a></h2>
 <p>callable类可用来实现设计模式里的<a href="https://refactoring.guru/design-patterns/strategy">策略模式</a>。</p>
 <p>比如商场对不同等级的客户有不同的折扣。</p>
-<pre><code class="language-mermaid">classDiagram
+<pre class="mermaid">classDiagram
   ShoppingCart o--&gt; DiscountStrategy 
 
   DiscountStrategy &lt;|-- VipDiscount
@@ -3599,7 +3599,7 @@ void main() {
     + double call(double originalPrice)
   }
 
-</code></pre>
+</pre>
 <pre><code class="language-dart">// ex465.dart
 abstract interface class DiscountStrategy {
   double call(double originalPrice); // 1
@@ -4800,6 +4800,14 @@ void main() {
 <li><a href="https://dart.dev/language/generics">https://dart.dev/language/generics</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="list列表"><a class="header" href="#list列表">List（列表）</a></h1>
+<p>Dart 中的集合数据类型（Collection）包括 List、Set、Map 和 Queue。</p>
+<pre class="mermaid">flowchart TD
+  B((Collection))
+  B--&gt;C(List)
+  B--&gt;D(Set)
+  B--&gt;E(Map)
+  B--&gt;F(Queue)
+</pre>
 <p>数组（array）是一组有序的对象集合。Dart 的数组即 List，在之前的章节已经多次出现过。</p>
 <h2 id="list-基础"><a class="header" href="#list-基础">List 基础</a></h2>
 <p>先来看一个简单的示例。</p>
@@ -4935,6 +4943,103 @@ void main() {
 }
 </code></pre>
 <h2 id="常用方法"><a class="header" href="#常用方法">常用方法</a></h2>
+<p>如下示例展示了 List 的常用方法或属性。</p>
+<pre><code class="language-dart">// ex627.dart
+void main() {
+  var numbers = [for (var n = 0; n &lt; 5; n++) n * n]; // 1
+  print(numbers.runtimeType); // 1a Output: List&lt;int&gt;
+  print(numbers.length); // 2 Output: 5
+  print(numbers.first); // 3 Output: 0
+  print(numbers.last); // 4 Output: 16
+  print(numbers.isEmpty); // 5 Output: false
+  print(numbers.isNotEmpty); // 6 Output: true
+
+  print('-' * 9);
+  print(numbers.sublist(1, 3)); // 7 Output: [1, 4]
+  print(numbers.getRange(1, 3)); // 8 Output: (1, 4)
+  print(numbers.reversed); // 9 Output: (16, 9, 4, 1, 0)
+  print(numbers.followedBy([50, 60])); // 10 Output: (0, 1, 4, 9, 16, 50, 60)
+  print(numbers.asMap()); // 11 Output: {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
+
+  print('+' * 9);
+  print(numbers.where((a) =&gt; a % 2 == 0)); // 12 Output: (0, 4, 16)
+  print(numbers.whereType&lt;int&gt;()); // 13 Output: (0, 1, 4, 9, 16)
+
+  print(
+    numbers.firstWhere((n) =&gt; n &gt; 0 &amp;&amp; n % 3 == 0, orElse: () =&gt; -1),
+  ); // 14 Output: 9
+
+  try {
+    print(numbers.singleWhere((n) =&gt; n % 3 == 0, orElse: () =&gt; -1)); // 15
+  } on StateError catch (e) {
+    print(e.message); // 15a Output: Too many elements
+  }
+
+  print(numbers.map((n) =&gt; n + 1)); // 16 Output: (1, 2, 5, 10, 17)
+  var result = numbers.fold&lt;int&gt;(5, (value, n) =&gt; value + n);
+  print(result); // 17 Output: 35
+  result = numbers.reduce((value, n) =&gt; value + n);
+  print(result); // 18 Output: 30
+
+  print('*' * 9);
+  print(numbers.any((n) =&gt; n &gt; 10)); // 19 Output: true
+  print(numbers.every((n) =&gt; n &gt; 0)); // 20 Output: false
+  print(numbers.take(3)); // 21 Output: (0, 1, 4)
+  print(numbers.takeWhile((n) =&gt; n % 2 == 1)); // 22 Output: ()
+  print(numbers.skip(2)); // 23 Output: (4, 9, 16)
+  print(numbers.skipWhile((n) =&gt; n % 2 == 1)); // 24 Output: (0, 1, 4, 9, 16)
+
+  print('/' * 9);
+  numbers.add(20); // 25
+  numbers.addAll([30]); // 26
+  numbers.removeAt(0); // 27
+  numbers.insert(0, 1); // 28
+  print(numbers); // 28a Output: [1, 1, 4, 9, 16, 20, 30]
+  numbers.replaceRange(1, 3, [10, 40]); // 29
+  print(numbers); // 29a Output: [1, 10, 40, 9, 16, 20, 30]
+  numbers.shuffle(); // 30
+  print(numbers); // 30a
+  numbers.sort((a, b) =&gt; a - b); // 31
+  print(numbers); // 31a Output: [1, 9, 10, 16, 20, 30, 40]
+  numbers.clear(); // 32
+  print(numbers.isEmpty); // 32a Output: true
+}
+</code></pre>
+<ol>
+<li>构造一个名为 <code>numbers</code> 的 List，其值为 <code>[0, 1, 4, 9, 16]</code>；</li>
+<li><code>length</code> 返回 List 中元素的个数（即 List 的长度）；</li>
+<li><code>first</code> 返回 List 的第一个元素（element），如果 List 为空将引发<code>StateError</code>；</li>
+<li><code>last</code>返回 List 的最后一个元素，如果 List 为空将引发<code>StateError</code>；</li>
+<li><code>isEmpty</code> 检查 List 是否为空；</li>
+<li><code>isNotEmpty</code> 检查 List 是否非空；</li>
+<li><code>sublist(int start, [int? end])</code> 返回一个新的 List，它包含了原 List 指定区间（<code>[start, end)</code>，不含<code>end</code>）内的元素；</li>
+<li><code>getRange(int start, int end)</code>与<code>sublist(start, end)</code>类似，只不过它返回的是一个<code>Iterable</code>对象；</li>
+<li><code>reversed</code>返回 List 的逆序的<code>Iterable</code>对象；</li>
+<li><code>followedBy(Iterable&lt;E&gt; other)</code>返回一个 <code>Iterable&lt;E&gt;</code> 对象，它包含了该 List 和 <code>other</code>（追加部分）的所有元素；</li>
+<li><code>asMap()</code>返回 List 的 Map 视图；</li>
+<li><code>where(bool test(E element))</code>返回一个<code>Iterable&lt;E&gt;</code>对象，它使用一个<code>test</code>函数来过滤 List 的元素(<code>e</code>)，通过测试（<code>test(e)</code>返回<code>true</code>）的那些元素将出现结果集中；</li>
+<li><code>whereType&lt;T&gt;()</code>返回一个<code>Iterable&lt;T&gt;</code>对象，它筛选指定数据类型(<code>T</code>)的元素；</li>
+<li><code>firstWhere(bool test(E element), {E orElse()?})</code>返回首个满足特定条件的元素，如果在 List 中找不到这样的元素，它就调用<code>orElse</code>函数并返回其值（如果 <code>orElse！=null</code>，否则将抛出<code>StateError</code>）；</li>
+<li><code>singleWhere</code>与<code>firstWhere</code>类似，只不过当有多个元素满足测试条件时会抛出<code>StateError</code>；</li>
+<li><code>map&lt;T&gt;(T toElement(E e))</code>返回一个<code>Iterable&lt;T&gt;</code>对象，它使用<code>toElement</code>函数将 List 里的每个元素转换成另一个值；</li>
+<li><code>fold&lt;T&gt;(T initialValue, T combine(T previousValue, E element))</code>遍历 List 并使用<code>combine</code>函数合并元素，最后返回一个单一的值，<code>initialValue</code>用于指定初始值；</li>
+<li><code>reduce(E combine(E value, E element))</code>可被视为<code>fold</code>的特例，它使用 List 的首个元素作为<code>initialValue</code>，然后合并剩余的元素，因而<code>reduce</code>要求 List 非空，在空 List 上调用<code>reduce</code>方法将引起<code>StateError</code>；另外<code>reduce</code>的返回类型为<code>E</code>，而<code>fold</code>的返回类型为<code>T</code>（方法的类型参数）；</li>
+<li><code>any(bool test(E element))</code>检查 List 是否包含满足特定条件的元素；</li>
+<li><code>every(bool test(E element))</code>检查是否 List 的每个元素都满足特定条件；</li>
+<li><code>take(int n)</code>获取 List 的前<code>n</code>个元素；</li>
+<li><code>takeWhile(bool test(E value))</code>返回 List 前面的元素（<code>e</code>），直到<code>test(e)</code>为<code>false</code>；</li>
+<li><code>skip(int n)</code>跳过 List 的前<code>n</code>个元素并返回剩余部分；</li>
+<li><code>skipWhile(bool test(E value))</code>跳过 List 前面的元素（<code>e</code>），直到<code>test(e)</code>为<code>false</code>，并返回剩余部分；</li>
+<li><code>add(E value)</code>向 List 中追加一个新元素（添加到末尾）；</li>
+<li><code>addAll(Iterable&lt;E&gt; iterable)</code>将 <code>iterable</code>里的所有元素追加到 List；</li>
+<li><code>removeAt(int index)</code>将对应下标（<code>index</code>）的元素从 List 中移除；</li>
+<li><code>insert(int index, E e)</code>将元素<code>e</code>插入到<code>index</code>对应的地方；</li>
+<li><code>replaceRange(int start, int end, Iterable&lt;E&gt; replacements)</code>使用<code>replacements</code>中的元素替换 List 指定区间（<code>[start, end)</code>）的元素；</li>
+<li><code>shuffle([Random? random])</code>将 List 中的元素随意打乱（洗牌）；</li>
+<li><code>sort([int compare(E a, E b)?])</code>对 List 中的元素排序，其顺序由<code>compare</code>函数指定；</li>
+<li><code>clear()</code>清空 List。</li>
+</ol>
+<p>关于 List 的更多细节，请参考官网文档<a href="https://api.dart.dev/dart-core/List-class.html">https://api.dart.dev/dart-core/List-class.html</a></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="set集"><a class="header" href="#set集">Set（集）</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="map映射"><a class="header" href="#map映射">Map（映射）</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="hashcode-与-操作符"><a class="header" href="#hashcode-与-操作符">hashCode 与 <code>==</code>操作符</a></h1>

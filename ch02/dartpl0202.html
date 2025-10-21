@@ -186,14 +186,14 @@ void main() {
     循环体
   }
 </code></pre>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     A([初始化列表]) --&gt; B{循环条件}
     B --&gt;|true| C(循环体)
     C --&gt;|continue| D(后置操作)
     D --&gt; B
     B ----&gt;|false| E([End])
     C ----&gt;|break| E
-</code></pre>
+</pre>
 <p>后置操作即执行完循环体之后的操作。初始化列表、 循环条件、后置操作，这三部分用分号（<code>;</code>）分割，且每一部分都可以省略（但必须保留分号）。如果循环体只有一条语句，包围循环体的那对花括号（<code>{}</code>） 可以省略，但不建议这么做。</p>
 <p>下面这段代码将打印九九乘法表：</p>
 <pre><code class="language-dart">// ex222.dart
@@ -260,20 +260,20 @@ void main() {
 <h2 id="while-和-do-while"><a class="header" href="#while-和-do-while"><code>while</code> 和 <code>do-while</code></a></h2>
 <p><code>while</code> 循环在循环体之前检查循环条件，而<code>do-while</code>则是在循环提之后检查。</p>
 <p><strong><em>while</em></strong> 循环：</p>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     B{循环条件}--&gt;|true| C(循环体)
     C --&gt;|continue| B
     C --&gt;|break|E
     B ----&gt;|false| E([End])
-</code></pre>
+</pre>
 <p><strong><em>do-while</em></strong> 循环：</p>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     C(循环体) --&gt;|continue| B{循环条件}
     B --&gt;|true| C
     C --&gt;|break|E
     B ----&gt;|false| E([End])
 
-</code></pre>
+</pre>
 <p>下面这段代码先打印数字0到9，再打印数字10到1（递减）。</p>
 <pre><code class="language-dart">//ex127.dart
 void main() {

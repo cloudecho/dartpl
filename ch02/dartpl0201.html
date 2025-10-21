@@ -185,11 +185,11 @@ void main() {
   }
 }  
 </code></pre>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     B{条件}--&gt;|true| C(代码块)
     C --&gt; E([End])
     B --&gt;|false| E
-</code></pre>
+</pre>
 <p><code>if</code> 有一个可选的<code>else</code>分支。</p>
 <pre><code class="language-dart">  if (isSunny) {
     print("Let's go to the park");
@@ -197,12 +197,12 @@ void main() {
     print("It's not sunny");
   }
 </code></pre>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     B{条件}--&gt;|true| C(主分支)
     C --&gt; E([End])
     B --&gt;|false| D(else分支)
     D --&gt; E
-</code></pre>
+</pre>
 <p>还可以使用 <code>else if</code>，像下面这样。</p>
 <pre><code class="language-dart">  if (isSunny) {
     print("Let's go to the park");
@@ -237,7 +237,7 @@ void main() {
 </ol>
 <h2 id="switch"><a class="header" href="#switch"><code>switch</code></a></h2>
 <p>如果需要匹配多个case，应使用<code>switch</code> 语句，而非一个又一个的<code>else if</code>。</p>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     A{switch}--&gt;|case1| B(case1)
     A --&gt; |case2| C(case2)
     A --&gt; |case...| D(case...)
@@ -246,7 +246,7 @@ void main() {
     C --&gt; Z
     D --&gt; Z
     E --&gt; Z
-</code></pre>
+</pre>
 <pre><code class="language-dart">// ex213.dart
 void main() {
   var status = 'done';

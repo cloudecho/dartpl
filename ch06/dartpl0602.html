@@ -165,6 +165,14 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="list列表"><a class="header" href="#list列表">List（列表）</a></h1>
+<p>Dart 中的集合数据类型（Collection）包括 List、Set、Map 和 Queue。</p>
+<pre class="mermaid">flowchart TD
+  B((Collection))
+  B--&gt;C(List)
+  B--&gt;D(Set)
+  B--&gt;E(Map)
+  B--&gt;F(Queue)
+</pre>
 <p>数组（array）是一组有序的对象集合。Dart 的数组即 List，在之前的章节已经多次出现过。</p>
 <h2 id="list-基础"><a class="header" href="#list-基础">List 基础</a></h2>
 <p>先来看一个简单的示例。</p>
@@ -300,6 +308,103 @@ void main() {
 }
 </code></pre>
 <h2 id="常用方法"><a class="header" href="#常用方法">常用方法</a></h2>
+<p>如下示例展示了 List 的常用方法或属性。</p>
+<pre><code class="language-dart">// ex627.dart
+void main() {
+  var numbers = [for (var n = 0; n &lt; 5; n++) n * n]; // 1
+  print(numbers.runtimeType); // 1a Output: List&lt;int&gt;
+  print(numbers.length); // 2 Output: 5
+  print(numbers.first); // 3 Output: 0
+  print(numbers.last); // 4 Output: 16
+  print(numbers.isEmpty); // 5 Output: false
+  print(numbers.isNotEmpty); // 6 Output: true
+
+  print('-' * 9);
+  print(numbers.sublist(1, 3)); // 7 Output: [1, 4]
+  print(numbers.getRange(1, 3)); // 8 Output: (1, 4)
+  print(numbers.reversed); // 9 Output: (16, 9, 4, 1, 0)
+  print(numbers.followedBy([50, 60])); // 10 Output: (0, 1, 4, 9, 16, 50, 60)
+  print(numbers.asMap()); // 11 Output: {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
+
+  print('+' * 9);
+  print(numbers.where((a) =&gt; a % 2 == 0)); // 12 Output: (0, 4, 16)
+  print(numbers.whereType&lt;int&gt;()); // 13 Output: (0, 1, 4, 9, 16)
+
+  print(
+    numbers.firstWhere((n) =&gt; n &gt; 0 &amp;&amp; n % 3 == 0, orElse: () =&gt; -1),
+  ); // 14 Output: 9
+
+  try {
+    print(numbers.singleWhere((n) =&gt; n % 3 == 0, orElse: () =&gt; -1)); // 15
+  } on StateError catch (e) {
+    print(e.message); // 15a Output: Too many elements
+  }
+
+  print(numbers.map((n) =&gt; n + 1)); // 16 Output: (1, 2, 5, 10, 17)
+  var result = numbers.fold&lt;int&gt;(5, (value, n) =&gt; value + n);
+  print(result); // 17 Output: 35
+  result = numbers.reduce((value, n) =&gt; value + n);
+  print(result); // 18 Output: 30
+
+  print('*' * 9);
+  print(numbers.any((n) =&gt; n &gt; 10)); // 19 Output: true
+  print(numbers.every((n) =&gt; n &gt; 0)); // 20 Output: false
+  print(numbers.take(3)); // 21 Output: (0, 1, 4)
+  print(numbers.takeWhile((n) =&gt; n % 2 == 1)); // 22 Output: ()
+  print(numbers.skip(2)); // 23 Output: (4, 9, 16)
+  print(numbers.skipWhile((n) =&gt; n % 2 == 1)); // 24 Output: (0, 1, 4, 9, 16)
+
+  print('/' * 9);
+  numbers.add(20); // 25
+  numbers.addAll([30]); // 26
+  numbers.removeAt(0); // 27
+  numbers.insert(0, 1); // 28
+  print(numbers); // 28a Output: [1, 1, 4, 9, 16, 20, 30]
+  numbers.replaceRange(1, 3, [10, 40]); // 29
+  print(numbers); // 29a Output: [1, 10, 40, 9, 16, 20, 30]
+  numbers.shuffle(); // 30
+  print(numbers); // 30a
+  numbers.sort((a, b) =&gt; a - b); // 31
+  print(numbers); // 31a Output: [1, 9, 10, 16, 20, 30, 40]
+  numbers.clear(); // 32
+  print(numbers.isEmpty); // 32a Output: true
+}
+</code></pre>
+<ol>
+<li>构造一个名为 <code>numbers</code> 的 List，其值为 <code>[0, 1, 4, 9, 16]</code>；</li>
+<li><code>length</code> 返回 List 中元素的个数（即 List 的长度）；</li>
+<li><code>first</code> 返回 List 的第一个元素（element），如果 List 为空将引发<code>StateError</code>；</li>
+<li><code>last</code>返回 List 的最后一个元素，如果 List 为空将引发<code>StateError</code>；</li>
+<li><code>isEmpty</code> 检查 List 是否为空；</li>
+<li><code>isNotEmpty</code> 检查 List 是否非空；</li>
+<li><code>sublist(int start, [int? end])</code> 返回一个新的 List，它包含了原 List 指定区间（<code>[start, end)</code>，不含<code>end</code>）内的元素；</li>
+<li><code>getRange(int start, int end)</code>与<code>sublist(start, end)</code>类似，只不过它返回的是一个<code>Iterable</code>对象；</li>
+<li><code>reversed</code>返回 List 的逆序的<code>Iterable</code>对象；</li>
+<li><code>followedBy(Iterable&lt;E&gt; other)</code>返回一个 <code>Iterable&lt;E&gt;</code> 对象，它包含了该 List 和 <code>other</code>（追加部分）的所有元素；</li>
+<li><code>asMap()</code>返回 List 的 Map 视图；</li>
+<li><code>where(bool test(E element))</code>返回一个<code>Iterable&lt;E&gt;</code>对象，它使用一个<code>test</code>函数来过滤 List 的元素(<code>e</code>)，通过测试（<code>test(e)</code>返回<code>true</code>）的那些元素将出现结果集中；</li>
+<li><code>whereType&lt;T&gt;()</code>返回一个<code>Iterable&lt;T&gt;</code>对象，它筛选指定数据类型(<code>T</code>)的元素；</li>
+<li><code>firstWhere(bool test(E element), {E orElse()?})</code>返回首个满足特定条件的元素，如果在 List 中找不到这样的元素，它就调用<code>orElse</code>函数并返回其值（如果 <code>orElse！=null</code>，否则将抛出<code>StateError</code>）；</li>
+<li><code>singleWhere</code>与<code>firstWhere</code>类似，只不过当有多个元素满足测试条件时会抛出<code>StateError</code>；</li>
+<li><code>map&lt;T&gt;(T toElement(E e))</code>返回一个<code>Iterable&lt;T&gt;</code>对象，它使用<code>toElement</code>函数将 List 里的每个元素转换成另一个值；</li>
+<li><code>fold&lt;T&gt;(T initialValue, T combine(T previousValue, E element))</code>遍历 List 并使用<code>combine</code>函数合并元素，最后返回一个单一的值，<code>initialValue</code>用于指定初始值；</li>
+<li><code>reduce(E combine(E value, E element))</code>可被视为<code>fold</code>的特例，它使用 List 的首个元素作为<code>initialValue</code>，然后合并剩余的元素，因而<code>reduce</code>要求 List 非空，在空 List 上调用<code>reduce</code>方法将引起<code>StateError</code>；另外<code>reduce</code>的返回类型为<code>E</code>，而<code>fold</code>的返回类型为<code>T</code>（方法的类型参数）；</li>
+<li><code>any(bool test(E element))</code>检查 List 是否包含满足特定条件的元素；</li>
+<li><code>every(bool test(E element))</code>检查是否 List 的每个元素都满足特定条件；</li>
+<li><code>take(int n)</code>获取 List 的前<code>n</code>个元素；</li>
+<li><code>takeWhile(bool test(E value))</code>返回 List 前面的元素（<code>e</code>），直到<code>test(e)</code>为<code>false</code>；</li>
+<li><code>skip(int n)</code>跳过 List 的前<code>n</code>个元素并返回剩余部分；</li>
+<li><code>skipWhile(bool test(E value))</code>跳过 List 前面的元素（<code>e</code>），直到<code>test(e)</code>为<code>false</code>，并返回剩余部分；</li>
+<li><code>add(E value)</code>向 List 中追加一个新元素（添加到末尾）；</li>
+<li><code>addAll(Iterable&lt;E&gt; iterable)</code>将 <code>iterable</code>里的所有元素追加到 List；</li>
+<li><code>removeAt(int index)</code>将对应下标（<code>index</code>）的元素从 List 中移除；</li>
+<li><code>insert(int index, E e)</code>将元素<code>e</code>插入到<code>index</code>对应的地方；</li>
+<li><code>replaceRange(int start, int end, Iterable&lt;E&gt; replacements)</code>使用<code>replacements</code>中的元素替换 List 指定区间（<code>[start, end)</code>）的元素；</li>
+<li><code>shuffle([Random? random])</code>将 List 中的元素随意打乱（洗牌）；</li>
+<li><code>sort([int compare(E a, E b)?])</code>对 List 中的元素排序，其顺序由<code>compare</code>函数指定；</li>
+<li><code>clear()</code>清空 List。</li>
+</ol>
+<p>关于 List 的更多细节，请参考官网文档<a href="https://api.dart.dev/dart-core/List-class.html">https://api.dart.dev/dart-core/List-class.html</a></p>
 
                     </main>
 
