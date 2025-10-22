@@ -174,6 +174,22 @@
   B--&gt;F(Queue)
 </pre>
 <p>数组（array）是一组有序的对象集合。Dart 的数组即 List，在之前的章节已经多次出现过。</p>
+<p>List 有各种不同类型的实现子类，最常见的两类是：</p>
+<ul>
+<li>固定长度的（Fixed-length） List：当执行可能改变 List 长度的操作时将引发错误</li>
+<li>可增长的（growable） List</li>
+</ul>
+<p>List 具有丰富的 API：</p>
+<ul>
+<li><code>操作符 []=</code>, <code>add</code> 或 <code>addAll</code> 向 List 添加数据。</li>
+<li><code>indexOf</code> 或 <code>lastIndexOf</code> 检查元素是否在 List 中及其对应位置。</li>
+<li><code>remove</code>, <code>removeAt</code>, <code>removeLast</code>, <code>removeRange</code> 或 <code>removeWhere</code> 从 List 中移除元素。</li>
+<li><code>insert</code> or <code>insertAll</code>向将元素插入到 List 的指定位置。</li>
+<li><code>fillRange</code>, <code>replaceRange</code> 或 <code>setRange</code> 替换 List 某区间内的元素。</li>
+<li><code>sort</code> 对 List 中的元素进行排序。</li>
+<li><code>shuffle</code> 将 List 中的元素随机打乱。</li>
+<li><code>firstWhere</code> 查找满足条件的首个元素，可以指定一个查找失败时的默认值，类似地还有 <code>lastWhere</code> 和 <code>singleWhere</code> 方法。</li>
+</ul>
 <h2 id="list-基础"><a class="header" href="#list-基础">List 基础</a></h2>
 <p>先来看一个简单的示例。</p>
 <pre><code class="language-dart">// ex621.dart
@@ -308,7 +324,7 @@ void main() {
 }
 </code></pre>
 <h2 id="常用方法"><a class="header" href="#常用方法">常用方法</a></h2>
-<p>如下示例展示了 List 的常用方法或属性。</p>
+<p>如下示例展示了 List 的一些常用方法或属性以及对应说明。</p>
 <pre><code class="language-dart">// ex627.dart
 void main() {
   var numbers = [for (var n = 0; n &lt; 5; n++) n * n]; // 1
