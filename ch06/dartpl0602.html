@@ -196,6 +196,7 @@
   }
 
 </pre>
+<h2 id="list"><a class="header" href="#list">List</a></h2>
 <p>List 是一组有序的对象（元素）的集合，可以通过下标（从 0 开始的整数）获取对应位置的元素。</p>
 <pre><code class="language-dart">// ex621.dart
 void main() {
@@ -208,6 +209,7 @@ void main() {
   print(letters.toSet()); // Output: {A, B, C}
 }
 </code></pre>
+<h2 id="set"><a class="header" href="#set">Set</a></h2>
 <p>Set 不关心元素的排序顺序，它关注的是元素是否在集合里，Set 中的元素不会重复。</p>
 <pre><code class="language-dart">// ex622.dart
 void main() {
@@ -221,6 +223,7 @@ void main() {
 <li><code>letters</code>的长度为 3 而不是 4；</li>
 <li><code>letters</code>包含的 3 个元素即 <code>{A, B, C}</code>，<code>A</code> 只出现了一次。</li>
 </ol>
+<h2 id="queue"><a class="header" href="#queue">Queue</a></h2>
 <p>Queue 表示队列，它提供了队列两端的添加/移除操作。</p>
 <pre><code class="language-dart">// ex623.dart
 import 'dart:collection';
@@ -242,6 +245,7 @@ void main() {
   print(q); // Output: {A, B, C}
 }
 </code></pre>
+<h2 id="map"><a class="header" href="#map">Map</a></h2>
 <p>Map 是键值（key-value）对的集合，它表达了 key 到 value 的映射关系。</p>
 <pre><code class="language-dart">// ex624.dart
 void main() {
@@ -257,6 +261,88 @@ void main() {
   print(prices.values); // Output: (1.5, 1.4, 2.1, 0.5)
   print(prices.entries);
   // Output: (MapEntry(Apple: 1.5), MapEntry(Banana: 1.4), MapEntry(Cherry: 2.1), MapEntry(Damson: 0.5))
+}
+</code></pre>
+<h2 id="集合元素"><a class="header" href="#集合元素">集合元素</a></h2>
+<p>先以 List 为例，简单说明下集合元素。在以<code>[a, b, ...]</code>这样的语法书写 List 时，其中的<code>a</code>、<code>b</code>等称为元素（elements）；每个元素将被求值（evaluated）以产生 0 到多个值（value），这些值随后将被插入到结果 List 中。集合元素分为叶元素（leaf elements）和控制流元素（control flow elements）两类。</p>
+<pre><code class="language-dart">// ex633.dart
+void main() {
+  print([1 * 1, 2 * 2, 3 * 3]); // 1 Output: [1, 4, 9]
+
+  int? a;
+  print([1, 2, a, 3]); // 2 Output: [1, 2, null, 3]
+  print([1, 2, ?a, 3]); // 2a Output: [1, 2, 3]
+
+  final arr = [3, 4];
+  var arr2 = [1, 2, ...arr, 5]; // 3
+  print('${arr2.runtimeType} $arr2'); // Output: List&lt;int&gt; [1, 2, 3, 4, 5]
+
+  List&lt;int&gt;? arr3;
+  print([1, 2, ...?arr3, 3]); // 4 Output: [1, 2, 3]
+}
+</code></pre>
+<ol>
+<li>此行代码展示的是表达式元素（Expression elements），它属于叶元素；</li>
+<li>这行中的<code> ?a</code> 是 Null-aware 元素，请与上一行代码进行对比；</li>
+<li>这行中的 <code>...arr</code> 乃 Spread 元素；</li>
+<li>这行中的 <code>...？arr3</code> 乃 Null-aware Spread 元素。</li>
+</ol>
+<h3 id="if-元素"><a class="header" href="#if-元素"><code>if</code> 元素</a></h3>
+<p><code>if</code>元素 和 <code>for</code>元素 都是控制流元素。下面的示例展示了<code>if</code>元素的各种用法。</p>
+<pre><code class="language-dart">// ex634.dart
+void main() {
+  var present = true;
+  print([0, if (present) 1, 2, 3]); // 1 Output: [0, 1, 2, 3]
+  print([0, if (!present) 1, 2, 3]); // 1a Output: [0, 2, 3]
+
+  var letter = 'A';
+  print([
+    if (letter == 'A') 'apple' else 'orange',
+    'orange',
+  ]); // 2 Output: [apple, orange]
+
+  print([
+    if (letter == 'A') 'apricot' else if (letter == 'O') 'orange',
+    'orange',
+  ]); // 3 Output: [apricot, orange]
+
+  var data = ['apple', 0.2];
+  print([
+    if (data case [var name, var price])
+      'The price of $name is \$$price'
+    else
+       'Error data',
+  ]); // 4 Output: [The price of apple is $0.2]
+}
+</code></pre>
+<h3 id="for-元素"><a class="header" href="#for-元素"><code>for</code> 元素</a></h3>
+<p>如下示例简单展示了<code>for</code>元素的用法。</p>
+<pre><code class="language-dart">// ex635.dart
+void main() {
+  var numbers = [for (var i = 2; i &lt;= 8; i += 2) i, 10]; // 1
+  print(numbers); // Output: [2, 4, 6, 8, 10]
+
+  var squares = [for (var n in numbers) n * n]; // 2
+  print(squares); // Output: [4, 16, 36, 64, 100]
+}
+</code></pre>
+<h3 id="嵌套控制流元素"><a class="header" href="#嵌套控制流元素">嵌套控制流元素</a></h3>
+<p>控制流元素可以互相嵌套。</p>
+<pre><code class="language-dart">// ex636.dart
+void main() {
+  var evens = [
+    for (var i = 0; i &lt; 10; i++)
+      if (i % 2 == 0) i,
+  ];
+  print(evens); // Output: [0, 2, 4, 6, 8]
+
+  var numbers = [
+    for (var i = 0; i &lt; 10; i++)
+      if (i % 3 == 0)
+        for (var j = i; j &lt; i + 3; j++)
+          if (j &lt; 10) j,
+  ];
+  print(numbers); // Output: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 }
 </code></pre>
 

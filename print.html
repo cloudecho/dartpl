@@ -4831,6 +4831,7 @@ void main() {
   }
 
 </pre>
+<h2 id="list"><a class="header" href="#list">List</a></h2>
 <p>List 是一组有序的对象（元素）的集合，可以通过下标（从 0 开始的整数）获取对应位置的元素。</p>
 <pre><code class="language-dart">// ex621.dart
 void main() {
@@ -4843,6 +4844,7 @@ void main() {
   print(letters.toSet()); // Output: {A, B, C}
 }
 </code></pre>
+<h2 id="set"><a class="header" href="#set">Set</a></h2>
 <p>Set 不关心元素的排序顺序，它关注的是元素是否在集合里，Set 中的元素不会重复。</p>
 <pre><code class="language-dart">// ex622.dart
 void main() {
@@ -4856,6 +4858,7 @@ void main() {
 <li><code>letters</code>的长度为 3 而不是 4；</li>
 <li><code>letters</code>包含的 3 个元素即 <code>{A, B, C}</code>，<code>A</code> 只出现了一次。</li>
 </ol>
+<h2 id="queue"><a class="header" href="#queue">Queue</a></h2>
 <p>Queue 表示队列，它提供了队列两端的添加/移除操作。</p>
 <pre><code class="language-dart">// ex623.dart
 import 'dart:collection';
@@ -4877,6 +4880,7 @@ void main() {
   print(q); // Output: {A, B, C}
 }
 </code></pre>
+<h2 id="map"><a class="header" href="#map">Map</a></h2>
 <p>Map 是键值（key-value）对的集合，它表达了 key 到 value 的映射关系。</p>
 <pre><code class="language-dart">// ex624.dart
 void main() {
@@ -4894,75 +4898,6 @@ void main() {
   // Output: (MapEntry(Apple: 1.5), MapEntry(Banana: 1.4), MapEntry(Cherry: 2.1), MapEntry(Damson: 0.5))
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="list列表"><a class="header" href="#list列表">List（列表）</a></h1>
-<p>数组（array）是一组有序的对象（元素）的集合，意味着可以通过下标（从 0 开始的整数）访问数组内对应位置的元素。Dart 的数组即 List，在之前的章节已经多次出现过。</p>
-<p>List 有各种不同类型的实现子类，最常见的两类是：</p>
-<ul>
-<li>固定长度的（Fixed-length） List：当执行可能改变 List 长度的操作时将引发错误</li>
-<li>可增长的（growable） List</li>
-</ul>
-<p>List 具有丰富的 API：</p>
-<ul>
-<li><code>操作符 []=</code>, <code>add</code> 或 <code>addAll</code> 向 List 添加数据。</li>
-<li><code>indexOf</code> 或 <code>lastIndexOf</code> 检查元素是否在 List 中及其对应位置。</li>
-<li><code>remove</code>, <code>removeAt</code>, <code>removeLast</code>, <code>removeRange</code> 或 <code>removeWhere</code> 从 List 中移除元素。</li>
-<li><code>insert</code> 或 <code>insertAll</code>向将元素插入到 List 的指定位置。</li>
-<li><code>fillRange</code>, <code>replaceRange</code> 或 <code>setRange</code> 替换 List 某区间内的元素。</li>
-<li><code>sort</code> 对 List 中的元素进行排序。</li>
-<li><code>shuffle</code> 将 List 中的元素随机打乱。</li>
-<li><code>firstWhere</code> 查找满足条件的首个元素，可以指定一个查找失败时的默认值，类似地还有 <code>lastWhere</code> 和 <code>singleWhere</code> 方法。</li>
-</ul>
-<h2 id="list-基础"><a class="header" href="#list-基础">List 基础</a></h2>
-<p>先来看一个简单的示例。</p>
-<pre><code class="language-dart">// ex631.dart
-void main() {
-  var numbers = [1, 2, 3]; // 1 List&lt;int&gt;
-  print(numbers); // 2 Output: [1, 2, 3]
-  assert(1 == numbers[0]); // 3
-  numbers[1] = 9; // 4
-  print(numbers); // 5 Output: [1, 9, 3]
-  print(numbers.length); // 6 Output: 3
-  print(numbers[3]); // 7
-  // Unhandled exception:
-  // RangeError (length): Invalid value: Not in inclusive range 0..2: 3
-}
-</code></pre>
-<ol>
-<li>使用字面量创建一个 List，其元素放在一对中括号（<code>[]</code>）内，并以逗号（<code>,</code>）分割；<code>numbers</code>是一个<code>List&lt;int&gt;</code>；</li>
-<li>打印<code>numbers</code>；</li>
-<li>通过索引(index，从 0 开始的整数，也称为下标)获取对应的元素，<code>numbers[0]</code>返回<code>numbers</code>的第 1 个元素。</li>
-<li>将<code>numbers</code> 的第 2 个元素修改为<code>9</code>；</li>
-<li>再次打印<code>numbers</code>；</li>
-<li>打印<code>numbers</code>的长度（元素个数），结果为 3；</li>
-<li>尝试打印<code>numbers</code>的第 4 个元素，遭遇<code>RangeError</code>，因为下标的最大值为 2（长度-1）。</li>
-</ol>
-<h2 id="常用构造函数"><a class="header" href="#常用构造函数">常用构造函数</a></h2>
-<p>Dart 的 List 有多个实用的构造函数，现举例说明。</p>
-<pre><code class="language-dart">// ex632.dart
-void main() {
-  final empty = List&lt;int&gt;.empty(growable: true); // 1
-  print(empty); // Output: []
-
-  final squares = List.generate(
-    10,
-    (index) =&gt; index * index,
-    growable: true,
-  ); // 2
-  print(squares); // Output: [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
-
-  final zeros = List.filled(5, 0, growable: false); // 3
-  print(zeros); // Output: [0, 0, 0, 0, 0]
-
-  final copy = List.of([3, 2, 1]); // 4
-  print(copy); // Output: [3, 2, 1]
-}
-</code></pre>
-<ol>
-<li><code>List.empty</code> 创建一个空的 List，命名参数<code>growable</code>用于指定创建的 List 是否可以增长，其默认值为<code>false</code>，表示创建一个固定长度（此处为 0）的 List；</li>
-<li><code>List.generate</code> 的第一个参数指定待创建 List 的初始长度；第二个参数是一个函数（称为<code>generator</code>），其签名为<code>E Function(int index)</code>（<code>E</code>为 <code>List</code> 的类型参数）；</li>
-<li><code>List.filled</code>使用指定的数据填充 List，其第一个参数为初始长度，第二个参数乃用于填充的数据；</li>
-<li><code>List.of</code>从一个<code>Iterable</code>对象创建 List。</li>
-</ol>
 <h2 id="集合元素"><a class="header" href="#集合元素">集合元素</a></h2>
 <p>先以 List 为例，简单说明下集合元素。在以<code>[a, b, ...]</code>这样的语法书写 List 时，其中的<code>a</code>、<code>b</code>等称为元素（elements）；每个元素将被求值（evaluated）以产生 0 到多个值（value），这些值随后将被插入到结果 List 中。集合元素分为叶元素（leaf elements）和控制流元素（control flow elements）两类。</p>
 <pre><code class="language-dart">// ex633.dart
@@ -5045,6 +4980,75 @@ void main() {
   print(numbers); // Output: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 }
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="list列表"><a class="header" href="#list列表">List（列表）</a></h1>
+<p>数组（array）是一组有序的对象（元素）的集合，意味着可以通过下标（从 0 开始的整数）访问数组内对应位置的元素。Dart 的数组即 List，在之前的章节已经多次出现过。</p>
+<p>List 有各种不同类型的实现子类，最常见的两类是：</p>
+<ul>
+<li>固定长度的（Fixed-length） List：当执行可能改变 List 长度的操作时将引发错误</li>
+<li>可增长的（growable） List</li>
+</ul>
+<p>List 具有丰富的 API：</p>
+<ul>
+<li><code>操作符 []=</code>, <code>add</code> 或 <code>addAll</code> 向 List 添加数据。</li>
+<li><code>indexOf</code> 或 <code>lastIndexOf</code> 检查元素是否在 List 中及其对应位置。</li>
+<li><code>remove</code>, <code>removeAt</code>, <code>removeLast</code>, <code>removeRange</code> 或 <code>removeWhere</code> 从 List 中移除元素。</li>
+<li><code>insert</code> 或 <code>insertAll</code>向将元素插入到 List 的指定位置。</li>
+<li><code>fillRange</code>, <code>replaceRange</code> 或 <code>setRange</code> 替换 List 某区间内的元素。</li>
+<li><code>sort</code> 对 List 中的元素进行排序。</li>
+<li><code>shuffle</code> 将 List 中的元素随机打乱。</li>
+<li><code>firstWhere</code> 查找满足条件的首个元素，可以指定一个查找失败时的默认值，类似地还有 <code>lastWhere</code> 和 <code>singleWhere</code> 方法。</li>
+</ul>
+<h2 id="list-基础"><a class="header" href="#list-基础">List 基础</a></h2>
+<p>先来看一个简单的示例。</p>
+<pre><code class="language-dart">// ex631.dart
+void main() {
+  var numbers = [1, 2, 3]; // 1 List&lt;int&gt;
+  print(numbers); // 2 Output: [1, 2, 3]
+  assert(1 == numbers[0]); // 3
+  numbers[1] = 9; // 4
+  print(numbers); // 5 Output: [1, 9, 3]
+  print(numbers.length); // 6 Output: 3
+  print(numbers[3]); // 7
+  // Unhandled exception:
+  // RangeError (length): Invalid value: Not in inclusive range 0..2: 3
+}
+</code></pre>
+<ol>
+<li>使用字面量创建一个 List，其元素放在一对中括号（<code>[]</code>）内，并以逗号（<code>,</code>）分割；<code>numbers</code>是一个<code>List&lt;int&gt;</code>；</li>
+<li>打印<code>numbers</code>；</li>
+<li>通过索引(index，从 0 开始的整数，也称为下标)获取对应的元素，<code>numbers[0]</code>返回<code>numbers</code>的第 1 个元素。</li>
+<li>将<code>numbers</code> 的第 2 个元素修改为<code>9</code>；</li>
+<li>再次打印<code>numbers</code>；</li>
+<li>打印<code>numbers</code>的长度（元素个数），结果为 3；</li>
+<li>尝试打印<code>numbers</code>的第 4 个元素，遭遇<code>RangeError</code>，因为下标的最大值为 2（长度-1）。</li>
+</ol>
+<h2 id="常用构造函数"><a class="header" href="#常用构造函数">常用构造函数</a></h2>
+<p>Dart 的 List 有多个实用的构造函数，现举例说明。</p>
+<pre><code class="language-dart">// ex632.dart
+void main() {
+  final empty = List&lt;int&gt;.empty(growable: true); // 1
+  print(empty); // Output: []
+
+  final squares = List.generate(
+    10,
+    (index) =&gt; index * index,
+    growable: true,
+  ); // 2
+  print(squares); // Output: [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+  final zeros = List.filled(5, 0, growable: false); // 3
+  print(zeros); // Output: [0, 0, 0, 0, 0]
+
+  final copy = List.of([3, 2, 1]); // 4
+  print(copy); // Output: [3, 2, 1]
+}
+</code></pre>
+<ol>
+<li><code>List.empty</code> 创建一个空的 List，命名参数<code>growable</code>用于指定创建的 List 是否可以增长，其默认值为<code>false</code>，表示创建一个固定长度（此处为 0）的 List；</li>
+<li><code>List.generate</code> 的第一个参数指定待创建 List 的初始长度；第二个参数是一个函数（称为<code>generator</code>），其签名为<code>E Function(int index)</code>（<code>E</code>为 <code>List</code> 的类型参数）；</li>
+<li><code>List.filled</code>使用指定的数据填充 List，其第一个参数为初始长度，第二个参数乃用于填充的数据；</li>
+<li><code>List.of</code>从一个<code>Iterable</code>对象创建 List。</li>
+</ol>
 <h2 id="常用方法"><a class="header" href="#常用方法">常用方法</a></h2>
 <p>如下示例展示了 List 的一些常用方法或属性以及对应说明。</p>
 <pre><code class="language-dart">// ex637.dart
@@ -5145,11 +5149,29 @@ void main() {
 </ol>
 <p>关于 List 的更多细节，请参考官网文档<a href="https://api.dart.dev/dart-core/List-class.html">https://api.dart.dev/dart-core/List-class.html</a></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="set集"><a class="header" href="#set集">Set（集）</a></h1>
-<p>Set 是不重复元素的无序集，它具有两个特征：</p>
+<p>Set 是不重复元素的无序集，它主要关注元素是否在 Set 中，并具有两个特征：</p>
 <ul>
 <li>唯一性：其元素在 Set 内 是唯一的</li>
 <li>无序性：通常不能像 List 那样通过下标获取某个元素</li>
 </ul>
+<p>对 Set 元素的遍历可以是无序，也可以是某方面有序的：</p>
+<ul>
+<li><code>HashSet</code> 是无序的</li>
+<li><code>LinkedHashSet</code> 按元素的写入顺序遍历</li>
+<li>有序 Set（如<code>SplayTreeSet</code>），按排序顺序进行遍历</li>
+</ul>
+<pre class="mermaid">classDiagram
+  Set~E~ &lt;|.. SetMixin~E~ 
+  Set~E~ &lt;|.. HashSet
+  Set~E~ &lt;|.. LinkedHashSet
+  SetMixin~E~ &lt;|-- SplayTreeSet~E~: with
+
+  &lt;&lt;inferface&gt;&gt; Set
+  &lt;&lt;final&gt;&gt; LinkedHashSet
+  &lt;&lt;final&gt;&gt; HashSet
+  &lt;&lt;final&gt;&gt; SplayTreeSet
+  &lt;&lt;mixin&gt;&gt; SetMixin
+</pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="map映射"><a class="header" href="#map映射">Map（映射）</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="hashcode-与-操作符"><a class="header" href="#hashcode-与-操作符">hashCode 与 <code>==</code>操作符</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="异步编程概述"><a class="header" href="#异步编程概述">异步编程概述</a></h1>

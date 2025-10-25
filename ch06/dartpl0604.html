@@ -165,11 +165,29 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="set集"><a class="header" href="#set集">Set（集）</a></h1>
-<p>Set 是不重复元素的无序集，它具有两个特征：</p>
+<p>Set 是不重复元素的无序集，它主要关注元素是否在 Set 中，并具有两个特征：</p>
 <ul>
 <li>唯一性：其元素在 Set 内 是唯一的</li>
 <li>无序性：通常不能像 List 那样通过下标获取某个元素</li>
 </ul>
+<p>对 Set 元素的遍历可以是无序，也可以是某方面有序的：</p>
+<ul>
+<li><code>HashSet</code> 是无序的</li>
+<li><code>LinkedHashSet</code> 按元素的写入顺序遍历</li>
+<li>有序 Set（如<code>SplayTreeSet</code>），按排序顺序进行遍历</li>
+</ul>
+<pre class="mermaid">classDiagram
+  Set~E~ &lt;|.. SetMixin~E~ 
+  Set~E~ &lt;|.. HashSet
+  Set~E~ &lt;|.. LinkedHashSet
+  SetMixin~E~ &lt;|-- SplayTreeSet~E~: with
+
+  &lt;&lt;inferface&gt;&gt; Set
+  &lt;&lt;final&gt;&gt; LinkedHashSet
+  &lt;&lt;final&gt;&gt; HashSet
+  &lt;&lt;final&gt;&gt; SplayTreeSet
+  &lt;&lt;mixin&gt;&gt; SetMixin
+</pre>
 
                     </main>
 
