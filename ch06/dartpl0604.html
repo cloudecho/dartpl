@@ -177,9 +177,9 @@
 <li>有序 Set（如<code>SplayTreeSet</code>），按排序顺序进行遍历</li>
 </ul>
 <pre class="mermaid">classDiagram
-  Set~E~ &lt;|.. SetMixin~E~ 
   Set~E~ &lt;|.. HashSet
   Set~E~ &lt;|.. LinkedHashSet
+  Set~E~ &lt;|.. SetMixin~E~
   SetMixin~E~ &lt;|-- SplayTreeSet~E~: with
 
   &lt;&lt;inferface&gt;&gt; Set
