@@ -165,6 +165,45 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="异步编程概述"><a class="header" href="#异步编程概述">异步编程概述</a></h1>
+<p>异步编程之于 Dart，正如多线程之于 Java。在 Java 世界中，多线程是处理并发任务的核心；而在 Dart 的世界里，异步编程承担着同样的角色；它是程序在处理耗时操作（如网络请求、数据库操作、文件读写）时，界面依然能够灵敏响应、不卡顿的基石。</p>
+<p>下面的示例模拟了用户在登录时，程序让用户无助等待了 5 秒的场景。</p>
+<pre><code class="language-dart">// ex711.dart
+import 'dart:io';
+
+void main() {
+  var watch = Stopwatch()..start();
+
+  var ok = login('userid', 'passwd'); // 1
+  if (ok) {
+    print('Welecome!');
+  } else {
+    print('try again');
+  }
+
+  print(watch.elapsedMilliseconds);
+}
+
+bool login(String userId, String passwd) {
+  // Simulate a long task that will take 5 seconds
+  sleep(Duration(seconds: 5));
+  return true;
+}
+
+</code></pre>
+<ol>
+<li>同步调用<code>login函数</code>，程序执行流程被阻塞，直到<code>login</code>函数返回；</li>
+<li>这里模拟了<code>login</code>函数花了5秒钟完成用户名和密码的校验。</li>
+</ol>
+<h2 id="核心机制event-loop-与它的三剑客"><a class="header" href="#核心机制event-loop-与它的三剑客">核心机制：Event Loop 与它的“三剑客”</a></h2>
+<p>Dart 采用的是单线程模型，其异步并非通过多线程并行实现，而是基于 Event Loop（事件循环） 机制。</p>
+<p>你可以把 Event Loop 想象成一个超级服务员：当他下单给厨师炒菜（耗时操作）后，并不会在取餐口原地干等，而是利用这段空档先去给其他客人倒水、点菜。他绝不让自己闲着，也绝不让任何一位客人干等。这种灵活的调度，正是 Dart 能够以单线程实现高并发响应的奥秘。</p>
+<p>除了 Event Loop，要掌握 Dart 异步编程，我们还必须理解下面三个核心概念：</p>
+<ul>
+<li>Future： 代表一个“承诺”，即在未来某个时刻会交付的结果（一次性任务）。</li>
+<li>Stream： 代表一连串“流动”的数据，像自来水管一样持续传输事件（持续性任务）。</li>
+<li>Isolate： 类似于轻量级进程。它拥有独立的内存空间，Isolate 之间互不共享内存，仅靠消息通信。它通常用于处理最吃性能的 CPU 密集型计算任务。</li>
+</ul>
+<p>本章将带你由浅入深，先掌握最常用的 Future 与 Stream，随后揭开 Event Loop 与 Isolate 的底层面纱。</p>
 
                     </main>
 

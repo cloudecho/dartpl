@@ -165,6 +165,85 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="hashcode-与-操作符"><a class="header" href="#hashcode-与-操作符">hashCode 与 <code>==</code>操作符</a></h1>
+<p>Set 和 Map 通常依托哈希表实现。 逻辑上，哈希表可以抽象为一个两列的表格：一列是由 <code>Object.hashCode</code>生成的哈希码（即散列码），另一列则是对应的 entry（key-value pair）。物理存储上，程序先将 key 映射为哈希码，再将哈希码转换为数组索引，该索引决定了 Entry 在哈希表中的物理位置。通过这种方式，Set 和 Map 实现了极其高效的元素存取。有趣的是，在很多底层实现中，Set 其实就是一个“值为空”的 Map；例如 Go 语言并未提供内置的 Set 类型，而是建议开发者直接使用 Map。</p>
+<pre class="mermaid">flowchart LR
+   A(( entry )) --&gt;|key.hashCode| B(( 哈希码 ))
+   B --&gt; C(( 索引 ))
+   C --&gt;|构建| D[( 哈希表 )]
+   D --&gt;|查找| A
+</pre>
+<p>Set或Map通常基于<code>Object.==</code> 进行相等性测试。<code>Object.hashCode</code> 与 <code>Object.==</code> （equals）的默认实现仅体现了对象的标识符。为了保持Set或Map语义正确：</p>
+<ul>
+<li>两个相等的对象，其哈希值也必须相等；</li>
+<li>重写了<code>Object.==</code>也必须重写<code>Object.hashCode</code>，反之亦然；</li>
+<li>通常只对不可变类重写 <code>Object.==</code>。</li>
+</ul>
+<h2 id="示例"><a class="header" href="#示例">示例</a></h2>
+<p>下例中<code>Point2</code>类 重写了 <code>Object.hashCode</code> 与 <code>Object.==</code> ，而 <code>Point</code>类使用了其默认实现。</p>
+<pre><code class="language-dart">// ex661.dart
+void main() {
+  var a = Point(1, 2);
+  var b = Point(1, 2);
+
+  var c = Point2(1, 2);
+  var d = Point2(1, 2);
+
+  print('a.hashCode: ${a.hashCode}'); // 1
+  print('b.hashCode: ${b.hashCode}'); // 1a
+
+  print('c.hashCode: ${c.hashCode}'); // 2
+  print('d.hashCode: ${d.hashCode}'); // 2a
+
+  assert(a != b); // 3
+  assert(c == d); // 3a
+
+  var set1 = {a, b, c, d}; // 4
+  print(set1); // Output: {Point(1, 2), Point(1, 2), Point2(1, 2)}
+
+  var map1 = {a: 'a', b: 'b', c: 'c', d: 'd'}; // 5
+  print(map1); // Output: {Point(1, 2): a, Point(1, 2): b, Point2(1, 2): d}
+}
+
+class Point {
+  final int x, y;
+  Point(this.x, this.y);
+
+  @override
+  String toString() =&gt; 'Point($x, $y)';
+}
+
+class Point2 {
+  final int x, y;
+  Point2(this.x, this.y);
+
+  @override
+  String toString() =&gt; 'Point2($x, $y)';
+
+  @override
+  int get hashCode {
+    const prime = 31;
+    var result = 1;
+    result = prime * result + x.hashCode;
+    result = prime * result + y.hashCode;
+    return result;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is Point2) {
+      return x == other.x &amp;&amp; y == other.y;
+    }
+    return false;
+  }
+}
+</code></pre>
+<ol>
+<li>变量<code>a</code>,<code>b</code>的类型为<code>Point</code>，虽然它们的成员变量（<code>x</code>和<code>y</code>）的值都一样，但它们的哈希值不同（原因是它们的对象标识不同）；</li>
+<li>变量<code>c</code>,<code>d</code>的类型为<code>Point2</code>，它们的哈希值相同（因为我们重写了<code>Object.hashCode</code> 与 <code>Object.==</code>，只要它们的成员变量具有相同的值，它们的哈希值就一定相同）；</li>
+<li><code>a != b</code> 且 <code>c == d</code>，显然成立；</li>
+<li>由于 <code>c==d</code> 成立， <code>set1</code> 只有3个元素；</li>
+<li>同理 <code>map1</code>只有3个entries，<code>map1</code>内部将<code>c</code>和<code>d</code>视为同样的key（即<code>Point2(1, 2)</code>），与其对应的value是最新的那个值<code>'d'</code>。</li>
+</ol>
 
                     </main>
 

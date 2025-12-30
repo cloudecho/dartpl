@@ -165,6 +165,238 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="future"><a class="header" href="#future">Future</a></h1>
+<p>Future 代表了一个“在未来某个时间点”才会完成的操作结果。
+Future 的生命周期可分为两个阶段：</p>
+<ul>
+<li>未完成 (Uncompleted)：异步操作正在进行中，结果尚未产生；</li>
+<li>已完成 (Completed)：操作结束，会有两种可能的结果：
+<ul>
+<li>成功 (Value)：操作顺利完成，返回具体的数据（如 Future<String> 返回字符串）；</li>
+<li>失败 (Error)：操作中途出错，返回一个异常。</li>
+</ul>
+</li>
+</ul>
+<pre class="mermaid">stateDiagram
+    [*] --&gt; Uncompleted : Create Future
+   
+    Uncompleted --&gt; Success : Value
+    Uncompleted --&gt; Failure : Error
+
+    Success --&gt; [*] : .then / await
+    Failure --&gt; [*] : .catchError / try-catch
+</pre>
+<h2 id="示例"><a class="header" href="#示例">示例</a></h2>
+<p>先通过一个例子来看同步函数与异步函数及其使用上的区别：</p>
+<pre><code class="language-dart">// ex721.dart
+import 'dart:async';
+import 'dart:io';
+
+void main() {
+  final watch = Stopwatch()..start(); // 3
+  var count = 0;
+  void myprint(o) =&gt;
+      print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o'); // 3a
+
+  myprint('before compute');
+  var result = compute(3, 4); // 4
+  myprint('after compute');
+  myprint('result=$result');
+
+  myprint('before computeAsync');
+  var futureResult = computeAsync(5, 12); // 5
+  myprint('after computeAsync');
+
+  futureResult.then((onValue) =&gt; myprint('result=$onValue')); // 6
+
+  /* An example output:
+out0 0ms: before compute
+out1 1004ms: after compute
+out2 1005ms: result=7
+out3 1005ms: before computeAsync
+out4 1010ms: after computeAsync
+out5 2020ms: result=17
+*/
+}
+
+// 1
+int compute(int a, int b) {
+  // Simulate a long task
+  sleep(Duration(seconds: 1));
+  return a + b;
+}
+
+// 2
+Future&lt;int&gt; computeAsync(int a, int b) {
+  return Future(() =&gt; compute(a, b));
+}
+</code></pre>
+<ol>
+<li><code>compute</code> 是一个同步函数，它模拟了一个耗时约1秒种的计算任务（根据<code>a</code>和<code>b</code>进行计算），然后返回其结果；</li>
+<li><code>computeAsync</code> 是 <code>compute</code>的异步版本，它是一个异步函数，它使用<code>Future.new</code>创建了一个Future对象并返回；</li>
+<li><code>Stopwatch</code>是一个用于计时对秒表，精确到微秒(microseconds)，该示例使用了毫秒（milliseconds）作为计时单位（<code>3a</code>）；</li>
+<li>调用<code>compute</code>函数，程序阻塞直到compute返回结果（<code>out0 - out2</code>)；</li>
+<li>调用<code>computeAsync</code>函数得到的是一个Future对象，<code>computeAsync</code>函数返回时，真正的计算（<code>compute</code>）还在进行中，即程序不会阻塞等待计算结果（<code>out3 - out4</code>）；</li>
+<li>给<code>futureResult.then</code>提供一个callback（回调）函数，当<code>computeAsync</code>内部计算完成时，callback将被调用（<code>out5</code>）。</li>
+</ol>
+<p>同步 vs 异步：</p>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th>同步函数 (compute)</th><th>异步函数 (computeAsync)</th></tr></thead><tbody>
+<tr><td>定义方式</td><td><code>int compute(...)</code></td><td><code>Future&lt;int&gt; computeAsync(...)</code></td></tr>
+<tr><td>返回值</td><td>直接返回结果</td><td>返回一个“凭证” Future，承诺以后给结果</td></tr>
+<tr><td>执行表现</td><td>调用时程序会“停”在这一行直到算完</td><td>调用后程序可以立即去做别的事</td></tr>
+<tr><td>调用方式</td><td><code>var res = compute(3, 4);</code></td><td><code>computeAsync(3, 4).then(...);</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="asyncwait"><a class="header" href="#asyncwait">async/wait</a></h2>
+<p>上述示例中的<code>computeAsync</code>可以用<code>asyc/wait</code>改写，这是更现代、更具可读性的风格，让异步代码看起来像同步代码。</p>
+<pre><code class="language-dart">// ex722.dart
+void main() async { // 3
+  var result = await compute(8, 15); // 2
+  print(result); // Output: 23
+}
+
+// 1
+Future&lt;int&gt; compute(int a, int b) async =&gt; a + b;
+</code></pre>
+<ol>
+<li><code>async</code>写在函数（或方法）签名的最后，这里标记compute为异步函数；</li>
+<li>调用异步函数<code>compute</code>时，使用前缀关键字<code>await</code>，使得异步代码像同步代码那样简洁；</li>
+<li><code>await</code> 关键字只能在异步函数（或方法）中。</li>
+</ol>
+<h2 id="异常处理"><a class="header" href="#异常处理">异常处理</a></h2>
+<p>下面的例子演示了有关Future的异常处理。</p>
+<pre><code class="language-dart">// ex723.dart
+void main() async {
+  divide(2, 1).then((val) =&gt; print(val)); // Output: 2
+
+  divide(2, 0).then((val) =&gt; print(val)).catchError((e) =&gt; print(e));
+  // Output: IntegerDivisionByZeroException
+
+  print(await divide(3, 1)); // Output: 3
+
+  try {
+    print(await divide(3, 0));
+  } on Exception catch (e) {
+    print(e); // Output: IntegerDivisionByZeroException
+  }
+}
+
+Future&lt;int&gt; divide(int a, int b) async =&gt; a ~/ b;
+</code></pre>
+<h2 id="构造函数"><a class="header" href="#构造函数">构造函数</a></h2>
+<p>常用的 Future 构造函数：</p>
+<ul>
+<li><code>Futrue(computation)</code>（<code>Futrue.new</code>） 使用 <code>Timer.run</code> 创建一个包含<code>computation()</code>的计算结果的Future（异步执行）</li>
+<li><code>Futrue.sync(computation)</code> 创建一个包含<code>computation()</code>的计算结果的Future（同步执行）；</li>
+<li><code>Future.delayed(duration,[computation])</code> 延迟一段时间后执行代码（常用于模拟网络延迟）</li>
+<li><code>Future.value([value])</code> 立即创建一个成功状态的 Future</li>
+<li><code>Future.error(error, [stackTrace])</code> 立即创建一个失败状态的 Future</li>
+<li><code>Future.microtask(computation)</code> 将任务放入微任务队列（Microtask Queue），相比<code>Futrue.new</code>优先级更高</li>
+</ul>
+<p>请仔细阅读并分析如下示例。</p>
+<pre><code class="language-dart">// ex724.dart
+void main() {
+  final watch = Stopwatch()..start();
+  var count = 0;
+  void myprint(o) =&gt;
+      print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
+
+  myprint('start');
+  Future.delayed(Duration(seconds: 1), () =&gt; myprint('deplay'));
+  Future.microtask(() =&gt; 'microtask1').then(myprint);
+  Future(() =&gt; 'new').then(myprint);
+  Future.sync(() =&gt; 'sync').then(myprint);
+  Future.value('value').then(myprint);
+  Future.error('error').catchError(myprint);
+  Future.microtask(() =&gt; 'microtask2').then(myprint);
+
+  /* An example output:
+out0 0ms: start
+out1 24ms: microtask1
+out2 24ms: sync
+out3 25ms: value
+out4 27ms: error
+out5 28ms: microtask2
+out6 30ms: new
+out7 1014ms: deplay
+*/
+}
+</code></pre>
+<h2 id="实用方法"><a class="header" href="#实用方法">实用方法</a></h2>
+<p>Future提供了下列实用的静态方法：</p>
+<ul>
+<li><code>Future.wait(futures,{...})</code> 同时启动多个Future，并等待它们全部完成；</li>
+<li><code>Future.any(futures)</code>  谁先完成就返回谁（无论是成功还是失败）；</li>
+<li><code>Future.doWhile(action)</code> 重复执行异步操作，直到返回 <code>false</code> 为止。</li>
+<li><code>Future.forEach(elements, action)</code> 对集合中的每个元素顺序执行异步操作，它会等前一个执行完再开始下一个。</li>
+</ul>
+<p>下面的示例代码不难理解，请读者自行分析。</p>
+<pre><code class="language-dart">// ex725.dart
+import 'dart:math';
+
+void main() {
+  final watch = Stopwatch()..start();
+  var count = 0;
+  void myprint(o) =&gt;
+      print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
+
+  Future.wait([
+    Future(() =&gt; myprint('wait1')),
+    Future(() =&gt; myprint('wait2')),
+    Future(() =&gt; myprint('wait3')),
+  ]);
+
+  Future.wait([
+    Future(() =&gt; 1),
+    Future(() =&gt; 2),
+    Future(() =&gt; 3),
+  ]).then(myprint);
+
+  Future.any([
+    Future.delayed(Duration(milliseconds: 100), () =&gt; myprint('any1')),
+    Future.delayed(Duration(milliseconds: 100), () =&gt; myprint('any2')),
+    Future.delayed(Duration(milliseconds: 100), () =&gt; myprint('any3')),
+  ]);
+
+  Future.any([
+    Future.delayed(Duration(milliseconds: 100), () =&gt; 4),
+    Future.delayed(Duration(milliseconds: 100), () =&gt; 5),
+    Future.delayed(Duration(milliseconds: 100), () =&gt; 6),
+  ]).then(myprint);
+
+  final rand = Random();
+  Future.doWhile(() {
+    var d = rand.nextDouble();
+    myprint(d);
+    return d &lt; 0.8;
+  });
+
+  Future.forEach(['A', 'B', 'C'], myprint);
+
+  /* An example output:
+out0 13ms: 0.06789414914959846
+out1 15ms: 0.142393000844255
+out2 15ms: 0.7807443343674055
+out3 15ms: 0.2542896840253688
+out4 15ms: 0.5590822258793036
+out5 15ms: 0.8071049146003575
+out6 17ms: A
+out7 17ms: B
+out8 17ms: C
+out9 19ms: wait1
+out10 21ms: wait2
+out11 21ms: wait3
+out12 24ms: [1, 2, 3]
+out13 110ms: any1
+out14 113ms: any2
+out15 113ms: any3
+out16 114ms: 4
+   */
+}
+</code></pre>
+<h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
+<ul>
+<li>https://api.dart.dev/dart-async/Future-class.html</li>
+</ul>
 
                     </main>
 

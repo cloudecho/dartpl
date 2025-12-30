@@ -188,6 +188,105 @@
   &lt;&lt;final&gt;&gt; SplayTreeSet
   &lt;&lt;mixin&gt;&gt; SetMixin
 </pre>
+<h2 id="set-示例"><a class="header" href="#set-示例">Set 示例</a></h2>
+<p>先看一个简单的例子。</p>
+<pre><code class="language-dart">// ex641.dart
+
+void main() {
+  var fruites = {'Apple', 'Banana'}; // 1
+  print(fruites.runtimeType); // Output: _Set&lt;String&gt;
+  print(fruites); // Ouput: {Apple, Banana}
+
+  fruites.add('Apple'); // 2
+  print(fruites); // Ouput: {Apple, Banana}
+
+  fruites.add('Cherry'); // 3
+  print(fruites); // Ouput: {Apple, Banana, Cherry}
+
+  print(fruites.length); // 4 Output: 3
+}
+
+</code></pre>
+<ol>
+<li>使用字面量声明一个类型为Set<String> 的变量 <code>fruites</code> ，它包含两个初始成员 'Apple' 和 'Banana'；</li>
+<li>给<code>fruites</code>添加一个成员<code>Apple</code>，由于<code>Apple</code>本来就已经在<code>fruites</code> Set中，因此这行代码执行后<code>fruites</code>的成员依旧只有原来的那两个；</li>
+<li>向<code>fruites</code>追加一个新的成员<code>Cherry</code>，这样代码执行后，<code>fruites</code>一共包含了3个成员；</li>
+<li><code>fruites.length</code>表示<code>fruites</code>的成员个数。</li>
+</ol>
+<h2 id="构造函数"><a class="header" href="#构造函数">构造函数</a></h2>
+<p>Set 有如下工厂构造函数：</p>
+<ul>
+<li><code>Set()</code>  创建一个空的Set</li>
+<li><code>Set.from(Iterable elements)</code> 从一个<code>Iterable</code>对象创建Set，可理解为将一个<code>Iterable</code>对象转换为Set</li>
+<li><code>Set.of(Iterable&lt;E&gt; elements)</code> 与<code>Set.from</code>类似，区别在于前者返回的是<code>Set&lt;E&gt;</code>对象，即带有类型参数<code>E</code></li>
+<li><code>Set.identity()</code> 创建一个空的 identity Set，该Set使用<code>identical(Object?,  Object?)</code>函数对成员进行相等性测试</li>
+<li><code>Set.unmodifiable(Iterable&lt;E&gt; elements)</code> 从 <code>elements</code> 创一个不可变Set</li>
+</ul>
+<p>请阅读并分析下面的代码</p>
+<pre><code class="language-dart">// ex642.dart
+import 'dart:math';
+
+void main() {
+  var list = [1, 2, 2, 3];
+
+  var set1 = Set.from(list); // 1
+  print('${set1.runtimeType} $set1'); // Output: _Set&lt;dynamic&gt; {1, 2, 3}
+
+  var set2 = Set.of(list); // 2
+  print('${set2.runtimeType} $set2'); // Output: _Set&lt;int&gt; {1, 2, 3}
+
+  var a = Point(1, 2);
+  var b = Point(1, 2);
+
+  var set3 = Set.identity()
+    ..add(a)
+    ..add(b); // 3
+  print(set3); // Output: {Point(1, 2), Point(1, 2)}
+
+  var set4 = &lt;dynamic&gt;{}
+    ..add(a)
+    ..add(b); // 4
+  print(set4); // Output: {Point(1, 2)}
+
+  var set5 = Set.unmodifiable(set1);
+  set5.add(5);
+  // Unhandled exception:
+  // Unsupported operation: Cannot change an unmodifiable set
+}
+</code></pre>
+<h2 id="set特色方法"><a class="header" href="#set特色方法">Set特色方法</a></h2>
+<p>与<code>List</code>一样，<code>Set</code>也实现了<code>Iterable</code>接口，即实现了<code>Iterable</code>接口定义的方法。由于在List章节中，我们已经对List的<a href="./dartpl0603.html#%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95">常用方法</a>（包括<code>Iterable</code>接口中定义的方法）做了介绍，这里仅举例说明Set类型特有的方法。</p>
+<pre><code class="language-dart">// ex643.dart
+void main() {
+  var set1 = {1, 2, 3};
+  var set2 = {2, 3, 4};
+
+  var set3 = set1.union(set2); // 1
+  print(set3); // Output: {1, 2, 3, 4}
+
+  var set4 = set1.intersection(set2); // 2
+  print(set4); // Output: {2, 3}
+
+  var set5 = set1.difference(set2); // 3
+  print(set5); // Output: {1}
+
+  var set6 = set2.difference(set1); // 3a
+  print(set6); // Output: {4}
+
+  var a = set1.lookup(1); // 4
+  print(a); // Output: 1
+
+  var b = set1.lookup(4); // 4a
+  print(b); // Output: null
+}
+</code></pre>
+<ol>
+<li><code>union(Set&lt;E&gt; other)</code> 返回该Set与另一个Set（<code>other</code>）的并集；</li>
+<li><code>intersection(Set&lt;Object?&gt; other)</code> 返回该Set与另一个Set（<code>other</code>）的交集；</li>
+<li><code>difference(Set&lt;Object?&gt; other)</code> 返回该Set与另一个Set（<code>other</code>） 的差集，注意 <code>this.difference(other)</code> 与 <code>other.difference(this)</code>是不同的；</li>
+<li><code>lookup(Object? object)</code>：如果Set中的某个成员与给定的对象<code>object</code>相等，就返回该成员，否则返回<code>null</code>。</li>
+</ol>
+<p>关于Set的更多方法，请查阅<a href="https://api.dart.dev/dart-core/Set-class.html">官方文档</a>。</p>
 
                     </main>
 

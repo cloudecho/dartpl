@@ -172,14 +172,14 @@
   Iterable~E~ &lt;|.. Queue~E~
 
   class Iterable{
-    &lt;&lt;mixin&gt;&gt;
+    &lt;&lt;abstract mixin&gt;&gt;
     + Iterator~E~ get iterator
   }
   &lt;&lt;interface&gt;&gt; List
   &lt;&lt;interface&gt;&gt; Set
   &lt;&lt;interface&gt;&gt; Queue
 
-  Iterator~E~ &lt;-- Iterable~E~
+  Iterable~E~ ..&gt; Iterator~E~ : Creates
   Iterable &lt;-- Map~K,V~
 
   class Iterator {
@@ -196,6 +196,57 @@
   }
 
 </pre>
+<h2 id="iterable"><a class="header" href="#iterable">Iterable</a></h2>
+<p>Iterable（可迭代对象）是一个抽象类，它是所有集合类（如 List 和 Set）的基石。<a href="/ch07/dartpl0703.html#iterable-%E7%94%9F%E6%88%90%E5%99%A8-sync-yield-">点击这里查看 Iterable生成器</a>。</p>
+<p>Iterable 的大多数方法（如 <code>map</code> 和 <code>where</code>）都是惰性的。这意味着当你调用这些方法时，它们并不会立即遍历集合。只有当你最终调用 <code>toList()</code>、<code>toSet()</code> 或在 <code>for-in</code> 循环中使用它时，计算才会真正发生。这种机制在处理大数据集时非常高效，因为它能避免不必要的中间计算。</p>
+<p><strong>核心属性</strong></p>
+<ul>
+<li><code>first</code>: 返回第一个元素。</li>
+<li><code>last</code>: 返回最后一个元素。</li>
+<li><code>single</code>: 检查是否只有一个元素并返回它。</li>
+<li><code>isEmpty</code>: 集合是否为空。</li>
+<li><code>isNotEmpty</code>: 集合是否不为空。</li>
+<li><code>length</code>: 返回元素个数。</li>
+<li><code>iterator</code>: 获取用于遍历的 Iterator 对象。</li>
+</ul>
+<p><strong>过滤</strong></p>
+<ul>
+<li><code>where(test)</code>: 返回满足条件的元素集合。</li>
+<li><code>whereType&lt;T&gt;()</code>: 筛选出指定类型的元素（如 <code>list.whereType&lt;String&gt;()</code>）。</li>
+<li><code>take(n)</code>: 获取前 n 个元素。</li>
+<li><code>takeWhile(test)</code>: 从头开始取，直到条件不满足。</li>
+<li><code>skip(n)</code>: 跳过前 n 个元素。</li>
+<li><code>skipWhile(test)</code>: 从头开始跳过，直到条件不满足。</li>
+</ul>
+<p><strong>转换</strong></p>
+<ul>
+<li><code>map(toElement)</code>: 将每个元素转换为另一种形式。</li>
+<li><code>expand(toElements)</code>: 将每个元素转换为一个序列，然后展平。</li>
+<li><code>cast&lt;R&gt;()</code>: 将 Iterable 强制转换为另一种类型的 Iterable。</li>
+<li><code>followedBy(other)</code>: 将另一个集合接在当前集合后面。</li>
+<li><code>toList({growable: true})</code>: 转换为 List（触发惰性求值）。</li>
+<li><code>toSet()</code>: 转换为 Set（去重并触发惰性求值）。</li>
+<li><code>toString()</code>: 返回集合的字符串表示。</li>
+</ul>
+<p><strong>查找</strong></p>
+<ul>
+<li><code>firstWhere(test, {orElse})</code>: 查找第一个满足条件的元素。</li>
+<li><code>lastWhere(test, {orElse})</code>: 查找最后一个满足条件的元素。</li>
+<li><code>singleWhere(test, {orElse})</code>: 查找唯一满足条件的元素。</li>
+<li><code>elementAt(index)</code>: 获取指定索引处的元素。</li>
+<li><code>contains(element)</code>: 判断是否包含某个元素。</li>
+</ul>
+<p><strong>逻辑检查</strong></p>
+<ul>
+<li><code>any(test)</code>: 是否至少有一个元素满足条件。</li>
+<li><code>every(test)</code>: 是否所有元素都满足条件。</li>
+</ul>
+<p><strong>聚合</strong></p>
+<ul>
+<li><code>fold(initialValue, combine)</code>: 提供初始值，并从左到右迭代合并。</li>
+<li><code>reduce(combine)</code>: 无初始值，将集合元素两两合并（要求集合非空）。</li>
+<li><code>join(separator)</code>: 将所有元素转为字符串并用分隔符连接。</li>
+</ul>
 <h2 id="list"><a class="header" href="#list">List</a></h2>
 <p>List 是一组有序的对象（元素）的集合，可以通过下标（从 0 开始的整数）获取对应位置的元素。</p>
 <pre><code class="language-dart">// ex621.dart
@@ -264,7 +315,7 @@ void main() {
 }
 </code></pre>
 <h2 id="集合元素"><a class="header" href="#集合元素">集合元素</a></h2>
-<p>先以 List 为例，简单说明下集合元素。在以<code>[a, b, ...]</code>这样的语法书写 List 时，其中的<code>a</code>、<code>b</code>等称为元素（elements）；每个元素将被求值（evaluated）以产生 0 到多个值（value），这些值随后将被插入到结果 List 中。集合元素分为叶元素（leaf elements）和控制流元素（control flow elements）两类。</p>
+<p>以 List 为例，简单说明下集合元素。在以<code>[a, b, ...]</code>这样的语法书写 List 时，其中的<code>a</code>、<code>b</code>等称为元素（elements）；每个元素将被求值（evaluated）以产生 0 到多个值（value），这些值随后将被插入到结果 List 中。集合元素分为叶元素（leaf elements）和控制流元素（control flow elements）两类。</p>
 <pre><code class="language-dart">// ex633.dart
 void main() {
   print([1 * 1, 2 * 2, 3 * 3]); // 1 Output: [1, 4, 9]

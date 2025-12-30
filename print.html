@@ -4807,14 +4807,14 @@ void main() {
   Iterable~E~ &lt;|.. Queue~E~
 
   class Iterable{
-    &lt;&lt;mixin&gt;&gt;
+    &lt;&lt;abstract mixin&gt;&gt;
     + Iterator~E~ get iterator
   }
   &lt;&lt;interface&gt;&gt; List
   &lt;&lt;interface&gt;&gt; Set
   &lt;&lt;interface&gt;&gt; Queue
 
-  Iterator~E~ &lt;-- Iterable~E~
+  Iterable~E~ ..&gt; Iterator~E~ : Creates
   Iterable &lt;-- Map~K,V~
 
   class Iterator {
@@ -4831,6 +4831,57 @@ void main() {
   }
 
 </pre>
+<h2 id="iterable"><a class="header" href="#iterable">Iterable</a></h2>
+<p>Iterable（可迭代对象）是一个抽象类，它是所有集合类（如 List 和 Set）的基石。<a href="ch06//ch07/dartpl0703.html#iterable-%E7%94%9F%E6%88%90%E5%99%A8-sync-yield-">点击这里查看 Iterable生成器</a>。</p>
+<p>Iterable 的大多数方法（如 <code>map</code> 和 <code>where</code>）都是惰性的。这意味着当你调用这些方法时，它们并不会立即遍历集合。只有当你最终调用 <code>toList()</code>、<code>toSet()</code> 或在 <code>for-in</code> 循环中使用它时，计算才会真正发生。这种机制在处理大数据集时非常高效，因为它能避免不必要的中间计算。</p>
+<p><strong>核心属性</strong></p>
+<ul>
+<li><code>first</code>: 返回第一个元素。</li>
+<li><code>last</code>: 返回最后一个元素。</li>
+<li><code>single</code>: 检查是否只有一个元素并返回它。</li>
+<li><code>isEmpty</code>: 集合是否为空。</li>
+<li><code>isNotEmpty</code>: 集合是否不为空。</li>
+<li><code>length</code>: 返回元素个数。</li>
+<li><code>iterator</code>: 获取用于遍历的 Iterator 对象。</li>
+</ul>
+<p><strong>过滤</strong></p>
+<ul>
+<li><code>where(test)</code>: 返回满足条件的元素集合。</li>
+<li><code>whereType&lt;T&gt;()</code>: 筛选出指定类型的元素（如 <code>list.whereType&lt;String&gt;()</code>）。</li>
+<li><code>take(n)</code>: 获取前 n 个元素。</li>
+<li><code>takeWhile(test)</code>: 从头开始取，直到条件不满足。</li>
+<li><code>skip(n)</code>: 跳过前 n 个元素。</li>
+<li><code>skipWhile(test)</code>: 从头开始跳过，直到条件不满足。</li>
+</ul>
+<p><strong>转换</strong></p>
+<ul>
+<li><code>map(toElement)</code>: 将每个元素转换为另一种形式。</li>
+<li><code>expand(toElements)</code>: 将每个元素转换为一个序列，然后展平。</li>
+<li><code>cast&lt;R&gt;()</code>: 将 Iterable 强制转换为另一种类型的 Iterable。</li>
+<li><code>followedBy(other)</code>: 将另一个集合接在当前集合后面。</li>
+<li><code>toList({growable: true})</code>: 转换为 List（触发惰性求值）。</li>
+<li><code>toSet()</code>: 转换为 Set（去重并触发惰性求值）。</li>
+<li><code>toString()</code>: 返回集合的字符串表示。</li>
+</ul>
+<p><strong>查找</strong></p>
+<ul>
+<li><code>firstWhere(test, {orElse})</code>: 查找第一个满足条件的元素。</li>
+<li><code>lastWhere(test, {orElse})</code>: 查找最后一个满足条件的元素。</li>
+<li><code>singleWhere(test, {orElse})</code>: 查找唯一满足条件的元素。</li>
+<li><code>elementAt(index)</code>: 获取指定索引处的元素。</li>
+<li><code>contains(element)</code>: 判断是否包含某个元素。</li>
+</ul>
+<p><strong>逻辑检查</strong></p>
+<ul>
+<li><code>any(test)</code>: 是否至少有一个元素满足条件。</li>
+<li><code>every(test)</code>: 是否所有元素都满足条件。</li>
+</ul>
+<p><strong>聚合</strong></p>
+<ul>
+<li><code>fold(initialValue, combine)</code>: 提供初始值，并从左到右迭代合并。</li>
+<li><code>reduce(combine)</code>: 无初始值，将集合元素两两合并（要求集合非空）。</li>
+<li><code>join(separator)</code>: 将所有元素转为字符串并用分隔符连接。</li>
+</ul>
 <h2 id="list"><a class="header" href="#list">List</a></h2>
 <p>List 是一组有序的对象（元素）的集合，可以通过下标（从 0 开始的整数）获取对应位置的元素。</p>
 <pre><code class="language-dart">// ex621.dart
@@ -4899,7 +4950,7 @@ void main() {
 }
 </code></pre>
 <h2 id="集合元素"><a class="header" href="#集合元素">集合元素</a></h2>
-<p>先以 List 为例，简单说明下集合元素。在以<code>[a, b, ...]</code>这样的语法书写 List 时，其中的<code>a</code>、<code>b</code>等称为元素（elements）；每个元素将被求值（evaluated）以产生 0 到多个值（value），这些值随后将被插入到结果 List 中。集合元素分为叶元素（leaf elements）和控制流元素（control flow elements）两类。</p>
+<p>以 List 为例，简单说明下集合元素。在以<code>[a, b, ...]</code>这样的语法书写 List 时，其中的<code>a</code>、<code>b</code>等称为元素（elements）；每个元素将被求值（evaluated）以产生 0 到多个值（value），这些值随后将被插入到结果 List 中。集合元素分为叶元素（leaf elements）和控制流元素（control flow elements）两类。</p>
 <pre><code class="language-dart">// ex633.dart
 void main() {
   print([1 * 1, 2 * 2, 3 * 3]); // 1 Output: [1, 4, 9]
@@ -5172,13 +5223,813 @@ void main() {
   &lt;&lt;final&gt;&gt; SplayTreeSet
   &lt;&lt;mixin&gt;&gt; SetMixin
 </pre>
+<h2 id="set-示例"><a class="header" href="#set-示例">Set 示例</a></h2>
+<p>先看一个简单的例子。</p>
+<pre><code class="language-dart">// ex641.dart
+
+void main() {
+  var fruites = {'Apple', 'Banana'}; // 1
+  print(fruites.runtimeType); // Output: _Set&lt;String&gt;
+  print(fruites); // Ouput: {Apple, Banana}
+
+  fruites.add('Apple'); // 2
+  print(fruites); // Ouput: {Apple, Banana}
+
+  fruites.add('Cherry'); // 3
+  print(fruites); // Ouput: {Apple, Banana, Cherry}
+
+  print(fruites.length); // 4 Output: 3
+}
+
+</code></pre>
+<ol>
+<li>使用字面量声明一个类型为Set<String> 的变量 <code>fruites</code> ，它包含两个初始成员 'Apple' 和 'Banana'；</li>
+<li>给<code>fruites</code>添加一个成员<code>Apple</code>，由于<code>Apple</code>本来就已经在<code>fruites</code> Set中，因此这行代码执行后<code>fruites</code>的成员依旧只有原来的那两个；</li>
+<li>向<code>fruites</code>追加一个新的成员<code>Cherry</code>，这样代码执行后，<code>fruites</code>一共包含了3个成员；</li>
+<li><code>fruites.length</code>表示<code>fruites</code>的成员个数。</li>
+</ol>
+<h2 id="构造函数-2"><a class="header" href="#构造函数-2">构造函数</a></h2>
+<p>Set 有如下工厂构造函数：</p>
+<ul>
+<li><code>Set()</code>  创建一个空的Set</li>
+<li><code>Set.from(Iterable elements)</code> 从一个<code>Iterable</code>对象创建Set，可理解为将一个<code>Iterable</code>对象转换为Set</li>
+<li><code>Set.of(Iterable&lt;E&gt; elements)</code> 与<code>Set.from</code>类似，区别在于前者返回的是<code>Set&lt;E&gt;</code>对象，即带有类型参数<code>E</code></li>
+<li><code>Set.identity()</code> 创建一个空的 identity Set，该Set使用<code>identical(Object?,  Object?)</code>函数对成员进行相等性测试</li>
+<li><code>Set.unmodifiable(Iterable&lt;E&gt; elements)</code> 从 <code>elements</code> 创一个不可变Set</li>
+</ul>
+<p>请阅读并分析下面的代码</p>
+<pre><code class="language-dart">// ex642.dart
+import 'dart:math';
+
+void main() {
+  var list = [1, 2, 2, 3];
+
+  var set1 = Set.from(list); // 1
+  print('${set1.runtimeType} $set1'); // Output: _Set&lt;dynamic&gt; {1, 2, 3}
+
+  var set2 = Set.of(list); // 2
+  print('${set2.runtimeType} $set2'); // Output: _Set&lt;int&gt; {1, 2, 3}
+
+  var a = Point(1, 2);
+  var b = Point(1, 2);
+
+  var set3 = Set.identity()
+    ..add(a)
+    ..add(b); // 3
+  print(set3); // Output: {Point(1, 2), Point(1, 2)}
+
+  var set4 = &lt;dynamic&gt;{}
+    ..add(a)
+    ..add(b); // 4
+  print(set4); // Output: {Point(1, 2)}
+
+  var set5 = Set.unmodifiable(set1);
+  set5.add(5);
+  // Unhandled exception:
+  // Unsupported operation: Cannot change an unmodifiable set
+}
+</code></pre>
+<h2 id="set特色方法"><a class="header" href="#set特色方法">Set特色方法</a></h2>
+<p>与<code>List</code>一样，<code>Set</code>也实现了<code>Iterable</code>接口，即实现了<code>Iterable</code>接口定义的方法。由于在List章节中，我们已经对List的<a href="ch06/./dartpl0603.html#%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95">常用方法</a>（包括<code>Iterable</code>接口中定义的方法）做了介绍，这里仅举例说明Set类型特有的方法。</p>
+<pre><code class="language-dart">// ex643.dart
+void main() {
+  var set1 = {1, 2, 3};
+  var set2 = {2, 3, 4};
+
+  var set3 = set1.union(set2); // 1
+  print(set3); // Output: {1, 2, 3, 4}
+
+  var set4 = set1.intersection(set2); // 2
+  print(set4); // Output: {2, 3}
+
+  var set5 = set1.difference(set2); // 3
+  print(set5); // Output: {1}
+
+  var set6 = set2.difference(set1); // 3a
+  print(set6); // Output: {4}
+
+  var a = set1.lookup(1); // 4
+  print(a); // Output: 1
+
+  var b = set1.lookup(4); // 4a
+  print(b); // Output: null
+}
+</code></pre>
+<ol>
+<li><code>union(Set&lt;E&gt; other)</code> 返回该Set与另一个Set（<code>other</code>）的并集；</li>
+<li><code>intersection(Set&lt;Object?&gt; other)</code> 返回该Set与另一个Set（<code>other</code>）的交集；</li>
+<li><code>difference(Set&lt;Object?&gt; other)</code> 返回该Set与另一个Set（<code>other</code>） 的差集，注意 <code>this.difference(other)</code> 与 <code>other.difference(this)</code>是不同的；</li>
+<li><code>lookup(Object? object)</code>：如果Set中的某个成员与给定的对象<code>object</code>相等，就返回该成员，否则返回<code>null</code>。</li>
+</ol>
+<p>关于Set的更多方法，请查阅<a href="https://api.dart.dev/dart-core/Set-class.html">官方文档</a>。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="map映射"><a class="header" href="#map映射">Map（映射）</a></h1>
+<p>Map中的成员以“键值对”（key-value pair）的形式存在，Map也就是“键值对”的集合。同一个Map中
+中的key不会重复，但不同的key可以关联到同一个value；通过key可以快速找到对应的value。理论上，Map的读写操作（查找、插入、删除）的平均时间复杂度都是O(1)，即Map可以在一个常量时间内完成某个读或写操作，这个时间几乎不受Map内成员个数的影响。</p>
+<pre class="mermaid">flowchart TB
+  subgraph abc [Map]
+    subgraph ... 
+    direction LR
+    G(k...) --&gt; H(v...)
+    end
+
+    subgraph entry2
+    direction LR
+    C(key2) --&gt; D(value2)
+    end
+   
+    subgraph entry1 
+    direction LR
+    A(key1) --&gt; B(value1) 
+    end
+  end
+</pre>
+<p>key与value的数据类型乃参数化类型（泛型）。</p>
+<pre><code class="language-dart">abstract interface class Map&lt;K, V&gt; { 
+  // ...
+}
+</code></pre>
+<p>在稍后的示例<code>ex651.dart</code>中，变量 <code>capitals</code>的数据类型是<code>Map&lt;String, String&gt;</code>（key与value的类型均为String）。</p>
+<h2 id="示例"><a class="header" href="#示例">示例</a></h2>
+<pre><code class="language-dart">// ex651.dart
+void main() {
+  var capitals = {'US': 'Washington', 'UK': 'London', 'France': 'Paris'};
+  print(capitals.runtimeType); // Output: _Map&lt;String, String&gt;
+
+  print(capitals.entries); // 1
+  // Outut: (MapEntry(US: Washington), MapEntry(UK: London), MapEntry(France: Paris))
+
+  print(capitals.keys); // 1a Output: (US, UK, France)
+  print(capitals.values); // 1b Output: (Washington, London, Paris)
+
+  print(capitals['US']); // 2 Output: Washington
+  print(capitals['Germany']); // 2a Output: null
+
+  capitals['Germany'] = 'Berlin'; // 3
+  capitals.putIfAbsent('Italy', () =&gt; 'Rome'); // 4
+  print('${capitals['Germany']} ${capitals['Italy']}'); // Output: Berlin Rome
+
+  var numbers = {'0xa': 10, '10': 10};
+  print(numbers.values); // Output: 5 (10, 10)
+  print(numbers.values.toSet()); // 5a Output: {10}
+}
+</code></pre>
+<ol>
+<li>在<a href="ch06/./dartpl0602.html">集合概述</a>一节中已经提到，一个Map有3个Iterable对象（getter），即<code>entries</code>,<code>keys</code> 以及 <code>values</code>；</li>
+<li>类似于通过下标（从0开始的整数）获取List（数组）的成员，通过key来获取Map中与key对应的value（获取失败将返回<code>null</code>），这里的获取操作本即<code>[]</code>操作符方法；</li>
+<li>与List类似，可通过<code>[]=</code>操作符方法，更新与key对应的value（若key不存在，则插入对应的key-value pair）；</li>
+<li><code>putIfAbsent</code>只有当key不存在时才更新对应的value；</li>
+<li>请注意，<code>values</code>返回的是Iterable对象，不会自动去重，可通过<code>values.toSet()</code>获取<code>values</code>对应的Set。</li>
+</ol>
+<h2 id="构造函数-3"><a class="header" href="#构造函数-3">构造函数</a></h2>
+<p>简单介绍一下的Map工厂构造函数：</p>
+<ul>
+<li><code>Map()</code> 创建一个空的 LinkedHashMap.</li>
+<li><code>Map.from(Map other)</code> 使用与<code>other</code>同样的 keys 与 values 创建一个 LinkedHashMap .</li>
+<li><code>Map.fromEntries(Iterable&lt;MapEntry&lt;K, V&gt;&gt; entries)</code> 从 entries 创建Map.</li>
+<li><code>Map.fromIterable(Iterable iterable, {K key(dynamic element)?, V value(dynamic element)?})</code> 从一个Iterable对象创建Map，等价于<code>&lt;K, V&gt;{for (var v in iterable) key(v): value(v)} </code>.</li>
+<li><code>Map.fromIterables(Iterable&lt;K&gt; keys, Iterable&lt;V&gt; values)</code> 从给定的 keys 和 values 创建Map.</li>
+<li><code>Map.identity()</code> 创建一个 identity Map， 该Map使用<code>identical(Object?,  Object?)</code>函数对key进行相等性测试.</li>
+<li><code>Map.of(Map&lt;K, V&gt; other)</code> 从<code>other</code> 创建一个LinkedHashMap</li>
+<li><code>Map.unmodifiable(Map other)</code> 从<code>other</code> 创建一个不可变Map.</li>
+</ul>
+<h2 id="练习-3"><a class="header" href="#练习-3">练习</a></h2>
+<p>创建一个类型为<code>Map&lt;String,int&gt;</code>的Map，并准备100万（key-value pair）的测试数据，然后将测试数据逐个写入Map；在Map的长度由1万增长至100万的过程中，记录每插入100个pair的耗时；最后观察并分析这些耗时。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="hashcode-与-操作符"><a class="header" href="#hashcode-与-操作符">hashCode 与 <code>==</code>操作符</a></h1>
+<p>Set 和 Map 通常依托哈希表实现。 逻辑上，哈希表可以抽象为一个两列的表格：一列是由 <code>Object.hashCode</code>生成的哈希码（即散列码），另一列则是对应的 entry（key-value pair）。物理存储上，程序先将 key 映射为哈希码，再将哈希码转换为数组索引，该索引决定了 Entry 在哈希表中的物理位置。通过这种方式，Set 和 Map 实现了极其高效的元素存取。有趣的是，在很多底层实现中，Set 其实就是一个“值为空”的 Map；例如 Go 语言并未提供内置的 Set 类型，而是建议开发者直接使用 Map。</p>
+<pre class="mermaid">flowchart LR
+   A(( entry )) --&gt;|key.hashCode| B(( 哈希码 ))
+   B --&gt; C(( 索引 ))
+   C --&gt;|构建| D[( 哈希表 )]
+   D --&gt;|查找| A
+</pre>
+<p>Set或Map通常基于<code>Object.==</code> 进行相等性测试。<code>Object.hashCode</code> 与 <code>Object.==</code> （equals）的默认实现仅体现了对象的标识符。为了保持Set或Map语义正确：</p>
+<ul>
+<li>两个相等的对象，其哈希值也必须相等；</li>
+<li>重写了<code>Object.==</code>也必须重写<code>Object.hashCode</code>，反之亦然；</li>
+<li>通常只对不可变类重写 <code>Object.==</code>。</li>
+</ul>
+<h2 id="示例-1"><a class="header" href="#示例-1">示例</a></h2>
+<p>下例中<code>Point2</code>类 重写了 <code>Object.hashCode</code> 与 <code>Object.==</code> ，而 <code>Point</code>类使用了其默认实现。</p>
+<pre><code class="language-dart">// ex661.dart
+void main() {
+  var a = Point(1, 2);
+  var b = Point(1, 2);
+
+  var c = Point2(1, 2);
+  var d = Point2(1, 2);
+
+  print('a.hashCode: ${a.hashCode}'); // 1
+  print('b.hashCode: ${b.hashCode}'); // 1a
+
+  print('c.hashCode: ${c.hashCode}'); // 2
+  print('d.hashCode: ${d.hashCode}'); // 2a
+
+  assert(a != b); // 3
+  assert(c == d); // 3a
+
+  var set1 = {a, b, c, d}; // 4
+  print(set1); // Output: {Point(1, 2), Point(1, 2), Point2(1, 2)}
+
+  var map1 = {a: 'a', b: 'b', c: 'c', d: 'd'}; // 5
+  print(map1); // Output: {Point(1, 2): a, Point(1, 2): b, Point2(1, 2): d}
+}
+
+class Point {
+  final int x, y;
+  Point(this.x, this.y);
+
+  @override
+  String toString() =&gt; 'Point($x, $y)';
+}
+
+class Point2 {
+  final int x, y;
+  Point2(this.x, this.y);
+
+  @override
+  String toString() =&gt; 'Point2($x, $y)';
+
+  @override
+  int get hashCode {
+    const prime = 31;
+    var result = 1;
+    result = prime * result + x.hashCode;
+    result = prime * result + y.hashCode;
+    return result;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is Point2) {
+      return x == other.x &amp;&amp; y == other.y;
+    }
+    return false;
+  }
+}
+</code></pre>
+<ol>
+<li>变量<code>a</code>,<code>b</code>的类型为<code>Point</code>，虽然它们的成员变量（<code>x</code>和<code>y</code>）的值都一样，但它们的哈希值不同（原因是它们的对象标识不同）；</li>
+<li>变量<code>c</code>,<code>d</code>的类型为<code>Point2</code>，它们的哈希值相同（因为我们重写了<code>Object.hashCode</code> 与 <code>Object.==</code>，只要它们的成员变量具有相同的值，它们的哈希值就一定相同）；</li>
+<li><code>a != b</code> 且 <code>c == d</code>，显然成立；</li>
+<li>由于 <code>c==d</code> 成立， <code>set1</code> 只有3个元素；</li>
+<li>同理 <code>map1</code>只有3个entries，<code>map1</code>内部将<code>c</code>和<code>d</code>视为同样的key（即<code>Point2(1, 2)</code>），与其对应的value是最新的那个值<code>'d'</code>。</li>
+</ol>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="异步编程概述"><a class="header" href="#异步编程概述">异步编程概述</a></h1>
+<p>异步编程之于 Dart，正如多线程之于 Java。在 Java 世界中，多线程是处理并发任务的核心；而在 Dart 的世界里，异步编程承担着同样的角色；它是程序在处理耗时操作（如网络请求、数据库操作、文件读写）时，界面依然能够灵敏响应、不卡顿的基石。</p>
+<p>下面的示例模拟了用户在登录时，程序让用户无助等待了 5 秒的场景。</p>
+<pre><code class="language-dart">// ex711.dart
+import 'dart:io';
+
+void main() {
+  var watch = Stopwatch()..start();
+
+  var ok = login('userid', 'passwd'); // 1
+  if (ok) {
+    print('Welecome!');
+  } else {
+    print('try again');
+  }
+
+  print(watch.elapsedMilliseconds);
+}
+
+bool login(String userId, String passwd) {
+  // Simulate a long task that will take 5 seconds
+  sleep(Duration(seconds: 5));
+  return true;
+}
+
+</code></pre>
+<ol>
+<li>同步调用<code>login函数</code>，程序执行流程被阻塞，直到<code>login</code>函数返回；</li>
+<li>这里模拟了<code>login</code>函数花了5秒钟完成用户名和密码的校验。</li>
+</ol>
+<h2 id="核心机制event-loop-与它的三剑客"><a class="header" href="#核心机制event-loop-与它的三剑客">核心机制：Event Loop 与它的“三剑客”</a></h2>
+<p>Dart 采用的是单线程模型，其异步并非通过多线程并行实现，而是基于 Event Loop（事件循环） 机制。</p>
+<p>你可以把 Event Loop 想象成一个超级服务员：当他下单给厨师炒菜（耗时操作）后，并不会在取餐口原地干等，而是利用这段空档先去给其他客人倒水、点菜。他绝不让自己闲着，也绝不让任何一位客人干等。这种灵活的调度，正是 Dart 能够以单线程实现高并发响应的奥秘。</p>
+<p>除了 Event Loop，要掌握 Dart 异步编程，我们还必须理解下面三个核心概念：</p>
+<ul>
+<li>Future： 代表一个“承诺”，即在未来某个时刻会交付的结果（一次性任务）。</li>
+<li>Stream： 代表一连串“流动”的数据，像自来水管一样持续传输事件（持续性任务）。</li>
+<li>Isolate： 类似于轻量级进程。它拥有独立的内存空间，Isolate 之间互不共享内存，仅靠消息通信。它通常用于处理最吃性能的 CPU 密集型计算任务。</li>
+</ul>
+<p>本章将带你由浅入深，先掌握最常用的 Future 与 Stream，随后揭开 Event Loop 与 Isolate 的底层面纱。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="future"><a class="header" href="#future">Future</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="iterable"><a class="header" href="#iterable">Iterable</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="stream"><a class="header" href="#stream">Stream</a></h1>
+<p>Future 代表了一个“在未来某个时间点”才会完成的操作结果。
+Future 的生命周期可分为两个阶段：</p>
+<ul>
+<li>未完成 (Uncompleted)：异步操作正在进行中，结果尚未产生；</li>
+<li>已完成 (Completed)：操作结束，会有两种可能的结果：
+<ul>
+<li>成功 (Value)：操作顺利完成，返回具体的数据（如 Future<String> 返回字符串）；</li>
+<li>失败 (Error)：操作中途出错，返回一个异常。</li>
+</ul>
+</li>
+</ul>
+<pre class="mermaid">stateDiagram
+    [*] --&gt; Uncompleted : Create Future
+   
+    Uncompleted --&gt; Success : Value
+    Uncompleted --&gt; Failure : Error
+
+    Success --&gt; [*] : .then / await
+    Failure --&gt; [*] : .catchError / try-catch
+</pre>
+<h2 id="示例-2"><a class="header" href="#示例-2">示例</a></h2>
+<p>先通过一个例子来看同步函数与异步函数及其使用上的区别：</p>
+<pre><code class="language-dart">// ex721.dart
+import 'dart:async';
+import 'dart:io';
+
+void main() {
+  final watch = Stopwatch()..start(); // 3
+  var count = 0;
+  void myprint(o) =&gt;
+      print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o'); // 3a
+
+  myprint('before compute');
+  var result = compute(3, 4); // 4
+  myprint('after compute');
+  myprint('result=$result');
+
+  myprint('before computeAsync');
+  var futureResult = computeAsync(5, 12); // 5
+  myprint('after computeAsync');
+
+  futureResult.then((onValue) =&gt; myprint('result=$onValue')); // 6
+
+  /* An example output:
+out0 0ms: before compute
+out1 1004ms: after compute
+out2 1005ms: result=7
+out3 1005ms: before computeAsync
+out4 1010ms: after computeAsync
+out5 2020ms: result=17
+*/
+}
+
+// 1
+int compute(int a, int b) {
+  // Simulate a long task
+  sleep(Duration(seconds: 1));
+  return a + b;
+}
+
+// 2
+Future&lt;int&gt; computeAsync(int a, int b) {
+  return Future(() =&gt; compute(a, b));
+}
+</code></pre>
+<ol>
+<li><code>compute</code> 是一个同步函数，它模拟了一个耗时约1秒种的计算任务（根据<code>a</code>和<code>b</code>进行计算），然后返回其结果；</li>
+<li><code>computeAsync</code> 是 <code>compute</code>的异步版本，它是一个异步函数，它使用<code>Future.new</code>创建了一个Future对象并返回；</li>
+<li><code>Stopwatch</code>是一个用于计时对秒表，精确到微秒(microseconds)，该示例使用了毫秒（milliseconds）作为计时单位（<code>3a</code>）；</li>
+<li>调用<code>compute</code>函数，程序阻塞直到compute返回结果（<code>out0 - out2</code>)；</li>
+<li>调用<code>computeAsync</code>函数得到的是一个Future对象，<code>computeAsync</code>函数返回时，真正的计算（<code>compute</code>）还在进行中，即程序不会阻塞等待计算结果（<code>out3 - out4</code>）；</li>
+<li>给<code>futureResult.then</code>提供一个callback（回调）函数，当<code>computeAsync</code>内部计算完成时，callback将被调用（<code>out5</code>）。</li>
+</ol>
+<p>同步 vs 异步：</p>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th>同步函数 (compute)</th><th>异步函数 (computeAsync)</th></tr></thead><tbody>
+<tr><td>定义方式</td><td><code>int compute(...)</code></td><td><code>Future&lt;int&gt; computeAsync(...)</code></td></tr>
+<tr><td>返回值</td><td>直接返回结果</td><td>返回一个“凭证” Future，承诺以后给结果</td></tr>
+<tr><td>执行表现</td><td>调用时程序会“停”在这一行直到算完</td><td>调用后程序可以立即去做别的事</td></tr>
+<tr><td>调用方式</td><td><code>var res = compute(3, 4);</code></td><td><code>computeAsync(3, 4).then(...);</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="asyncwait"><a class="header" href="#asyncwait">async/wait</a></h2>
+<p>上述示例中的<code>computeAsync</code>可以用<code>asyc/wait</code>改写，这是更现代、更具可读性的风格，让异步代码看起来像同步代码。</p>
+<pre><code class="language-dart">// ex722.dart
+void main() async { // 3
+  var result = await compute(8, 15); // 2
+  print(result); // Output: 23
+}
+
+// 1
+Future&lt;int&gt; compute(int a, int b) async =&gt; a + b;
+</code></pre>
+<ol>
+<li><code>async</code>写在函数（或方法）签名的最后，这里标记compute为异步函数；</li>
+<li>调用异步函数<code>compute</code>时，使用前缀关键字<code>await</code>，使得异步代码像同步代码那样简洁；</li>
+<li><code>await</code> 关键字只能在异步函数（或方法）中。</li>
+</ol>
+<h2 id="异常处理-1"><a class="header" href="#异常处理-1">异常处理</a></h2>
+<p>下面的例子演示了有关Future的异常处理。</p>
+<pre><code class="language-dart">// ex723.dart
+void main() async {
+  divide(2, 1).then((val) =&gt; print(val)); // Output: 2
+
+  divide(2, 0).then((val) =&gt; print(val)).catchError((e) =&gt; print(e));
+  // Output: IntegerDivisionByZeroException
+
+  print(await divide(3, 1)); // Output: 3
+
+  try {
+    print(await divide(3, 0));
+  } on Exception catch (e) {
+    print(e); // Output: IntegerDivisionByZeroException
+  }
+}
+
+Future&lt;int&gt; divide(int a, int b) async =&gt; a ~/ b;
+</code></pre>
+<h2 id="构造函数-4"><a class="header" href="#构造函数-4">构造函数</a></h2>
+<p>常用的 Future 构造函数：</p>
+<ul>
+<li><code>Futrue(computation)</code>（<code>Futrue.new</code>） 使用 <code>Timer.run</code> 创建一个包含<code>computation()</code>的计算结果的Future（异步执行）</li>
+<li><code>Futrue.sync(computation)</code> 创建一个包含<code>computation()</code>的计算结果的Future（同步执行）；</li>
+<li><code>Future.delayed(duration,[computation])</code> 延迟一段时间后执行代码（常用于模拟网络延迟）</li>
+<li><code>Future.value([value])</code> 立即创建一个成功状态的 Future</li>
+<li><code>Future.error(error, [stackTrace])</code> 立即创建一个失败状态的 Future</li>
+<li><code>Future.microtask(computation)</code> 将任务放入微任务队列（Microtask Queue），相比<code>Futrue.new</code>优先级更高</li>
+</ul>
+<p>请仔细阅读并分析如下示例。</p>
+<pre><code class="language-dart">// ex724.dart
+void main() {
+  final watch = Stopwatch()..start();
+  var count = 0;
+  void myprint(o) =&gt;
+      print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
+
+  myprint('start');
+  Future.delayed(Duration(seconds: 1), () =&gt; myprint('deplay'));
+  Future.microtask(() =&gt; 'microtask1').then(myprint);
+  Future(() =&gt; 'new').then(myprint);
+  Future.sync(() =&gt; 'sync').then(myprint);
+  Future.value('value').then(myprint);
+  Future.error('error').catchError(myprint);
+  Future.microtask(() =&gt; 'microtask2').then(myprint);
+
+  /* An example output:
+out0 0ms: start
+out1 24ms: microtask1
+out2 24ms: sync
+out3 25ms: value
+out4 27ms: error
+out5 28ms: microtask2
+out6 30ms: new
+out7 1014ms: deplay
+*/
+}
+</code></pre>
+<h2 id="实用方法"><a class="header" href="#实用方法">实用方法</a></h2>
+<p>Future提供了下列实用的静态方法：</p>
+<ul>
+<li><code>Future.wait(futures,{...})</code> 同时启动多个Future，并等待它们全部完成；</li>
+<li><code>Future.any(futures)</code>  谁先完成就返回谁（无论是成功还是失败）；</li>
+<li><code>Future.doWhile(action)</code> 重复执行异步操作，直到返回 <code>false</code> 为止。</li>
+<li><code>Future.forEach(elements, action)</code> 对集合中的每个元素顺序执行异步操作，它会等前一个执行完再开始下一个。</li>
+</ul>
+<p>下面的示例代码不难理解，请读者自行分析。</p>
+<pre><code class="language-dart">// ex725.dart
+import 'dart:math';
+
+void main() {
+  final watch = Stopwatch()..start();
+  var count = 0;
+  void myprint(o) =&gt;
+      print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
+
+  Future.wait([
+    Future(() =&gt; myprint('wait1')),
+    Future(() =&gt; myprint('wait2')),
+    Future(() =&gt; myprint('wait3')),
+  ]);
+
+  Future.wait([
+    Future(() =&gt; 1),
+    Future(() =&gt; 2),
+    Future(() =&gt; 3),
+  ]).then(myprint);
+
+  Future.any([
+    Future.delayed(Duration(milliseconds: 100), () =&gt; myprint('any1')),
+    Future.delayed(Duration(milliseconds: 100), () =&gt; myprint('any2')),
+    Future.delayed(Duration(milliseconds: 100), () =&gt; myprint('any3')),
+  ]);
+
+  Future.any([
+    Future.delayed(Duration(milliseconds: 100), () =&gt; 4),
+    Future.delayed(Duration(milliseconds: 100), () =&gt; 5),
+    Future.delayed(Duration(milliseconds: 100), () =&gt; 6),
+  ]).then(myprint);
+
+  final rand = Random();
+  Future.doWhile(() {
+    var d = rand.nextDouble();
+    myprint(d);
+    return d &lt; 0.8;
+  });
+
+  Future.forEach(['A', 'B', 'C'], myprint);
+
+  /* An example output:
+out0 13ms: 0.06789414914959846
+out1 15ms: 0.142393000844255
+out2 15ms: 0.7807443343674055
+out3 15ms: 0.2542896840253688
+out4 15ms: 0.5590822258793036
+out5 15ms: 0.8071049146003575
+out6 17ms: A
+out7 17ms: B
+out8 17ms: C
+out9 19ms: wait1
+out10 21ms: wait2
+out11 21ms: wait3
+out12 24ms: [1, 2, 3]
+out13 110ms: any1
+out14 113ms: any2
+out15 113ms: any3
+out16 114ms: 4
+   */
+}
+</code></pre>
+<h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
+<ul>
+<li>https://api.dart.dev/dart-async/Future-class.html</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="stream流"><a class="header" href="#stream流">Stream（流）</a></h1>
+<p>如果说 Future 是“一次性买卖”，那么 Stream 就是“订阅服务”。Stream 是一系列异步事件的序列。它会随着时间的推移发出多个值，直到任务完成或发生错误。</p>
+<pre class="mermaid">graph LR
+    A((生成数据)) --&gt; B@{ shape: das, label: &quot;Stream&quot; }
+    B --&gt;|数据事件 Data| C([监听器 Listener])
+    B --&gt;|错误事件 Error| C
+    B --&gt;|完成事件 Done| C
+    C --&gt; D{处理数据}
+</pre>
+<p>Stream 是异步版的Iterable，借助下表我们可以快速掌握其核心差异。</p>
+<div class="table-wrapper"><table><thead><tr><th></th><th>单个数据</th><th>多个数据</th></tr></thead><tbody>
+<tr><td>同步</td><td>T (普通变量)</td><td><a href="ch07/../ch06/dartpl0602.html#iterable">Iterable&lt;T&gt;</a></td></tr>
+<tr><td>异步</td><td><a href="ch07/./dartpl0702.html">Future&lt;T&gt;</a></td><td>Stream&lt;T&gt;</td></tr>
+</tbody></table>
+</div>
+<p>Iterable 与 Stream 的对称性：</p>
+<ul>
+<li><em>数据结构对称性</em>：Iterable 允许你遍历一组已经存在的数据；Stream 允许你“遍历”一组未来才会到达的数据。</li>
+<li><em>处理逻辑对称性</em>：在 Iterable 上用的 <code>map</code>、<code>where</code>、<code>expand</code>，在 Stream 中几乎完全通用。</li>
+<li><em>语法对称性</em>：Iterable 对应 <code>sync* / yield</code>，Stream 对应 <code>async* / yield</code>。</li>
+</ul>
+<h2 id="示例-3"><a class="header" href="#示例-3">示例</a></h2>
+<p>下面的示例演示了如何Stream API创建和监听Stream。</p>
+<pre><code class="language-dart">// ex731.dart
+import 'dart:async';
+import 'dart:math';
+
+void main() async {
+  final watch = Stopwatch()..start();
+  var count = 0;
+  void myprint(o) =&gt;
+      print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
+
+  randomStream(5).listen(myprint, onDone: () =&gt; myprint('done')); // 5
+
+  /** An example output:
+out0 119ms: 1
+out1 212ms: 4
+out2 312ms: 2
+out3 415ms: 2
+out4 514ms: 4
+out5 518ms: done
+   */
+}
+
+// 1
+Stream&lt;int&gt; randomStream(int max) {
+  var controller = StreamController&lt;int&gt;(); // 2
+  // Generate random int asynchronously
+  final rand = Random();
+  for (var i = 1; i &lt;= max; i++) {
+    Future.delayed(Duration(milliseconds: 100 * i), () {
+      controller.sink.add(rand.nextInt(max)); // 3
+      if (i == max) {
+        controller.close(); // 4
+      }
+    });
+  }
+  return controller.stream; // 2a
+}
+</code></pre>
+<ol>
+<li><code>randomStream(max)</code> 是数据的生产者，它每间隔100毫秒产生一个<code>[0, max)</code>区间内的随机整数（异步执行）；</li>
+<li>使用<code>StreamController</code>来控制数据的生成，在函数的最后返回 <code>controller.stream</code>；</li>
+<li>调用 <code>controller.sink.add(event)</code>（等同于<code>controller.add(event)</code>）将数据放进<code>controller.stream</code>，由于该操作时延迟且异步进行的，当<code>randomStream</code>函数返回之后才会执行；</li>
+<li>生成<code>max</code>个数据后关闭Stream；</li>
+<li>调用 <code>Stream.listen(onData,{...})</code>方法监听Stream并消费（处理）数据。</li>
+</ol>
+<h2 id="iterable-生成器-sync-yield-"><a class="header" href="#iterable-生成器-sync-yield-">Iterable 生成器（ <code>sync*-yield</code> ）</a></h2>
+<p>在介绍异步生成器 <code>async*-yield</code> 之前，先来看下Iterable生成器（使用 <code>sync*-yield</code> 创建 <a href="ch07/../ch06/dartpl0602.html#iterable">Iterable</a> 对象），请对两者进行对比。</p>
+<pre><code class="language-dart">// ex732.dart
+void main() {
+  print(countList(5)); // 1 Output: (1, 2, 3, 4, 5)
+  print(countList2(5)); // 2 Output: [1, 2, 3, 4, 5]
+}
+
+Iterable&lt;int&gt; countList(int max) sync* {
+  for (int n = 1; n &lt;= max; n++) {
+    yield n;
+  }
+}
+
+Iterable&lt;int&gt; countList2(int max) =&gt; [for (int n = 1; n &lt;= max; n++) n];
+</code></pre>
+<h2 id="async--await-for"><a class="header" href="#async--await-for"><code>async* / await for</code></a></h2>
+<p>与 Future 的 <code>async / await</code> 语法对应，Stream提供了<code>async* / await for</code>语法；使用该语法改写示例<code>ex731</code>，我们得到了一个更为现代与简洁的版本：</p>
+<pre><code class="language-dart">// ex733.dart
+import 'dart:math';
+
+void main() async { // 4
+  final watch = Stopwatch()..start();
+  var count = 0;
+  void myprint(o) =&gt;
+      print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
+
+  // 3
+  await for (var n in randomStream(5)) {
+    myprint(n);
+  }
+  myprint('done');
+}
+
+// 1
+Stream&lt;int&gt; randomStream(int max) async* {
+  final rand = Random();
+  for (var i = 0; i &lt; max; i++) {
+    await Future.delayed(Duration(milliseconds: 100));
+    yield rand.nextInt(max); // 2
+  }
+}
+</code></pre>
+<ol>
+<li><code>async*</code> 写在函数签名的最后，用以标记该函数是一个异步生成器（返回一个 Stream 对象）；</li>
+<li>使用 <code>yield</code> 将生成的数据放进Stream，此类函数不用<code>return</code>；</li>
+<li>使用 <code>await for...in...</code> 监听并消费Stream里的数据；</li>
+<li>使用 <code>await</code> 关键字的外围函数必须带 <code>async</code> 标记；</li>
+</ol>
+<h2 id="广播-broadcast"><a class="header" href="#广播-broadcast">广播 (Broadcast)</a></h2>
+<p>以上介绍的是 Stream 的“单订阅”（Single-subscription） 模式。然而，Stream 还有另一种更为灵活的形态，即广播模式（Broadcast）。我们先来看下两种模式的区别。</p>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th>单订阅</th><th>广播</th></tr></thead><tbody>
+<tr><td>监听数量</td><td>只能被 listen 一次，第二次报错</td><td>可以有无限个监听者同时监听</td></tr>
+<tr><td>缓存机制</td><td>监听前的事件可能会在缓冲区等待</td><td>事件是即时的，错过监听时间点就拿不到旧数据</td></tr>
+<tr><td>典型用途</td><td>文件读取、网络请求（端对端数据流）</td><td>状态管理、传感器数据、UI 事件通知</td></tr>
+</tbody></table>
+</div>
+<p>请看下面的示例：</p>
+<pre><code class="language-dart">// ex734.dart
+import 'dart:async';
+
+void main() {
+  final watch = Stopwatch()..start();
+  var count = 0;
+  void myprint(o) =&gt;
+      print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
+
+  var datas = countStream(5);
+  datas.listen((d) =&gt; myprint('sub1 $d')); // 1
+
+  // 0.2s later
+  Future.delayed(
+    Duration(milliseconds: 200),
+    () =&gt; datas.listen((d) =&gt; myprint('sub2 $d')), // 2
+  );
+
+  /* An example output:
+out0 128ms: sub1 1
+out1 210ms: sub1 2
+out2 323ms: sub1 3
+out3 323ms: sub2 3
+out4 415ms: sub1 4
+out5 415ms: sub2 4
+out6 510ms: sub1 5
+out7 510ms: sub2 5
+   */
+}
+
+Stream&lt;int&gt; countStream(int max) {
+  var controller = StreamController&lt;int&gt;.broadcast(); // 1
+  for (var n = 1; n &lt;= max; n++) {
+    Future.delayed(Duration(milliseconds: 100 * n), () =&gt; controller.add(n));
+  }
+  return controller.stream;
+}
+</code></pre>
+<ol>
+<li><code>StreamController.broadcast</code> 构造函数返回一个广播Stream；</li>
+<li>第一个消费者（<code>sub1</code>）监听并消费数据；</li>
+<li>0.2秒之后，第二个消费者（<code>sub2</code>）监听并消费数据；注意观察程序输出，对比两个消费者各自监听到的数据。</li>
+</ol>
+<p>可以用 <code>async*-yield</code> 语法改写此示例的 <code>countStream</code> 函数如下：</p>
+<pre><code class="language-dart">Stream&lt;int&gt; countStream(int max) async* {
+  for (var n = 1; n &lt;= max; n++) {
+    await Future.delayed(Duration(milliseconds: 100));
+    yield n;
+  }
+}
+</code></pre>
+<p>改写后的<code>countStream</code> 函数更加简洁。相应地 <code>var datas = countStream(5);</code> 一行需改写为：</p>
+<pre><code class="language-dart">    var datas = countStream(5).asBroadcastStream(); // 1 
+</code></pre>
+<h2 id="stream-的常用方法"><a class="header" href="#stream-的常用方法">Stream 的常用方法</a></h2>
+<p><strong>订阅与生命周期</strong></p>
+<ul>
+<li><code>listen()</code>: 最核心的方法。手动订阅流，处理 <code>onData</code>, <code>onError</code>, <code>onDone</code> 事件。</li>
+<li><code>await for</code>: 异步迭代器。像遍历 List 一样消费流（最简洁的消费方式）。</li>
+<li><code>asBroadcastStream()</code>: 将单订阅流转换为广播流（多订阅流）。</li>
+<li><code>timeout(duration)</code>: 设置超时时间，若规定时间内无事件则触发错误或执行回调。</li>
+</ul>
+<p><strong>转换</strong></p>
+<p>这些方法返回一个新的 Stream，且大多是惰性的。</p>
+<ul>
+<li><code>map&lt;T&gt;(convert)</code>: 将流中的每个元素同步转换为另一种类型。</li>
+<li><code>asyncMap&lt;T&gt;(convert)</code>: 异步转换。等待 <code>Future</code> 完成后再发射下一个元素。</li>
+<li><code>expand(convert)</code>: 将一个元素转换为多个元素，并平铺（Flatten）到流中。</li>
+<li><code>asyncExpand(convert)</code>: 将每个元素转换为一个新的 <code>Stream</code> 并按顺序连接。</li>
+<li><code>transform(transformer)</code>: 使用 <code>StreamTransformer</code> 进行自定义的复杂转换（如解密、编码）。</li>
+</ul>
+<p><strong>过滤</strong></p>
+<ul>
+<li><code>where(test)</code>: 筛选掉不满足条件的元素。</li>
+<li><code>distinct([equals])</code>: 过滤掉与前一个元素连续重复的元素。</li>
+<li><code>take(count)</code>: 只获取前 <code>count</code> 个元素。</li>
+<li><code>takeWhile(test)</code>: 持续获取，直到条件不再满足。</li>
+<li><code>skip(count)</code>: 跳过前 <code>count</code> 个元素。</li>
+<li><code>skipWhile(test)</code>: 跳过直到条件不再满足，之后开始获取。</li>
+<li><code>handleError(onError)</code>: 捕获并处理流中的错误，防止流中断。</li>
+</ul>
+<p><strong>聚合与检索</strong></p>
+<ul>
+<li><code>toList()</code>: 将流中所有元素收集到一个 <code>List</code> 中。</li>
+<li><code>toSet()</code>: 将流中所有元素收集到一个 <code>Set</code> 中。</li>
+<li><code>fold&lt;T&gt;(initial, combine)</code>: 提供初始值，将元素累加合并为单一结果。</li>
+<li><code>reduce(combine)</code>: 无初始值，两两合并流中的元素（要求非空）。</li>
+<li><code>join([separator])</code>: 将元素转为字符串并用分隔符连接。</li>
+<li><code>first</code> / <code>last</code> / <code>single</code>: 获取流中第一个、最后一个或唯一一个元素。</li>
+<li><code>any(test)</code> / <code>every(test)</code>: 检查是否至少一个/全部元素满足条件。</li>
+<li><code>contains(element)</code>: 检查流中是否包含特定元素。</li>
+</ul>
+<p>一个简单示例：</p>
+<pre><code class="language-dart">// ex736.dart
+void main() async {
+  var nums = Stream.fromIterable([for (var i = 0; i &lt; 10; i++) i]);
+  print(await nums.join("-")); // Output: 0-1-2-3-4-5-6-7-8-9
+  print(await nums.map((i) =&gt; i * i).toList()); // 1*1,2*2,...
+  print(await nums.where((i) =&gt; i % 2 == 0).toList()); // even numbers
+  print(await nums.fold&lt;int&gt;(0, (old, i) =&gt; old + i)); // 1+2+...
+  print(await nums.contains(1)); // Output: true
+
+  print(
+    await nums
+        .take(5)
+        .map((i) =&gt; i * 3 + 1)
+        .expand((i) =&gt; [i, i * i, i * i * i])
+        .where((i) =&gt; i &lt; 200)
+        .toList(),
+  );
+  // Output: [1, 1, 1, 4, 16, 64, 7, 49, 10, 100, 13, 169]
+}
+</code></pre>
+<h2 id="yieldyield-each"><a class="header" href="#yieldyield-each"><code>yield*</code>（yield-each）</a></h2>
+<p><code>yield*</code> （yield-each）是Dart 非常强大的异步生成器。如果说 <code>yield</code> 是插入一个元素，那么 <code>yield*</code> 就是插入一个 Stream 中的所有元素。<code>yield*</code> 后接 一个 Stream，其作用是暂停当前的生成器，转而监听后面的 Stream，并将其产生的所有事件逐一转发，直到那个 Stream 结束，才继续执行当前生成器接下来的代码。</p>
+<p>先来看一个使用 <code>yield*</code> 的例子：</p>
+<pre><code class="language-dart">// ex737.dart
+void main() async {
+  var nums = combinedStream(Stream.fromIterable([1, 2, 3]));
+  print(await nums.toList()); // Output: [1, 2, 3, 0]
+}
+
+Stream&lt;int&gt; combinedStream(Stream&lt;int&gt; prev) async* {
+  // 1
+  await for (final n in prev) {
+    yield n; 
+  }
+  yield 0; // 2
+}
+</code></pre>
+<p><code>combinedStream</code> 函数使用 <code>await for</code> 将 <code>prev</code> 中的元素一个个写进目标stream后，然后追加一条数据（<code>0</code>）。用 <code>yield*</code> 改写该函数如下：</p>
+<pre><code class="language-dart">// ex738.dart
+Stream&lt;int&gt; combinedStream(Stream&lt;int&gt; prev) async* {
+  yield* prev; // 1
+  yield 0; // 2
+}
+</code></pre>
+<p>改写后的函数看起来简洁多了。</p>
+<h3 id="yield-与-yield-对比"><a class="header" href="#yield-与-yield-对比"><code>yield</code> 与 <code>yield*</code> 对比</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th><code>yield</code></th><th><code>yield*</code></th></tr></thead><tbody>
+<tr><td>右侧对象</td><td>单个数据（如 <code>int</code>, <code>String</code>）</td><td>一个 <code>Stream</code>&lt;<code>T</code>&gt;</td></tr>
+<tr><td>行为</td><td>产出一个值后继续</td><td>代理另一个Stream，直到其结束才继续</td></tr>
+<tr><td>性能</td><td>逐个处理</td><td>更加高效（Dart 引擎对其有内部优化）</td></tr>
+</tbody></table>
+</div>
+<h3 id="关键特性与陷阱"><a class="header" href="#关键特性与陷阱">关键特性与陷阱</a></h3>
+<p><strong>执行顺序</strong></p>
+<p><code>yield*</code> 会阻塞当前生成器的执行。只有当 <code>yield*</code> 后面的Stream关闭（close）后，当前函数才会执行下一行。</p>
+<p><strong>错误传递</strong></p>
+<p>如果 <code>yield*</code> 监听的Stream抛出了异常，这个异常会直接传递到当前Stream中，除非你在外层用了 <code>try-catch</code>。</p>
+<p><strong>广播流</strong></p>
+<p>如果 <code>yield*</code> 后面是一个广播流，那么它只会转发从“订阅那一刻”开始的数据。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="isolate"><a class="header" href="#isolate">Isolate</a></h1>
+<h2 id="reference-1"><a class="header" href="#reference-1">Reference</a></h2>
+<ul>
+<li><a href="https://dart.dev/articles/event-loop/">Dart asynchronous programming: Isolates and event loops</a></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="testgroup"><a class="header" href="#testgroup">test/group</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="测试异步代码"><a class="header" href="#测试异步代码">测试异步代码</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="mockito"><a class="header" href="#mockito">mockito</a></h1>

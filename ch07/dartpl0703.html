@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Iterable - 从0开始学Dart</title>
+        <title>Stream - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -164,7 +164,284 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="iterable"><a class="header" href="#iterable">Iterable</a></h1>
+                        <h1 id="stream流"><a class="header" href="#stream流">Stream（流）</a></h1>
+<p>如果说 Future 是“一次性买卖”，那么 Stream 就是“订阅服务”。Stream 是一系列异步事件的序列。它会随着时间的推移发出多个值，直到任务完成或发生错误。</p>
+<pre class="mermaid">graph LR
+    A((生成数据)) --&gt; B@{ shape: das, label: &quot;Stream&quot; }
+    B --&gt;|数据事件 Data| C([监听器 Listener])
+    B --&gt;|错误事件 Error| C
+    B --&gt;|完成事件 Done| C
+    C --&gt; D{处理数据}
+</pre>
+<p>Stream 是异步版的Iterable，借助下表我们可以快速掌握其核心差异。</p>
+<div class="table-wrapper"><table><thead><tr><th></th><th>单个数据</th><th>多个数据</th></tr></thead><tbody>
+<tr><td>同步</td><td>T (普通变量)</td><td><a href="../ch06/dartpl0602.html#iterable">Iterable&lt;T&gt;</a></td></tr>
+<tr><td>异步</td><td><a href="./dartpl0702.html">Future&lt;T&gt;</a></td><td>Stream&lt;T&gt;</td></tr>
+</tbody></table>
+</div>
+<p>Iterable 与 Stream 的对称性：</p>
+<ul>
+<li><em>数据结构对称性</em>：Iterable 允许你遍历一组已经存在的数据；Stream 允许你“遍历”一组未来才会到达的数据。</li>
+<li><em>处理逻辑对称性</em>：在 Iterable 上用的 <code>map</code>、<code>where</code>、<code>expand</code>，在 Stream 中几乎完全通用。</li>
+<li><em>语法对称性</em>：Iterable 对应 <code>sync* / yield</code>，Stream 对应 <code>async* / yield</code>。</li>
+</ul>
+<h2 id="示例"><a class="header" href="#示例">示例</a></h2>
+<p>下面的示例演示了如何Stream API创建和监听Stream。</p>
+<pre><code class="language-dart">// ex731.dart
+import 'dart:async';
+import 'dart:math';
+
+void main() async {
+  final watch = Stopwatch()..start();
+  var count = 0;
+  void myprint(o) =&gt;
+      print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
+
+  randomStream(5).listen(myprint, onDone: () =&gt; myprint('done')); // 5
+
+  /** An example output:
+out0 119ms: 1
+out1 212ms: 4
+out2 312ms: 2
+out3 415ms: 2
+out4 514ms: 4
+out5 518ms: done
+   */
+}
+
+// 1
+Stream&lt;int&gt; randomStream(int max) {
+  var controller = StreamController&lt;int&gt;(); // 2
+  // Generate random int asynchronously
+  final rand = Random();
+  for (var i = 1; i &lt;= max; i++) {
+    Future.delayed(Duration(milliseconds: 100 * i), () {
+      controller.sink.add(rand.nextInt(max)); // 3
+      if (i == max) {
+        controller.close(); // 4
+      }
+    });
+  }
+  return controller.stream; // 2a
+}
+</code></pre>
+<ol>
+<li><code>randomStream(max)</code> 是数据的生产者，它每间隔100毫秒产生一个<code>[0, max)</code>区间内的随机整数（异步执行）；</li>
+<li>使用<code>StreamController</code>来控制数据的生成，在函数的最后返回 <code>controller.stream</code>；</li>
+<li>调用 <code>controller.sink.add(event)</code>（等同于<code>controller.add(event)</code>）将数据放进<code>controller.stream</code>，由于该操作时延迟且异步进行的，当<code>randomStream</code>函数返回之后才会执行；</li>
+<li>生成<code>max</code>个数据后关闭Stream；</li>
+<li>调用 <code>Stream.listen(onData,{...})</code>方法监听Stream并消费（处理）数据。</li>
+</ol>
+<h2 id="iterable-生成器-sync-yield-"><a class="header" href="#iterable-生成器-sync-yield-">Iterable 生成器（ <code>sync*-yield</code> ）</a></h2>
+<p>在介绍异步生成器 <code>async*-yield</code> 之前，先来看下Iterable生成器（使用 <code>sync*-yield</code> 创建 <a href="../ch06/dartpl0602.html#iterable">Iterable</a> 对象），请对两者进行对比。</p>
+<pre><code class="language-dart">// ex732.dart
+void main() {
+  print(countList(5)); // 1 Output: (1, 2, 3, 4, 5)
+  print(countList2(5)); // 2 Output: [1, 2, 3, 4, 5]
+}
+
+Iterable&lt;int&gt; countList(int max) sync* {
+  for (int n = 1; n &lt;= max; n++) {
+    yield n;
+  }
+}
+
+Iterable&lt;int&gt; countList2(int max) =&gt; [for (int n = 1; n &lt;= max; n++) n];
+</code></pre>
+<h2 id="async--await-for"><a class="header" href="#async--await-for"><code>async* / await for</code></a></h2>
+<p>与 Future 的 <code>async / await</code> 语法对应，Stream提供了<code>async* / await for</code>语法；使用该语法改写示例<code>ex731</code>，我们得到了一个更为现代与简洁的版本：</p>
+<pre><code class="language-dart">// ex733.dart
+import 'dart:math';
+
+void main() async { // 4
+  final watch = Stopwatch()..start();
+  var count = 0;
+  void myprint(o) =&gt;
+      print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
+
+  // 3
+  await for (var n in randomStream(5)) {
+    myprint(n);
+  }
+  myprint('done');
+}
+
+// 1
+Stream&lt;int&gt; randomStream(int max) async* {
+  final rand = Random();
+  for (var i = 0; i &lt; max; i++) {
+    await Future.delayed(Duration(milliseconds: 100));
+    yield rand.nextInt(max); // 2
+  }
+}
+</code></pre>
+<ol>
+<li><code>async*</code> 写在函数签名的最后，用以标记该函数是一个异步生成器（返回一个 Stream 对象）；</li>
+<li>使用 <code>yield</code> 将生成的数据放进Stream，此类函数不用<code>return</code>；</li>
+<li>使用 <code>await for...in...</code> 监听并消费Stream里的数据；</li>
+<li>使用 <code>await</code> 关键字的外围函数必须带 <code>async</code> 标记；</li>
+</ol>
+<h2 id="广播-broadcast"><a class="header" href="#广播-broadcast">广播 (Broadcast)</a></h2>
+<p>以上介绍的是 Stream 的“单订阅”（Single-subscription） 模式。然而，Stream 还有另一种更为灵活的形态，即广播模式（Broadcast）。我们先来看下两种模式的区别。</p>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th>单订阅</th><th>广播</th></tr></thead><tbody>
+<tr><td>监听数量</td><td>只能被 listen 一次，第二次报错</td><td>可以有无限个监听者同时监听</td></tr>
+<tr><td>缓存机制</td><td>监听前的事件可能会在缓冲区等待</td><td>事件是即时的，错过监听时间点就拿不到旧数据</td></tr>
+<tr><td>典型用途</td><td>文件读取、网络请求（端对端数据流）</td><td>状态管理、传感器数据、UI 事件通知</td></tr>
+</tbody></table>
+</div>
+<p>请看下面的示例：</p>
+<pre><code class="language-dart">// ex734.dart
+import 'dart:async';
+
+void main() {
+  final watch = Stopwatch()..start();
+  var count = 0;
+  void myprint(o) =&gt;
+      print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
+
+  var datas = countStream(5);
+  datas.listen((d) =&gt; myprint('sub1 $d')); // 1
+
+  // 0.2s later
+  Future.delayed(
+    Duration(milliseconds: 200),
+    () =&gt; datas.listen((d) =&gt; myprint('sub2 $d')), // 2
+  );
+
+  /* An example output:
+out0 128ms: sub1 1
+out1 210ms: sub1 2
+out2 323ms: sub1 3
+out3 323ms: sub2 3
+out4 415ms: sub1 4
+out5 415ms: sub2 4
+out6 510ms: sub1 5
+out7 510ms: sub2 5
+   */
+}
+
+Stream&lt;int&gt; countStream(int max) {
+  var controller = StreamController&lt;int&gt;.broadcast(); // 1
+  for (var n = 1; n &lt;= max; n++) {
+    Future.delayed(Duration(milliseconds: 100 * n), () =&gt; controller.add(n));
+  }
+  return controller.stream;
+}
+</code></pre>
+<ol>
+<li><code>StreamController.broadcast</code> 构造函数返回一个广播Stream；</li>
+<li>第一个消费者（<code>sub1</code>）监听并消费数据；</li>
+<li>0.2秒之后，第二个消费者（<code>sub2</code>）监听并消费数据；注意观察程序输出，对比两个消费者各自监听到的数据。</li>
+</ol>
+<p>可以用 <code>async*-yield</code> 语法改写此示例的 <code>countStream</code> 函数如下：</p>
+<pre><code class="language-dart">Stream&lt;int&gt; countStream(int max) async* {
+  for (var n = 1; n &lt;= max; n++) {
+    await Future.delayed(Duration(milliseconds: 100));
+    yield n;
+  }
+}
+</code></pre>
+<p>改写后的<code>countStream</code> 函数更加简洁。相应地 <code>var datas = countStream(5);</code> 一行需改写为：</p>
+<pre><code class="language-dart">    var datas = countStream(5).asBroadcastStream(); // 1 
+</code></pre>
+<h2 id="stream-的常用方法"><a class="header" href="#stream-的常用方法">Stream 的常用方法</a></h2>
+<p><strong>订阅与生命周期</strong></p>
+<ul>
+<li><code>listen()</code>: 最核心的方法。手动订阅流，处理 <code>onData</code>, <code>onError</code>, <code>onDone</code> 事件。</li>
+<li><code>await for</code>: 异步迭代器。像遍历 List 一样消费流（最简洁的消费方式）。</li>
+<li><code>asBroadcastStream()</code>: 将单订阅流转换为广播流（多订阅流）。</li>
+<li><code>timeout(duration)</code>: 设置超时时间，若规定时间内无事件则触发错误或执行回调。</li>
+</ul>
+<p><strong>转换</strong></p>
+<p>这些方法返回一个新的 Stream，且大多是惰性的。</p>
+<ul>
+<li><code>map&lt;T&gt;(convert)</code>: 将流中的每个元素同步转换为另一种类型。</li>
+<li><code>asyncMap&lt;T&gt;(convert)</code>: 异步转换。等待 <code>Future</code> 完成后再发射下一个元素。</li>
+<li><code>expand(convert)</code>: 将一个元素转换为多个元素，并平铺（Flatten）到流中。</li>
+<li><code>asyncExpand(convert)</code>: 将每个元素转换为一个新的 <code>Stream</code> 并按顺序连接。</li>
+<li><code>transform(transformer)</code>: 使用 <code>StreamTransformer</code> 进行自定义的复杂转换（如解密、编码）。</li>
+</ul>
+<p><strong>过滤</strong></p>
+<ul>
+<li><code>where(test)</code>: 筛选掉不满足条件的元素。</li>
+<li><code>distinct([equals])</code>: 过滤掉与前一个元素连续重复的元素。</li>
+<li><code>take(count)</code>: 只获取前 <code>count</code> 个元素。</li>
+<li><code>takeWhile(test)</code>: 持续获取，直到条件不再满足。</li>
+<li><code>skip(count)</code>: 跳过前 <code>count</code> 个元素。</li>
+<li><code>skipWhile(test)</code>: 跳过直到条件不再满足，之后开始获取。</li>
+<li><code>handleError(onError)</code>: 捕获并处理流中的错误，防止流中断。</li>
+</ul>
+<p><strong>聚合与检索</strong></p>
+<ul>
+<li><code>toList()</code>: 将流中所有元素收集到一个 <code>List</code> 中。</li>
+<li><code>toSet()</code>: 将流中所有元素收集到一个 <code>Set</code> 中。</li>
+<li><code>fold&lt;T&gt;(initial, combine)</code>: 提供初始值，将元素累加合并为单一结果。</li>
+<li><code>reduce(combine)</code>: 无初始值，两两合并流中的元素（要求非空）。</li>
+<li><code>join([separator])</code>: 将元素转为字符串并用分隔符连接。</li>
+<li><code>first</code> / <code>last</code> / <code>single</code>: 获取流中第一个、最后一个或唯一一个元素。</li>
+<li><code>any(test)</code> / <code>every(test)</code>: 检查是否至少一个/全部元素满足条件。</li>
+<li><code>contains(element)</code>: 检查流中是否包含特定元素。</li>
+</ul>
+<p>一个简单示例：</p>
+<pre><code class="language-dart">// ex736.dart
+void main() async {
+  var nums = Stream.fromIterable([for (var i = 0; i &lt; 10; i++) i]);
+  print(await nums.join("-")); // Output: 0-1-2-3-4-5-6-7-8-9
+  print(await nums.map((i) =&gt; i * i).toList()); // 1*1,2*2,...
+  print(await nums.where((i) =&gt; i % 2 == 0).toList()); // even numbers
+  print(await nums.fold&lt;int&gt;(0, (old, i) =&gt; old + i)); // 1+2+...
+  print(await nums.contains(1)); // Output: true
+
+  print(
+    await nums
+        .take(5)
+        .map((i) =&gt; i * 3 + 1)
+        .expand((i) =&gt; [i, i * i, i * i * i])
+        .where((i) =&gt; i &lt; 200)
+        .toList(),
+  );
+  // Output: [1, 1, 1, 4, 16, 64, 7, 49, 10, 100, 13, 169]
+}
+</code></pre>
+<h2 id="yieldyield-each"><a class="header" href="#yieldyield-each"><code>yield*</code>（yield-each）</a></h2>
+<p><code>yield*</code> （yield-each）是Dart 非常强大的异步生成器。如果说 <code>yield</code> 是插入一个元素，那么 <code>yield*</code> 就是插入一个 Stream 中的所有元素。<code>yield*</code> 后接 一个 Stream，其作用是暂停当前的生成器，转而监听后面的 Stream，并将其产生的所有事件逐一转发，直到那个 Stream 结束，才继续执行当前生成器接下来的代码。</p>
+<p>先来看一个使用 <code>yield*</code> 的例子：</p>
+<pre><code class="language-dart">// ex737.dart
+void main() async {
+  var nums = combinedStream(Stream.fromIterable([1, 2, 3]));
+  print(await nums.toList()); // Output: [1, 2, 3, 0]
+}
+
+Stream&lt;int&gt; combinedStream(Stream&lt;int&gt; prev) async* {
+  // 1
+  await for (final n in prev) {
+    yield n; 
+  }
+  yield 0; // 2
+}
+</code></pre>
+<p><code>combinedStream</code> 函数使用 <code>await for</code> 将 <code>prev</code> 中的元素一个个写进目标stream后，然后追加一条数据（<code>0</code>）。用 <code>yield*</code> 改写该函数如下：</p>
+<pre><code class="language-dart">// ex738.dart
+Stream&lt;int&gt; combinedStream(Stream&lt;int&gt; prev) async* {
+  yield* prev; // 1
+  yield 0; // 2
+}
+</code></pre>
+<p>改写后的函数看起来简洁多了。</p>
+<h3 id="yield-与-yield-对比"><a class="header" href="#yield-与-yield-对比"><code>yield</code> 与 <code>yield*</code> 对比</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th><code>yield</code></th><th><code>yield*</code></th></tr></thead><tbody>
+<tr><td>右侧对象</td><td>单个数据（如 <code>int</code>, <code>String</code>）</td><td>一个 <code>Stream</code>&lt;<code>T</code>&gt;</td></tr>
+<tr><td>行为</td><td>产出一个值后继续</td><td>代理另一个Stream，直到其结束才继续</td></tr>
+<tr><td>性能</td><td>逐个处理</td><td>更加高效（Dart 引擎对其有内部优化）</td></tr>
+</tbody></table>
+</div>
+<h3 id="关键特性与陷阱"><a class="header" href="#关键特性与陷阱">关键特性与陷阱</a></h3>
+<p><strong>执行顺序</strong></p>
+<p><code>yield*</code> 会阻塞当前生成器的执行。只有当 <code>yield*</code> 后面的Stream关闭（close）后，当前函数才会执行下一行。</p>
+<p><strong>错误传递</strong></p>
+<p>如果 <code>yield*</code> 监听的Stream抛出了异常，这个异常会直接传递到当前Stream中，除非你在外层用了 <code>try-catch</code>。</p>
+<p><strong>广播流</strong></p>
+<p>如果 <code>yield*</code> 后面是一个广播流，那么它只会转发从“订阅那一刻”开始的数据。</p>
 
                     </main>
 
