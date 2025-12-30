@@ -451,7 +451,7 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
 </code></pre>
 <ol>
 <li>获取 <code>dir</code> 的子目录及文件；</li>
-<li>如何是文件（<code>File</code>），就直接产出（<code>yield</code>）；</li>
+<li>如果 <code>entity</code> 是文件（<code>File</code>），就直接产出（<code>yield</code>）；</li>
 <li>递归调用并将子目录流的所有结果“委派”给当前流（<code>yield*</code>）。</li>
 </ol>
 <p>如果不用 <code>yield*</code>，就必须使用 <code>await for</code> 循环去解包子流，代码会变得冗长且难以维护。
