@@ -428,6 +428,34 @@ Stream&lt;int&gt; combinedStream(Stream&lt;int&gt; prev) async* {
 }
 </code></pre>
 <p>改写后的函数看起来简洁多了。</p>
+<h3 id="异步递归"><a class="header" href="#异步递归">异步递归</a></h3>
+<p>文件夹是一个典型的递归结构（文件夹内包含文件夹）。使用 <code>yield*</code> 可以让你像写同步递归一样，源源不断地产出深度嵌套的文件。</p>
+<pre><code class="language-dart">// ex739.dart
+import 'dart:io';
+
+void main() {
+  final dir = Directory('.');
+  traversal(dir).listen((f) =&gt; print(f.path));
+}
+
+Stream&lt;File&gt; traversal(Directory dir) async* {
+  final entities = await dir.list().toList(); // 1
+  for (var entity in entities) {
+    if (entity is File) {
+      yield entity; // 2
+    } else if (entity is Directory) {
+      yield* traversal(entity); // 3
+    }
+  }
+}
+</code></pre>
+<ol>
+<li>获取 <code>dir</code> 的子目录及文件；</li>
+<li>如何是文件（<code>File</code>），就直接产出（<code>yield</code>）；</li>
+<li>递归调用并将子目录流的所有结果“委派”给当前流（<code>yield*</code>）。</li>
+</ol>
+<p>如果不用 <code>yield*</code>，就必须使用 <code>await for</code> 循环去解包子流，代码会变得冗长且难以维护。
+在处理树形结构的数据时，<code>yield*</code> 是实现异步递归的唯一标准方式。</p>
 <h3 id="yield-与-yield-对比"><a class="header" href="#yield-与-yield-对比"><code>yield</code> 与 <code>yield*</code> 对比</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>特性</th><th><code>yield</code></th><th><code>yield*</code></th></tr></thead><tbody>
 <tr><td>右侧对象</td><td>单个数据（如 <code>int</code>, <code>String</code>）</td><td>一个 <code>Stream</code>&lt;<code>T</code>&gt;</td></tr>
