@@ -164,7 +164,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="延迟初始化"><a class="header" href="#延迟初始化">延迟初始化</a></h1>
+                        <h1 id="延迟初始化再谈late"><a class="header" href="#延迟初始化再谈late">延迟初始化（再谈<code>late</code>）</a></h1>
 <p><code>late</code> 关键字的本意是延迟变量的初始化。</p>
 <pre><code class="language-dart">// ex431.dart
 
@@ -273,7 +273,24 @@ class RandAvg {
   RandAvg(this.n);
 }
 </code></pre>
-
+<h2 id="最佳实践"><a class="header" href="#最佳实践">最佳实践</a></h2>
+<h3 id="late-在不同生命周期下的表现"><a class="header" href="#late-在不同生命周期下的表现"><code>late</code> 在不同生命周期下的表现</a></h3>
+<p><em>全局变量 / 静态变量 (Static/Top-level)</em></p>
+<p>这是 late 最能发挥威力的地方。Dart 的全局变量本身就是延迟初始化的。使用 <code>late</code> 可以让这种延迟语义更加明确。它避免了在 App 启动瞬间（main 函数执行前）加载大量非必要资源，从而缩短启动白屏时间。</p>
+<p><em>类成员变量 (Instance Fields)</em></p>
+<p>在对象实例化的生命周期内，<code>late</code> 会稍微增加对象的内存占用（因为需要存储初始化状态位）。<strong>性能权衡</strong>： 如果对象频繁创建且变量经常不被使用，<code>late</code> 是优化的；如果变量几乎总是会被立即使用，那么普通的 <code>final</code> 构造函数赋值性能更优，因为编译器可以进行更多的内联优化。</p>
+<p><em>局部变量 (Local Variables)</em></p>
+<p>Dart 编译器（尤其是 AOT 模式）通常能通过静态流分析（Definite Assignment Analysis）确认局部变量在使用前是否已赋值。在这种情况下，编译器会移除运行时的状态检查，性能等同于普通变量。</p>
+<h3 id="避免滥用-late"><a class="header" href="#避免滥用-late">避免滥用 <code>late</code></a></h3>
+<p>过度使用 <code>late</code> 的风险包括代码<strong>运行风险</strong>与<strong>代码膨胀</strong>。一方面，<code>late</code>可能将本该在编译期发现的错误推迟到了运行期（抛出 Error），此即运行风险。另一方面，
+<code>late</code> 是用微小的运行时开销换取了开发的灵活性，每一处 <code>late</code> 访问在汇编后的代码中都会多出一层逻辑判断（代码膨胀）。在绝大多数业务逻辑中，这种开销是无感的；但在每秒数百万次的计算中（高性能场景），它确不可被忽视。在高性能要求的场景下，如果能通过构造函数初始化列表（Initializer List）解决的问题，优先使用普通非空变量。</p>
+<h3 id="性能与安全的权衡"><a class="header" href="#性能与安全的权衡">性能与安全的权衡</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>使用方式</th><th>性能影响</th><th>建议场景</th></tr></thead><tbody>
+<tr><td><code>late T v = ...</code></td><td>节省启动开销，首访微量开销</td><td>昂贵的资源加载、单例模式</td></tr>
+<tr><td><code>late T v;</code></td><td>每次访问微量检查开销</td><td>必须在 <code>initState</code> 或构造函数体赋值的非空变量</td></tr>
+<tr><td>普通 <code>final</code></td><td>性能最优（编译器优化空间最大）</td><td>能在声明处或构造函数初始化列表确定的值</td></tr>
+</tbody></table>
+</div>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">

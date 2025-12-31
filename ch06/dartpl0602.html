@@ -315,7 +315,7 @@ void main() {
 }
 </code></pre>
 <h2 id="集合元素"><a class="header" href="#集合元素">集合元素</a></h2>
-<p>以 List 为例，简单说明下集合元素。在以<code>[a, b, ...]</code>这样的语法书写 List 时，其中的<code>a</code>、<code>b</code>等称为元素（elements）；每个元素将被求值（evaluated）以产生 0 到多个值（value），这些值随后将被插入到结果 List 中。集合元素分为叶元素（leaf elements）和控制流元素（control flow elements）两类。</p>
+<p>以 List 为例，简单说明下集合元素。在以<code>[a, b, ...]</code>这样的语法书写 List 时，其中的<code>a</code>、<code>b</code>等称为元素（elements）；每个元素将被求值（evaluated）以产生 0 到多个值（value），这些值随后将被插入到结果 List 中。集合元素分为叶元素（leaf elements）和控制流元素（control flow elements）两类。控制流元素即collection if/for，是必须掌握的重要编程技巧，它在Flutter开发中使用的极为广泛。</p>
 <pre><code class="language-dart">// ex633.dart
 void main() {
   print([1 * 1, 2 * 2, 3 * 3]); // 1 Output: [1, 4, 9]

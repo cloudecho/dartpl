@@ -694,6 +694,22 @@ void genericFunction&lt;_&gt;() {}
 </code></pre>
 <p>for循环、函数、catch语句、泛型等概念将在后续章节陆续介绍，这里关于通配符有个印象就行。</p>
 <p>更多的示例，可查阅<a href="https://dart.dev/language/variables#wildcard-variables">官方文档</a>。</p>
+<h2 id="最佳实践"><a class="header" href="#最佳实践">最佳实践</a></h2>
+<p>声明变量时应<strong>优先使用const</strong>以提高程序性能。</p>
+<p><strong>编译时常量 vs 运行时对象</strong></p>
+<ul>
+<li>普通对象（<code>final</code> 或无修饰）在程序运行到那一行时才在堆（Heap）上分配内存。</li>
+<li><code>const</code> 对象在编译时就已确定。Dart 编译器会将这些常量放入一个特殊的“常量池”中。无论你的代码运行多少次，该常量在内存中永远只有一份。</li>
+</ul>
+<p><strong><code>const </code>对 Flutter 渲染性能的巨大贡献</strong></p>
+<ul>
+<li>
+<p>避免不必要的 Rebuild：当父 Widget 触发重新构建（Rebuild）时，如果子 Widget 带有 <code>const</code> 修饰，Flutter 会通过内存地址判断它是同一个实例，从而跳过对该子 Widget 的构建和比对过程。</p>
+</li>
+<li>
+<p>减轻 GC（垃圾回收）压力：频繁地销毁和创建临时 Widget 会频繁触发 GC。<code>const</code> 对象生命周期贯穿程序始终，不会被回收，从而减少了 GC 引起的微小卡顿。</p>
+</li>
+</ul>
 <h2 id="参考资料-2"><a class="header" href="#参考资料-2">参考资料</a></h2>
 <ul>
 <li><a href="https://dart.dev/language/variable">https://dart.dev/language/variable</a></li>
@@ -3135,7 +3151,7 @@ class Cat {
 <ul>
 <li><a href="https://dart.dev/language/constructors">https://dart.dev/language/constructors</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="延迟初始化"><a class="header" href="#延迟初始化">延迟初始化</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="延迟初始化再谈late"><a class="header" href="#延迟初始化再谈late">延迟初始化（再谈<code>late</code>）</a></h1>
 <p><code>late</code> 关键字的本意是延迟变量的初始化。</p>
 <pre><code class="language-dart">// ex431.dart
 
@@ -3244,7 +3260,24 @@ class RandAvg {
   RandAvg(this.n);
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="方法method"><a class="header" href="#方法method">方法（Method）</a></h1>
+<h2 id="最佳实践-1"><a class="header" href="#最佳实践-1">最佳实践</a></h2>
+<h3 id="late-在不同生命周期下的表现"><a class="header" href="#late-在不同生命周期下的表现"><code>late</code> 在不同生命周期下的表现</a></h3>
+<p><em>全局变量 / 静态变量 (Static/Top-level)</em></p>
+<p>这是 late 最能发挥威力的地方。Dart 的全局变量本身就是延迟初始化的。使用 <code>late</code> 可以让这种延迟语义更加明确。它避免了在 App 启动瞬间（main 函数执行前）加载大量非必要资源，从而缩短启动白屏时间。</p>
+<p><em>类成员变量 (Instance Fields)</em></p>
+<p>在对象实例化的生命周期内，<code>late</code> 会稍微增加对象的内存占用（因为需要存储初始化状态位）。<strong>性能权衡</strong>： 如果对象频繁创建且变量经常不被使用，<code>late</code> 是优化的；如果变量几乎总是会被立即使用，那么普通的 <code>final</code> 构造函数赋值性能更优，因为编译器可以进行更多的内联优化。</p>
+<p><em>局部变量 (Local Variables)</em></p>
+<p>Dart 编译器（尤其是 AOT 模式）通常能通过静态流分析（Definite Assignment Analysis）确认局部变量在使用前是否已赋值。在这种情况下，编译器会移除运行时的状态检查，性能等同于普通变量。</p>
+<h3 id="避免滥用-late"><a class="header" href="#避免滥用-late">避免滥用 <code>late</code></a></h3>
+<p>过度使用 <code>late</code> 的风险包括代码<strong>运行风险</strong>与<strong>代码膨胀</strong>。一方面，<code>late</code>可能将本该在编译期发现的错误推迟到了运行期（抛出 Error），此即运行风险。另一方面，
+<code>late</code> 是用微小的运行时开销换取了开发的灵活性，每一处 <code>late</code> 访问在汇编后的代码中都会多出一层逻辑判断（代码膨胀）。在绝大多数业务逻辑中，这种开销是无感的；但在每秒数百万次的计算中（高性能场景），它确不可被忽视。在高性能要求的场景下，如果能通过构造函数初始化列表（Initializer List）解决的问题，优先使用普通非空变量。</p>
+<h3 id="性能与安全的权衡"><a class="header" href="#性能与安全的权衡">性能与安全的权衡</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>使用方式</th><th>性能影响</th><th>建议场景</th></tr></thead><tbody>
+<tr><td><code>late T v = ...</code></td><td>节省启动开销，首访微量开销</td><td>昂贵的资源加载、单例模式</td></tr>
+<tr><td><code>late T v;</code></td><td>每次访问微量检查开销</td><td>必须在 <code>initState</code> 或构造函数体赋值的非空变量</td></tr>
+<tr><td>普通 <code>final</code></td><td>性能最优（编译器优化空间最大）</td><td>能在声明处或构造函数初始化列表确定的值</td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="方法method"><a class="header" href="#方法method">方法（Method）</a></h1>
 <p>方法即类中定义的函数，有实例方法与静态方法之分，这在<a href="ch04/./dartpl0401.html#%E7%B1%BB%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E4%B8%8E%E6%88%90%E5%91%98">类的实例化与成员</a>一节中已介绍过。
 本文将介绍 <a href="ch04/dartpl0404.html#getter-%E4%B8%8E-setter-%E6%96%B9%E6%B3%95">Getter 与 Setter 方法</a> 和 <a href="ch04/dartpl0404.html#%E6%8A%BD%E8%B1%A1%E6%96%B9%E6%B3%95">抽象方法</a>。
 另外有一种特殊的方法是<a href="ch04/./dartpl0405.html">操作符</a>，将在下一节中介绍。</p>
@@ -4950,7 +4983,7 @@ void main() {
 }
 </code></pre>
 <h2 id="集合元素"><a class="header" href="#集合元素">集合元素</a></h2>
-<p>以 List 为例，简单说明下集合元素。在以<code>[a, b, ...]</code>这样的语法书写 List 时，其中的<code>a</code>、<code>b</code>等称为元素（elements）；每个元素将被求值（evaluated）以产生 0 到多个值（value），这些值随后将被插入到结果 List 中。集合元素分为叶元素（leaf elements）和控制流元素（control flow elements）两类。</p>
+<p>以 List 为例，简单说明下集合元素。在以<code>[a, b, ...]</code>这样的语法书写 List 时，其中的<code>a</code>、<code>b</code>等称为元素（elements）；每个元素将被求值（evaluated）以产生 0 到多个值（value），这些值随后将被插入到结果 List 中。集合元素分为叶元素（leaf elements）和控制流元素（control flow elements）两类。控制流元素即collection if/for，是必须掌握的重要编程技巧，它在Flutter开发中使用的极为广泛。</p>
 <pre><code class="language-dart">// ex633.dart
 void main() {
   print([1 * 1, 2 * 2, 3 * 3]); // 1 Output: [1, 4, 9]
