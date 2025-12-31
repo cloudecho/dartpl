@@ -695,13 +695,14 @@ void genericFunction&lt;_&gt;() {}
 <p>for循环、函数、catch语句、泛型等概念将在后续章节陆续介绍，这里关于通配符有个印象就行。</p>
 <p>更多的示例，可查阅<a href="https://dart.dev/language/variables#wildcard-variables">官方文档</a>。</p>
 <h2 id="最佳实践"><a class="header" href="#最佳实践">最佳实践</a></h2>
-<p>声明变量时应<strong>优先使用const</strong>以提高程序性能。</p>
-<p><strong>编译时常量 vs 运行时对象</strong></p>
+<p>实践中应遵循“能用 <code>final</code> 不用 <code>var</code>，能用 <code>const</code> 不用 <code>final</code>”的黄金原则。</p>
+<p>下面重点说下<strong>const</strong>对提高程序性能的至关作用。</p>
+<p><em>编译时常量 vs 运行时对象</em></p>
 <ul>
 <li>普通对象（<code>final</code> 或无修饰）在程序运行到那一行时才在堆（Heap）上分配内存。</li>
 <li><code>const</code> 对象在编译时就已确定。Dart 编译器会将这些常量放入一个特殊的“常量池”中。无论你的代码运行多少次，该常量在内存中永远只有一份。</li>
 </ul>
-<p><strong><code>const </code>对 Flutter 渲染性能的巨大贡献</strong></p>
+<p><em><code>const </code>对 Flutter 渲染性能的巨大贡献</em></p>
 <ul>
 <li>
 <p>避免不必要的 Rebuild：当父 Widget 触发重新构建（Rebuild）时，如果子 Widget 带有 <code>const</code> 修饰，Flutter 会通过内存地址判断它是同一个实例，从而跳过对该子 Widget 的构建和比对过程。</p>
