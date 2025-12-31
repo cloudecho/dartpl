@@ -235,7 +235,7 @@ Future&lt;int&gt; computeAsync(int a, int b) {
 <li><code>computeAsync</code> 是 <code>compute</code>的异步版本，它是一个异步函数，它使用<code>Future.new</code>创建了一个Future对象并返回；</li>
 <li><code>Stopwatch</code>是一个用于计时对秒表，精确到微秒(microseconds)，该示例使用了毫秒（milliseconds）作为计时单位（<code>3a</code>）；</li>
 <li>调用<code>compute</code>函数，程序阻塞直到compute返回结果（<code>out0 - out2</code>)；</li>
-<li>调用<code>computeAsync</code>函数得到的是一个Future对象，<code>computeAsync</code>函数返回时，真正的计算（<code>compute</code>）还在进行中，即程序不会阻塞等待计算结果（<code>out3 - out4</code>）；</li>
+<li>调用<code>computeAsync</code>函数得到的是一个Future对象，<code>computeAsync</code>函数返回时，真正的计算（<code>compute</code>）还在进行中，即程序不会挂起等待计算结果（<code>out3 - out4</code>）；</li>
 <li>给<code>futureResult.then</code>提供一个callback（回调）函数，当<code>computeAsync</code>内部计算完成时，callback将被调用（<code>out5</code>）。</li>
 </ol>
 <p>同步 vs 异步：</p>

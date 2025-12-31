@@ -191,7 +191,7 @@ bool login(String userId, String passwd) {
 
 </code></pre>
 <ol>
-<li>同步调用<code>login函数</code>，程序执行流程被阻塞，直到<code>login</code>函数返回；</li>
+<li>同步调用<code>login函数</code>，程序执行流程被阻塞（block，此处由<code>sleep</code>引起），直到<code>login</code>函数返回；</li>
 <li>这里模拟了<code>login</code>函数花了5秒钟完成用户名和密码的校验。</li>
 </ol>
 <h2 id="核心机制event-loop-与它的三剑客"><a class="header" href="#核心机制event-loop-与它的三剑客">核心机制：Event Loop 与它的“三剑客”</a></h2>

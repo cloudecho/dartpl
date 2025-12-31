@@ -165,6 +165,165 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="isolate"><a class="header" href="#isolate">Isolate</a></h1>
+<p>不同于 Java 基于共享内存的多线程并发，Dart 采用了名为 Isolate 的隔离并发模型，其运行机制类似于轻量级进程。Isolate 之间采用“无共享”（Shared-Nothing）架构，通信完全依赖于异步消息传递。这种天然的隔离机制从根本上消除了数据竞争（Data Race），无需引入复杂的锁机制（Locks）即可确保运行时的内存安全。</p>
+<pre class="mermaid">graph TD
+    subgraph &quot;Process (Java, C++) - 共享内存模型&quot;
+        M[(Shared Heap Memory)]
+        T1([Thread 1]) --- M
+        T2([Thread 2]) --- M
+        T3([Thread 3]) --- M
+        style M fill:#f96,stroke:#333,stroke-width:2px
+    end
+
+    subgraph &quot;Process (Dart) - 隔离模型&quot;
+        subgraph I1 [Isolate 1]
+            H1[(Heap)] --- E1([Event Loop])
+        end
+        subgraph I2 [Isolate 2]
+            H2[(Heap)] --- E2([Event Loop])
+        end
+        I1 -.-&gt;|Message Passing| I2
+        style H1 fill:#6cf,stroke:#333
+        style H2 fill:#6cf,stroke:#333
+    end
+</pre>
+<p>Isolate 这种设计让 Dart 能够实现 “无停顿垃圾回收”。因为每个 Isolate 的 GC 是独立的，当子 Isolate 在后台清理垃圾时，不会阻塞主 Isolate 的 UI 渲染，这正是 Flutter 保持流畅（60/120 FPS）的底层秘诀之一。</p>
+<h2 id="event-loop"><a class="header" href="#event-loop">Event Loop</a></h2>
+<p>Isolate与Event Loop是密不可分的，每个Isolate都有唯一的一个Event Loop与之对应。Isolate 是物理边界，而 Event Loop 是运行逻辑。</p>
+<pre class="mermaid">graph TD
+    subgraph Core [&quot; &quot;]
+        direction TB
+        EL((⚙️ Event Loop))
+    end
+
+    MTQ@{shape: das, label: &quot;Microtask Queue&quot; }
+    EQ@{shape: das, label: &quot;Event Queue&quot; }
+
+    Exec[[当前执行上下文]]
+
+    EL ==&gt; |轮询并清空| MTQ
+    MTQ --&gt;|弹出任务| Exec
+    Exec -.-&gt;| microtask | MTQ
+    Exec -.-&gt;| event | EQ    
+    
+    EL ==&gt;|检查并取出一个| EQ
+    EQ --&gt;|弹出任务| Exec
+
+    Input([外部事件: I/O, Click, Timer]) ---&gt; |进入队列| EQ
+
+    style EL fill:#673AB7,stroke:#311B92,stroke-width:4px,color:#fff
+    style Exec fill:#4CAF50,stroke:#1B5E20,color:#fff
+    style MTQ fill:#FFF9C4,stroke:#FBC02D
+    style EQ fill:#E1F5FE,stroke:#0288D1
+    style Core fill:none,stroke:none
+</pre>
+<p>Event Loop就像一个时间齿轮不停地转动， 同时维护着两个优先级不同的队列：</p>
+<ul>
+<li>
+<p><strong>Event Queue（事件队列）</strong>：优先级较低。包含外部事件，如 I/O、计时器（Timer）、鼠标点击、绘制事件等。</p>
+</li>
+<li>
+<p><strong>Microtask Queue（微任务队列）</strong>：优先级最高。通常用于非常简短的、需要异步执行的操作。只要微任务队列不为空，Event Loop 就会一直执行它，直到清空。 <strong>注意</strong>：如果在微任务中不断产生新的微任务，事件队列就会被“饿死”，导致 UI 无法响应。</p>
+</li>
+</ul>
+<p>Event Queue 保证了程序的响应性，它让 UI 刷新和用户点击有条不紊地排队。而 Microtask Queue 则保证了异步逻辑的原子性。当一个 Future 完成时，我们希望它的后续处理（then）能尽快执行，甚至赶在下一个用户点击之前。微任务队列就是为了这种‘插队’需求而生的，它让异步逻辑在宏观上看起来像是连续执行的。</p>
+<h3 id="再谈-asycwait"><a class="header" href="#再谈-asycwait">再谈 <code>asyc/wait</code></a></h3>
+<p>在 Dart 中，<code>async/await</code> 并不是让代码进入了另一个线程，而是将一个长函数拆分成了多个逻辑片段，并利用 Event Loop 重新排队。下面结合示例进行分析。</p>
+<pre><code class="language-dart">// ex741.dart
+void main() async {
+  print('main start');
+  var result = await task();
+  print(result);
+  print('main end');
+
+  /* Output:
+main start
+task start
+task done
+main end
+  */
+}
+
+Future&lt;String&gt; task() async {
+  await Future(() =&gt; print('task start'));
+  return 'task done';
+}
+</code></pre>
+<pre class="mermaid">sequenceDiagram
+    participant M as main
+    participant EL as Event Loop (时间齿轮)
+    participant MTQ as Microtask Queue (MTQ)
+    participant EQ as Event Queue
+    participant Exec as Execution Context
+
+    Note over M, Exec: 1. 同步启动阶段
+    M-&gt;&gt;Exec: print('main start')
+    M-&gt;&gt;Exec: 调用 task()
+    
+    Note right of Exec: 进入 task 内部
+    Exec-&gt;&gt;EQ: 注册 Future 任务 (print 'task start')
+    Exec--&gt;&gt;M: task 函数挂起 (await)
+    
+    Note over M, Exec: 2. 控制权回归 main
+    M--&gt;&gt;EL: main 函数挂起 (暂停于 await task)
+    
+    Note over EL: 3. 齿轮旋转 - 处理宏任务
+    EL-&gt;&gt;EQ: 提取并执行 Future
+    EQ-&gt;&gt;Exec: print('task start')
+    Exec-&gt;&gt;MTQ: Future 完成，恢复 task 剩余部分
+    
+    Note over EL: 4. 齿轮旋转 - 优先调度 (MTQ)
+    EL-&gt;&gt;MTQ: 提取任务：完成 task 并返回 'task done'
+    MTQ-&gt;&gt;Exec: 执行 return 'task done'
+    Exec-&gt;&gt;MTQ: task 完成，恢复 main 剩余部分
+    
+    Note over EL: 5. 再次清空微任务
+    EL-&gt;&gt;MTQ: 提取任务：打印结果
+    MTQ-&gt;&gt;Exec: print('task done')
+    MTQ-&gt;&gt;Exec: print('main end')
+    
+    Note over Exec: 所有任务链结束
+</pre>
+<p>上述时序图中的三个关键“跳转”：</p>
+<ul>
+<li>
+<p>a. 在 task() 中，一遇到 <code>await Future(...)</code>，<code>task</code> 函数就会立即交出控制权。此时并没有立即出现 <code>task start</code>，因为 <code>task start</code> 被丢进了 Event Queue。</p>
+</li>
+<li>
+<p>b. 双重挂起： 此时内存中有两个处于“暂停”状态的函数：<code>main</code> 在等 <code>task</code>，<code>task</code> 在等 Future。这种嵌套挂起展示了 Dart 异步非阻塞的本质。</p>
+</li>
+<li>
+<p>c. 微任务的“接力”： 当 Future（宏任务）执行完后，它并没有直接回到 main。它先触发了 task 的恢复（微任务），<code>task</code> 完成后又触发了 <code>main</code> 的恢复（又一个微任务）。这就是为什么 Microtask Queue 被称为异步链条的“粘合剂”。</p>
+</li>
+</ul>
+<h3 id="sleep-vs-await-futuredelayed"><a class="header" href="#sleep-vs-await-futuredelayed"><code>sleep()</code> VS <code>await Future.delayed()</code></a></h3>
+<p><code>sleep()</code>是一个同步阻塞（block）调用，它将强行卡死EventLoop时间齿轮，霸占 CPU 并原地停止。</p>
+<p><code>await Future.delayed()</code>，是一个异步非阻塞操作，就像执行区里的工人看了一眼闹钟，发现时间没到，于是主动离开位子，把执行区让出来，自己去休息室等候。其过程是：</p>
+<ul>
+<li><code>Future.delayed</code> 向底层操作系统注册一个计时器</li>
+<li><code>await</code> 关键字将当前函数挂起（Suspend）</li>
+<li>执行区立即变空，Event Loop 齿轮可以自由转动，去处理屏幕刷新、点击等其他队列任务。</li>
+<li>时间一到，计时器把“恢复执行”的任务丢进 Event Queue，等齿轮下一轮转过来时执行。</li>
+</ul>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th><code>sleep(2s)</code></th><th><code>await Future.delayed(2s)</code></th></tr></thead><tbody>
+<tr><td>执行性质</td><td>同步、阻塞</td><td>异步、挂起（非阻塞）</td></tr>
+<tr><td>对EventLoop齿轮影响</td><td>停止转动</td><td>正常转动</td></tr>
+<tr><td>队列任务</td><td>被饿死（Starvation）</td><td>正常调度</td></tr>
+<tr><td>用户体验</td><td>应用卡死，无法操作</td><td>应用流畅，后台等待</td></tr>
+<tr><td>底层实现</td><td>操作系统线程休眠</td><td>计时器事件注册 + 任务回流</td></tr>
+</tbody></table>
+</div>
+<h2 id="isolatespawn"><a class="header" href="#isolatespawn"><code>Isolate.spawn</code></a></h2>
+<h2 id="在flutter中使用isolate"><a class="header" href="#在flutter中使用isolate">在flutter中使用Isolate</a></h2>
+<h2 id="async-还是-isolate-"><a class="header" href="#async-还是-isolate-">Async 还是 Isolate ?</a></h2>
+<p>虽然 async/await 能处理异步，但它本质上还是在同一个线程的 Event Loop 里“排队”。如果你需要处理 CPU 密集型任务（如大图片滤镜、复杂加解密、解析 100MB 的 JSON），主线程依然会卡顿，这时就需要启动一个新的 Isolate 进行并行处理。</p>
+<div class="table-wrapper"><table><thead><tr><th>场景</th><th>推荐方案</th><th>底层逻辑</th></tr></thead><tbody>
+<tr><td>网络请求 (HTTP)</td><td>async/await</td><td>线程在等待 IO 响应，不需要额外 CPU 计算。</td></tr>
+<tr><td>文件读写 (I/O)</td><td>async/await</td><td>由操作系统异步处理，返回后在 Event Loop 排队。</td></tr>
+<tr><td>JSON 解析 (巨大)</td><td>Isolate</td><td>解析需要消耗大量 CPU 时间，会阻塞 UI 渲染。</td></tr>
+<tr><td>图像/视频处理</td><td>Isolate</td><td>属于高强度计算，必须移出 Main Isolate。</td></tr>
+</tbody></table>
+</div>
 <h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
 <ul>
 <li><a href="https://dart.dev/articles/event-loop/">Dart asynchronous programming: Isolates and event loops</a></li>

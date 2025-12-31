@@ -465,7 +465,7 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
 </div>
 <h3 id="关键特性与陷阱"><a class="header" href="#关键特性与陷阱">关键特性与陷阱</a></h3>
 <p><strong>执行顺序</strong></p>
-<p><code>yield*</code> 会阻塞当前生成器的执行。只有当 <code>yield*</code> 后面的Stream关闭（close）后，当前函数才会执行下一行。</p>
+<p><code>yield*</code> 会挂起（suspend）当前生成器的执行。只有当 <code>yield*</code> 后面的Stream关闭（close）后，当前函数才会执行下一行。</p>
 <p><strong>错误传递</strong></p>
 <p>如果 <code>yield*</code> 监听的Stream抛出了异常，这个异常会直接传递到当前Stream中，除非你在外层用了 <code>try-catch</code>。</p>
 <p><strong>广播流</strong></p>
