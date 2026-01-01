@@ -249,9 +249,16 @@ Future&lt;String&gt; task() async {
   return 'task done';
 }
 </code></pre>
-<pre class="mermaid">sequenceDiagram
+<pre class="mermaid">%%{init: {'themeVariables': {
+    'sequenceNumberColor': '#fff',
+    'actorBorder': '#311B92',
+    'actorBkg': '#673AB7',
+    'actorTextColor': '#fff',
+    'actorLineColor': '#311B92'
+}}}%%
+sequenceDiagram
     participant M as main
-    participant EL as Event Loop (时间齿轮)
+    participant EL as ⚙️ Event Loop
     participant MTQ as Microtask Queue (MTQ)
     participant EQ as Event Queue
     participant Exec as Execution Context
@@ -262,10 +269,10 @@ Future&lt;String&gt; task() async {
     
     Note right of Exec: 进入 task 内部
     Exec-&gt;&gt;EQ: 注册 Future 任务 (print 'task start')
-    Exec--&gt;&gt;M: task 函数挂起 (await)
+    Exec--&gt;&gt;M: task 函数挂起 (await Future)
     
     Note over M, Exec: 2. 控制权回归 main
-    M--&gt;&gt;EL: main 函数挂起 (暂停于 await task)
+    M--&gt;&gt;EL: main 函数挂起 (await task)
     
     Note over EL: 3. 齿轮旋转 - 处理宏任务
     EL-&gt;&gt;EQ: 提取并执行 Future
@@ -305,7 +312,7 @@ Future&lt;String&gt; task() async {
 <li>执行区立即变空，Event Loop 齿轮可以自由转动，去处理屏幕刷新、点击等其他队列任务。</li>
 <li>时间一到，计时器把“恢复执行”的任务丢进 Event Queue，等齿轮下一轮转过来时执行。</li>
 </ul>
-<div class="table-wrapper"><table><thead><tr><th>特性</th><th><code>sleep(2s)</code></th><th><code>await Future.delayed(2s)</code></th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th><code>sleep(...)</code></th><th><code>await Future.delayed(...)</code></th></tr></thead><tbody>
 <tr><td>执行性质</td><td>同步、阻塞</td><td>异步、挂起（非阻塞）</td></tr>
 <tr><td>对EventLoop齿轮影响</td><td>停止转动</td><td>正常转动</td></tr>
 <tr><td>队列任务</td><td>被饿死（Starvation）</td><td>正常调度</td></tr>
