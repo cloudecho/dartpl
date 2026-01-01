@@ -6155,7 +6155,9 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
 <p>如果 <code>yield*</code> 监听的Stream抛出了异常，这个异常会直接传递到当前Stream中，除非你在外层用了 <code>try-catch</code>。</p>
 <p><strong>广播流</strong></p>
 <p>如果 <code>yield*</code> 后面是一个广播流，那么它只会转发从“订阅那一刻”开始的数据。</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="isolate"><a class="header" href="#isolate">Isolate</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="isolate-与-event-loop"><a class="header" href="#isolate-与-event-loop">Isolate 与 Event Loop</a></h1>
+<p>本节将简单介绍 Isolate 与 Event Loop。下一节将详细介绍如何使用 Isolate。</p>
+<h2 id="并发模型"><a class="header" href="#并发模型">并发模型</a></h2>
 <p>不同于 Java 基于共享内存的多线程并发，Dart 采用了名为 Isolate 的隔离并发模型，其运行机制类似于轻量级进程。Isolate 之间采用“无共享”（Shared-Nothing）架构，通信完全依赖于异步消息传递。这种天然的隔离机制从根本上消除了数据竞争（Data Race），无需引入复杂的锁机制（Locks）即可确保运行时的内存安全。</p>
 <pre class="mermaid">graph TD
     subgraph &quot;Process (Java, C++) - 共享内存模型&quot;
@@ -6218,7 +6220,7 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
 </li>
 </ul>
 <p>Event Queue 保证了程序的响应性，它让 UI 刷新和用户点击有条不紊地排队。而 Microtask Queue 则保证了异步逻辑的原子性。当一个 Future 完成时，我们希望它的后续处理（then）能尽快执行，甚至赶在下一个用户点击之前。微任务队列就是为了这种‘插队’需求而生的，它让异步逻辑在宏观上看起来像是连续执行的。</p>
-<h3 id="再谈-asycwait"><a class="header" href="#再谈-asycwait">再谈 <code>asyc/wait</code></a></h3>
+<h2 id="再谈-asycwait"><a class="header" href="#再谈-asycwait">再谈 <code>asyc/wait</code></a></h2>
 <p>在 Dart 中，<code>async/await</code> 并不是让代码进入了另一个线程，而是将一个长函数拆分成了多个逻辑片段，并利用 Event Loop 重新排队。下面结合示例进行分析。</p>
 <pre><code class="language-dart">// ex741.dart
 void main() async {
@@ -6289,7 +6291,7 @@ sequenceDiagram
 <p>c. 微任务的“接力”： 当 Future（宏任务）执行完后，它并没有直接回到 main。它先触发了 task 的恢复（微任务），<code>task</code> 完成后又触发了 <code>main</code> 的恢复（又一个微任务）。这就是为什么 Microtask Queue 被称为异步链条的“粘合剂”。</p>
 </li>
 </ul>
-<h3 id="sleep-vs-await-futuredelayed"><a class="header" href="#sleep-vs-await-futuredelayed"><code>sleep()</code> VS <code>await Future.delayed()</code></a></h3>
+<h2 id="sleep-vs-await-futuredelayed"><a class="header" href="#sleep-vs-await-futuredelayed"><code>sleep()</code> VS <code>await Future.delayed()</code></a></h2>
 <p><code>sleep()</code>是一个同步阻塞（block）调用，它将强行卡死EventLoop时间齿轮，霸占 CPU 并原地停止。</p>
 <p><code>await Future.delayed()</code>，是一个异步非阻塞操作，就像执行区里的工人看了一眼闹钟，发现时间没到，于是主动离开位子，把执行区让出来，自己去休息室等候。其过程是：</p>
 <ul>
@@ -6306,14 +6308,33 @@ sequenceDiagram
 <tr><td>底层实现</td><td>操作系统线程休眠</td><td>计时器事件注册 + 任务回流</td></tr>
 </tbody></table>
 </div>
-<h2 id="创建-isolate"><a class="header" href="#创建-isolate">创建 Isolate</a></h2>
+<h2 id="async-还是-isolate-"><a class="header" href="#async-还是-isolate-">Async 还是 Isolate ?</a></h2>
+<p>虽然 async/await 能处理异步，但它本质上还是在同一个线程的 Event Loop 里“排队”。如果你需要处理 CPU 密集型任务（如大图片滤镜、复杂加解密、解析 100MB 的 JSON），主线程依然会卡顿，这时就需要启动一个新的 Isolate 进行并行处理。</p>
+<div class="table-wrapper"><table><thead><tr><th>场景</th><th>推荐方案</th><th>底层逻辑</th></tr></thead><tbody>
+<tr><td>网络请求 (HTTP)</td><td>async/await</td><td>线程在等待 IO 响应，不需要额外 CPU 计算。</td></tr>
+<tr><td>文件读写 (I/O)</td><td>async/await</td><td>由操作系统异步处理，返回后在 Event Loop 排队。</td></tr>
+<tr><td>JSON 解析 (巨大)</td><td>Isolate</td><td>解析需要消耗大量 CPU 时间，会阻塞 UI 渲染。</td></tr>
+<tr><td>图像/视频处理</td><td>Isolate</td><td>属于高强度计算，必须移出 Main Isolate。</td></tr>
+</tbody></table>
+</div>
+<h2 id="reference-1"><a class="header" href="#reference-1">Reference</a></h2>
+<ul>
+<li>
+<p><a href="https://dart.dev/articles/event-loop/">Dart asynchronous programming: Isolates and event loops</a></p>
+</li>
+<li>
+<p>https://api.dart.dev/dart-isolate/Isolate-class.html</p>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="isolate-应用篇"><a class="header" href="#isolate-应用篇">Isolate 应用篇</a></h1>
 <p>按使用场景（是简单的计算还是长期的后台任务）的不同，有三种主流的创建方式：</p>
 <ul>
 <li><code>Isolate.run()</code>（单次轻量）：Dart会自动处理 Isolate 的创建、参数传递、结果返回以及最后的销毁</li>
 <li><code>Isolate.spawn()</code>（常驻/双向通信）：如果你需要一个常驻的后台服务</li>
 <li>Flutter 特色：<code>compute()</code>，类似<code>Isolate.run()</code>，更加兼容 Flutter 环境</li>
 </ul>
-<h3 id="isolaterun"><a class="header" href="#isolaterun"><code>Isolate.run()</code></a></h3>
+<p>此外，<code>Isolate.spawnUri()</code>从指定的 URI（如本地路径或 HTTP 链接）读取脚本（源代码），并在一个全新的环境中运行它。</p>
+<h2 id="isolaterun"><a class="header" href="#isolaterun"><code>Isolate.run()</code></a></h2>
 <p>如下示例中的<code>heavyTask</code>模拟了一个CPU密集型任务，通过 <code>Isolate.run()</code> 启用一个新的 Isolate 对其进行计算。</p>
 <pre><code class="language-dart">// ex742.dart
 import 'dart:isolate';
@@ -6331,7 +6352,7 @@ int heavyTask(int count) {
   return sum;
 }
 </code></pre>
-<h3 id="isolatespawn"><a class="header" href="#isolatespawn"><code>Isolate.spawn()</code></a></h3>
+<h2 id="isolatespawn"><a class="header" href="#isolatespawn"><code>Isolate.spawn()</code></a></h2>
 <p>Isolate 之间通过发送消息通信， ReceivePort 和 SendPort 是其通信端口。</p>
 <ul>
 <li><strong>ReceivePort（收信箱）</strong>：它是私有的，只有创建它的 Isolate 才能从中读取消息。本质上它是一个 Stream。当消息掉进箱子时，Event Loop 齿轮转动，触发监听（<code>listen</code>）回调。</li>
@@ -6359,7 +6380,7 @@ int heavyTask(int count) {
     style RP fill:#FFF9C4,stroke:#FBC02D
     style SP fill:#E1F5FE,stroke:#0288D1
 </pre>
-<h4 id="单向通信生产-消费"><a class="header" href="#单向通信生产-消费">单向通信（“生产-消费”）</a></h4>
+<h3 id="单向通信生产-消费"><a class="header" href="#单向通信生产-消费">单向通信（“生产-消费”）</a></h3>
 <p>在单向通信（“生产-消费”）模式中，Main Isolate 充当“听众” （即数据的消费者），Worker Isolate 充当数据的“生产者”。</p>
 <pre class="mermaid">%%{init: {'themeVariables': {'actorBkg': '#673AB7'} }}%%
 sequenceDiagram
@@ -6373,15 +6394,16 @@ sequenceDiagram
     W-&gt;&gt;M: 通过传入的 SendPort 发回数据
     M-&gt;&gt;M: RP.listen 接收并处理结果
 </pre>
-<pre><code class="language-dart">// ex742.dart
+<pre><code class="language-dart">// ex743.dart
 import 'dart:isolate';
 import 'dart:async';
 
-final watch = Stopwatch()..start();
-var count = 0;
-void myprint(o) =&gt; print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
-
 void main() async {
+  final watch = Stopwatch()..start();
+  var count = 0;
+  void myprint(o) =&gt;
+      print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
+
   myprint('main: ⚙️ 启动任务...');
 
   final receivePort = ReceivePort(); // 1
@@ -6433,8 +6455,8 @@ void entryPoint(SendPort sendPort) async {
 <li>处理worker发来的消息；</li>
 <li><code>receivePort.close()</code> 释放work Isolate相关资源，最终work Isolate终止。</li>
 </ol>
-<h4 id="双向通信"><a class="header" href="#双向通信">双向通信</a></h4>
-<p>我们在理解了单向通信模式之后，就不难双向通信模式。main isolate要想发消息给work isolate，必须通过worker的SendPort，因此我们要设法将worker的SendPort传递给main isolate。在<code>entrypoint</code> 函数中，worker调用<code>mainRP.send()</code>即可实现这一点（<code>mainRP</code>即main isolate的ReceivePort）。</p>
+<h3 id="双向通信"><a class="header" href="#双向通信">双向通信</a></h3>
+<p>我们在理解了单向通信模式之后，就不难理解双向通信模式。main isolate要想发消息给work isolate，必须通过worker的SendPort，因此我们要设法将worker的SendPort传递给main isolate。在<code>entrypoint</code> 函数中，worker调用<code>mainRP.send(...)</code>即可实现这一点（<code>mainRP</code>即main isolate的ReceivePort）。</p>
 <pre class="mermaid">%%{init: {'themeVariables': {'actorBkg': '#673AB7'} }}%%
 sequenceDiagram
     autonumber
@@ -6462,21 +6484,135 @@ sequenceDiagram
     
     M-&gt;&gt;M: 处理结果
 </pre>
-<h3 id="flutter-特色compute"><a class="header" href="#flutter-特色compute"><code>Flutter 特色：compute()</code></a></h3>
-<h2 id="isolate-生命周期"><a class="header" href="#isolate-生命周期">Isolate 生命周期</a></h2>
-<h2 id="零拷贝zero-copy"><a class="header" href="#零拷贝zero-copy">零拷贝（Zero-copy）</a></h2>
-<h2 id="async-还是-isolate-"><a class="header" href="#async-还是-isolate-">Async 还是 Isolate ?</a></h2>
-<p>虽然 async/await 能处理异步，但它本质上还是在同一个线程的 Event Loop 里“排队”。如果你需要处理 CPU 密集型任务（如大图片滤镜、复杂加解密、解析 100MB 的 JSON），主线程依然会卡顿，这时就需要启动一个新的 Isolate 进行并行处理。</p>
-<div class="table-wrapper"><table><thead><tr><th>场景</th><th>推荐方案</th><th>底层逻辑</th></tr></thead><tbody>
-<tr><td>网络请求 (HTTP)</td><td>async/await</td><td>线程在等待 IO 响应，不需要额外 CPU 计算。</td></tr>
-<tr><td>文件读写 (I/O)</td><td>async/await</td><td>由操作系统异步处理，返回后在 Event Loop 排队。</td></tr>
-<tr><td>JSON 解析 (巨大)</td><td>Isolate</td><td>解析需要消耗大量 CPU 时间，会阻塞 UI 渲染。</td></tr>
-<tr><td>图像/视频处理</td><td>Isolate</td><td>属于高强度计算，必须移出 Main Isolate。</td></tr>
+<p>如下示例由示例<code>ex743</code>改写而成，它演示了两个Isolate间的双向通信，请读者自行分析。</p>
+<pre><code class="language-dart">// ex744.dart
+import 'dart:isolate';
+import 'dart:async';
+
+void main() async {
+  final watch = Stopwatch()..start();
+  var count = 0;
+  String myprintPrefix() =&gt; 'out${count++} ${watch.elapsed.inMilliseconds}ms:';
+  void myprint(o) =&gt; print('${myprintPrefix()} $o');
+
+  myprint('main: ⚙️ 启动任务...');
+
+  final receivePort = ReceivePort(); // 1
+  await Isolate.spawn(entryPoint, receivePort.sendPort); // 2
+
+  SendPort? workerSendPort;
+
+  // 3
+  receivePort.listen((message) {
+    // 4
+    if (message case (int x, int y)) {
+      myprint('main: f($x)=$y');
+    } // 4a
+    else if (message is SendPort) {
+      workerSendPort = message;
+      myprint('main: 🤝 握手成功');
+    }
+  });
+
+  myprint('main: 🚀 我继续做其它事');
+
+  for (var x = 1; x &lt;= 5; x++) {
+    Future.delayed(
+      Duration(seconds: x),
+      () =&gt; workerSendPort?.send((x, myprintPrefix())),
+    );
+  }
+
+  Future.delayed(Duration(seconds: 6), () =&gt; receivePort.close());
+
+  /* An example output:
+out0 0ms: main: ⚙️ 启动任务...
+out1 76ms: main: 🚀 我继续做其它事
+out2 138ms: main: 🤝 握手成功
+out3 1089ms: worker: x=1
+out4 1195ms: main: f(1)=1
+out5 2090ms: worker: x=2
+out6 2196ms: main: f(2)=4
+out7 3096ms: worker: x=3
+out8 3203ms: main: f(3)=9
+out9 4097ms: worker: x=4
+out10 4201ms: main: f(4)=16
+out11 5096ms: worker: x=5
+out12 5202ms: main: f(5)=25
+   */
+}
+
+void entryPoint(SendPort mainSendPort) async {
+  final workerReceivePort = ReceivePort();
+  mainSendPort.send(workerReceivePort.sendPort);
+
+  workerReceivePort.listen((message) async {
+    if (message case (int x, String prefix)) {
+      print('$prefix worker: x=$x');
+      // Simulate a time-consuming task
+      await Future.delayed(Duration(milliseconds: 100));
+      final y = x * x;
+      mainSendPort.send((x, y));
+    }
+  });
+}
+</code></pre>
+<h2 id="isolatespawnuri"><a class="header" href="#isolatespawnuri"><code>Isolate.spawnUri()</code></a></h2>
+<p><code>Isolate.spawnUri()</code> 与 <code>Isolate.spawnUri()</code>类似，区别在于前者的 entryPoint 是由一个脚本文件提供。我们将 <code>ex743</code> 中的 <code>entryPoint</code> 函数稍作改变，然后移至一个文件中：</p>
+<pre><code class="language-dart">// A script file for ex745.dart
+import 'dart:isolate';
+
+void main(List&lt;String&gt; args, SendPort sendPort) async {
+  print('worker: $args');
+  for (int i = 1; i &lt;= 5; i++) {
+    await Future.delayed(Duration(seconds: 1));
+    sendPort.send(20 * i); // 发送进度
+  }
+  // 发送最终计算结果
+  sendPort.send('DONE');
+}
+</code></pre>
+<p>请注意观察这里的函数及其签名：原来的entryPoint变成了main函数，第二个入参代表初始消息。然后 <code>ex743.dart</code> 剩余的部分也稍作变化：</p>
+<pre><code class="language-dart">// ex745.dart
+import 'dart:isolate';
+
+void main() async {
+  // ... (omitted for brevity)
+  
+  final receivePort = ReceivePort(); // 1
+  var uri = Uri.file('./ex745a.dart');
+  await Isolate.spawnUri(uri, ['arg1', 'arg2'], receivePort.sendPort);
+
+  // ... (omitted for brevity)
+}
+</code></pre>
+<p>请尝试运行修改后得到的新示例（<code>ex745</code>）并观察程序输出。</p>
+<p><em>常见约束与避坑指南</em></p>
+<ul>
+<li><code>spawnUri()</code> 会重新加载其依赖的所有库。如果外部脚本也依赖了 <code>dart:math</code>，它会在新 Isolate 中拥有一份独立的拷贝。</li>
+<li>在 Flutter 环境中，由于打包机制，<code>spawnUri()</code>通常不能直接指向磁盘文件</li>
+<li>安全性：虽然 Isolate 之间是隔离的，但在加载外部脚本时仍需确保来源可靠。</li>
+</ul>
+<p><em><code>Isolate.spawn()</code> VS <code>Isolate.spawnUri()</code></em></p>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th><code>Isolate.spawn()</code></th><th><code>Isolate.spawnUri()</code></th></tr></thead><tbody>
+<tr><td>代码来源</td><td>当前程序中的函数（共享现有代码）</td><td>外部 URI 指向的文件（独立代码）</td></tr>
+<tr><td>启动速度</td><td>较快（不需要重新解析代码）</td><td>较慢（需要加载、解析并运行新脚本）</td></tr>
+<tr><td>参数限制</td><td>可以传递大部分不可变对象</td><td>参数必须是简单的类型（如字符串、列表、SendPort）</td></tr>
+<tr><td>内存开销</td><td>相对较小</td><td>较大（整个脚本环境需要重新初始化）</td></tr>
+<tr><td>典型用途</td><td>处理当前应用的密集计算</td><td>动态插件系统、运行不受信任的外部脚本</td></tr>
 </tbody></table>
 </div>
-<h2 id="reference-1"><a class="header" href="#reference-1">Reference</a></h2>
+<h2 id="flutter-特色compute"><a class="header" href="#flutter-特色compute"><code>Flutter 特色：compute()</code></a></h2>
+<h2 id="isolate-生命周期"><a class="header" href="#isolate-生命周期">Isolate 生命周期</a></h2>
+<h2 id="零拷贝zero-copy"><a class="header" href="#零拷贝zero-copy">零拷贝（Zero-copy）</a></h2>
+<h2 id="reference-2"><a class="header" href="#reference-2">Reference</a></h2>
 <ul>
-<li><a href="https://dart.dev/articles/event-loop/">Dart asynchronous programming: Isolates and event loops</a></li>
+<li>
+<p><a href="https://dart.dev/articles/event-loop/">Dart asynchronous programming: Isolates and event loops</a></p>
+</li>
+<li>
+<p>https://api.dart.dev/dart-isolate/Isolate-class.html</p>
+</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="testgroup"><a class="header" href="#testgroup">test/group</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="测试异步代码"><a class="header" href="#测试异步代码">测试异步代码</a></h1>

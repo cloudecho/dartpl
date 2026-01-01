@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Isolate - 从0开始学Dart</title>
+        <title>Isolate 与 Event Loop - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -164,7 +164,9 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="isolate"><a class="header" href="#isolate">Isolate</a></h1>
+                        <h1 id="isolate-与-event-loop"><a class="header" href="#isolate-与-event-loop">Isolate 与 Event Loop</a></h1>
+<p>本节将简单介绍 Isolate 与 Event Loop。下一节将详细介绍如何使用 Isolate。</p>
+<h2 id="并发模型"><a class="header" href="#并发模型">并发模型</a></h2>
 <p>不同于 Java 基于共享内存的多线程并发，Dart 采用了名为 Isolate 的隔离并发模型，其运行机制类似于轻量级进程。Isolate 之间采用“无共享”（Shared-Nothing）架构，通信完全依赖于异步消息传递。这种天然的隔离机制从根本上消除了数据竞争（Data Race），无需引入复杂的锁机制（Locks）即可确保运行时的内存安全。</p>
 <pre class="mermaid">graph TD
     subgraph &quot;Process (Java, C++) - 共享内存模型&quot;
@@ -227,7 +229,7 @@
 </li>
 </ul>
 <p>Event Queue 保证了程序的响应性，它让 UI 刷新和用户点击有条不紊地排队。而 Microtask Queue 则保证了异步逻辑的原子性。当一个 Future 完成时，我们希望它的后续处理（then）能尽快执行，甚至赶在下一个用户点击之前。微任务队列就是为了这种‘插队’需求而生的，它让异步逻辑在宏观上看起来像是连续执行的。</p>
-<h3 id="再谈-asycwait"><a class="header" href="#再谈-asycwait">再谈 <code>asyc/wait</code></a></h3>
+<h2 id="再谈-asycwait"><a class="header" href="#再谈-asycwait">再谈 <code>asyc/wait</code></a></h2>
 <p>在 Dart 中，<code>async/await</code> 并不是让代码进入了另一个线程，而是将一个长函数拆分成了多个逻辑片段，并利用 Event Loop 重新排队。下面结合示例进行分析。</p>
 <pre><code class="language-dart">// ex741.dart
 void main() async {
@@ -298,7 +300,7 @@ sequenceDiagram
 <p>c. 微任务的“接力”： 当 Future（宏任务）执行完后，它并没有直接回到 main。它先触发了 task 的恢复（微任务），<code>task</code> 完成后又触发了 <code>main</code> 的恢复（又一个微任务）。这就是为什么 Microtask Queue 被称为异步链条的“粘合剂”。</p>
 </li>
 </ul>
-<h3 id="sleep-vs-await-futuredelayed"><a class="header" href="#sleep-vs-await-futuredelayed"><code>sleep()</code> VS <code>await Future.delayed()</code></a></h3>
+<h2 id="sleep-vs-await-futuredelayed"><a class="header" href="#sleep-vs-await-futuredelayed"><code>sleep()</code> VS <code>await Future.delayed()</code></a></h2>
 <p><code>sleep()</code>是一个同步阻塞（block）调用，它将强行卡死EventLoop时间齿轮，霸占 CPU 并原地停止。</p>
 <p><code>await Future.delayed()</code>，是一个异步非阻塞操作，就像执行区里的工人看了一眼闹钟，发现时间没到，于是主动离开位子，把执行区让出来，自己去休息室等候。其过程是：</p>
 <ul>
@@ -315,165 +317,6 @@ sequenceDiagram
 <tr><td>底层实现</td><td>操作系统线程休眠</td><td>计时器事件注册 + 任务回流</td></tr>
 </tbody></table>
 </div>
-<h2 id="创建-isolate"><a class="header" href="#创建-isolate">创建 Isolate</a></h2>
-<p>按使用场景（是简单的计算还是长期的后台任务）的不同，有三种主流的创建方式：</p>
-<ul>
-<li><code>Isolate.run()</code>（单次轻量）：Dart会自动处理 Isolate 的创建、参数传递、结果返回以及最后的销毁</li>
-<li><code>Isolate.spawn()</code>（常驻/双向通信）：如果你需要一个常驻的后台服务</li>
-<li>Flutter 特色：<code>compute()</code>，类似<code>Isolate.run()</code>，更加兼容 Flutter 环境</li>
-</ul>
-<h3 id="isolaterun"><a class="header" href="#isolaterun"><code>Isolate.run()</code></a></h3>
-<p>如下示例中的<code>heavyTask</code>模拟了一个CPU密集型任务，通过 <code>Isolate.run()</code> 启用一个新的 Isolate 对其进行计算。</p>
-<pre><code class="language-dart">// ex742.dart
-import 'dart:isolate';
-
-Future&lt;void&gt; main() async {
-  final result = await Isolate.run(() =&gt; heavyTask(100_000_000));
-  print('result: $result'); // Output:  99999999
-}
-
-int heavyTask(int count) {
-  var sum = 0;
-  for (int i = 0; i &lt; count; i++) {
-    sum += i % 3;
-  }
-  return sum;
-}
-</code></pre>
-<h3 id="isolatespawn"><a class="header" href="#isolatespawn"><code>Isolate.spawn()</code></a></h3>
-<p>Isolate 之间通过发送消息通信， ReceivePort 和 SendPort 是其通信端口。</p>
-<ul>
-<li><strong>ReceivePort（收信箱）</strong>：它是私有的，只有创建它的 Isolate 才能从中读取消息。本质上它是一个 Stream。当消息掉进箱子时，Event Loop 齿轮转动，触发监听（<code>listen</code>）回调。</li>
-<li><strong>SendPort（投递地址）</strong>： 它是公开的，可以被复制、传递给其他 Isolate。</li>
-</ul>
-<pre class="mermaid">graph LR
-    subgraph Isolate_A [main Isolate]
-        direction TB
-        RP[ReceivePort]
-        Handler([处理逻辑])
-        RP --&gt;|监听| Handler
-    end
-
-    subgraph Isolate_B [worker Isolate]
-        direction TB
-        SP[SendPort]
-        Task([计算任务])
-        Task --&gt;|结果| SP
-    end
-
-    SP -.-&gt;|跨越物理边界| RP
-
-    style Isolate_A fill:#f5f5f5,stroke:#333
-    style Isolate_B fill:#f5f5f5,stroke:#333
-    style RP fill:#FFF9C4,stroke:#FBC02D
-    style SP fill:#E1F5FE,stroke:#0288D1
-</pre>
-<h4 id="单向通信生产-消费"><a class="header" href="#单向通信生产-消费">单向通信（“生产-消费”）</a></h4>
-<p>在单向通信（“生产-消费”）模式中，Main Isolate 充当“听众” （即数据的消费者），Worker Isolate 充当数据的“生产者”。</p>
-<pre class="mermaid">%%{init: {'themeVariables': {'actorBkg': '#673AB7'} }}%%
-sequenceDiagram
-	autonumber
-    participant M as Main Isolate
-    participant W as Worker Isolate
-    
-    M-&gt;&gt;M: 创建 ReceivePort (RP)
-    M-&gt;&gt;W: Isolate.spawn(entryPoint, RP.sendPort)
-    W-&gt;&gt;W: 初始化自己的 Event Loop
-    W-&gt;&gt;M: 通过传入的 SendPort 发回数据
-    M-&gt;&gt;M: RP.listen 接收并处理结果
-</pre>
-<pre><code class="language-dart">// ex742.dart
-import 'dart:isolate';
-import 'dart:async';
-
-final watch = Stopwatch()..start();
-var count = 0;
-void myprint(o) =&gt; print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
-
-void main() async {
-  myprint('main: ⚙️ 启动任务...');
-
-  final receivePort = ReceivePort(); // 1
-  await Isolate.spawn(entryPoint, receivePort.sendPort); // 2
-
-  // 3
-  receivePort.listen((message) {
-    // 4
-    if (message is int) {
-      myprint('main: progress $message%');
-    } // 4a
-    else if (message is String) {
-      myprint('main: $message');
-      receivePort.close(); // 5
-      myprint('main: 🏁 done');
-    }
-  });
-
-  myprint('main: 🚀 我继续做其它事');
-
-  /* An example output:
-out0 0ms: main: ⚙️ 启动任务...
-out1 52ms: main: 🚀 我继续做其他事
-out2 1039ms: main: progress 20%
-out3 2040ms: main: progress 40%
-out4 3045ms: main: progress 60%
-out5 4051ms: main: progress 80%
-out6 5054ms: main: progress 100%
-out7 5054ms: main: DONE
-out8 5061ms: main: 🏁 done  
-   */
-}
-
-/// worker 逻辑: 执行任务并不断向 main “汇报”
-void entryPoint(SendPort sendPort) async {
-  // 模拟耗时任务，每秒发送一次进度
-  for (int i = 1; i &lt;= 5; i++) {
-    await Future.delayed(Duration(seconds: 1));
-    sendPort.send(20 * i); // 发送进度
-  }
-  // 发送最终计算结果
-  sendPort.send('DONE');
-}
-</code></pre>
-<ol>
-<li>首先创建一个ReceivePort；</li>
-<li>启动worker Isolate；<code>Isolate.spawn()</code>的第一个入参，是worker的入口函数（<code>entryPoint</code>，代表了worker的待执行任务），第二个入参是传递给 <code>entryPoint</code> 的初始消息（此处是一个<code>SendPort</code>）；</li>
-<li><code>receivePort</code>本质上是一个Stream，<code>receivePort.listen()</code>监听worker发来的消息；</li>
-<li>处理worker发来的消息；</li>
-<li><code>receivePort.close()</code> 释放work Isolate相关资源，最终work Isolate终止。</li>
-</ol>
-<h4 id="双向通信"><a class="header" href="#双向通信">双向通信</a></h4>
-<p>我们在理解了单向通信模式之后，就不难双向通信模式。main isolate要想发消息给work isolate，必须通过worker的SendPort，因此我们要设法将worker的SendPort传递给main isolate。在<code>entrypoint</code> 函数中，worker调用<code>mainRP.send()</code>即可实现这一点（<code>mainRP</code>即main isolate的ReceivePort）。</p>
-<pre class="mermaid">%%{init: {'themeVariables': {'actorBkg': '#673AB7'} }}%%
-sequenceDiagram
-    autonumber
-    participant M as Main Isolate
-    participant W as Worker Isolate
-    
-    Note over M: 准备阶段
-    M-&gt;&gt;M: 创建 ReceivePort (mainRP)
-    M-&gt;&gt;W: Isolate.spawn(entryPoint, mainRP.sendPort)
-    
-    Note over W: Worker 启动
-    W-&gt;&gt;W: 初始化自己的 Event Loop
-    W-&gt;&gt;W: 创建自己的 ReceivePort (workerRP)
-    W-&gt;&gt;M: 发回 workerRP.sendPort (握手)
-    
-    Note over M: 建立双向连接
-    M-&gt;&gt;M: 收到并保存 Worker 的 SendPort
-    
-    rect rgb(232, 245, 233)
-    Note over M, W: 交互阶段
-    M-&gt;&gt;W: 发送任务数据 (Main 发送消息)
-    W-&gt;&gt;W: 执行密集计算/任务
-    W-&gt;&gt;M: 通过 mainRP 发回处理结果
-    end
-    
-    M-&gt;&gt;M: 处理结果
-</pre>
-<h3 id="flutter-特色compute"><a class="header" href="#flutter-特色compute"><code>Flutter 特色：compute()</code></a></h3>
-<h2 id="isolate-生命周期"><a class="header" href="#isolate-生命周期">Isolate 生命周期</a></h2>
-<h2 id="零拷贝zero-copy"><a class="header" href="#零拷贝zero-copy">零拷贝（Zero-copy）</a></h2>
 <h2 id="async-还是-isolate-"><a class="header" href="#async-还是-isolate-">Async 还是 Isolate ?</a></h2>
 <p>虽然 async/await 能处理异步，但它本质上还是在同一个线程的 Event Loop 里“排队”。如果你需要处理 CPU 密集型任务（如大图片滤镜、复杂加解密、解析 100MB 的 JSON），主线程依然会卡顿，这时就需要启动一个新的 Isolate 进行并行处理。</p>
 <div class="table-wrapper"><table><thead><tr><th>场景</th><th>推荐方案</th><th>底层逻辑</th></tr></thead><tbody>
@@ -485,7 +328,12 @@ sequenceDiagram
 </div>
 <h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
 <ul>
-<li><a href="https://dart.dev/articles/event-loop/">Dart asynchronous programming: Isolates and event loops</a></li>
+<li>
+<p><a href="https://dart.dev/articles/event-loop/">Dart asynchronous programming: Isolates and event loops</a></p>
+</li>
+<li>
+<p>https://api.dart.dev/dart-isolate/Isolate-class.html</p>
+</li>
 </ul>
 
                     </main>
@@ -496,7 +344,7 @@ sequenceDiagram
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../ch08/dartpl0801.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ch07/dartpl0705.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -510,7 +358,7 @@ sequenceDiagram
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../ch08/dartpl0801.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ch07/dartpl0705.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
