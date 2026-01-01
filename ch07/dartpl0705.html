@@ -174,7 +174,7 @@
 <p>此外，<code>Isolate.spawnUri()</code>从指定的 URI（如本地路径或 HTTP 链接）读取脚本（源代码），并在一个全新的环境中运行它。</p>
 <h2 id="isolaterun"><a class="header" href="#isolaterun"><code>Isolate.run()</code></a></h2>
 <p>如下示例中的<code>heavyTask</code>模拟了一个CPU密集型任务，通过 <code>Isolate.run()</code> 启用一个新的 Isolate 对其进行计算。</p>
-<pre><code class="language-dart">// ex742.dart
+<pre><code class="language-dart">// ex751.dart
 import 'dart:isolate';
 
 Future&lt;void&gt; main() async {
@@ -232,7 +232,7 @@ sequenceDiagram
     W-&gt;&gt;M: 通过传入的 SendPort 发回数据
     M-&gt;&gt;M: RP.listen 接收并处理结果
 </pre>
-<pre><code class="language-dart">// ex743.dart
+<pre><code class="language-dart">// ex752.dart
 import 'dart:isolate';
 import 'dart:async';
 
@@ -322,8 +322,8 @@ sequenceDiagram
     
     M-&gt;&gt;M: 处理结果
 </pre>
-<p>如下示例由示例<code>ex743</code>改写而成，它演示了两个Isolate间的双向通信，请读者自行分析。</p>
-<pre><code class="language-dart">// ex744.dart
+<p>如下示例由示例<code>ex752</code>改写而成，它演示了两个Isolate间的双向通信，请读者自行分析。</p>
+<pre><code class="language-dart">// ex753.dart
 import 'dart:isolate';
 import 'dart:async';
 
@@ -396,8 +396,8 @@ void entryPoint(SendPort mainSendPort) async {
 }
 </code></pre>
 <h2 id="isolatespawnuri"><a class="header" href="#isolatespawnuri"><code>Isolate.spawnUri()</code></a></h2>
-<p><code>Isolate.spawnUri()</code> 与 <code>Isolate.spawnUri()</code>类似，区别在于前者的 entryPoint 是由一个脚本文件提供。我们将 <code>ex743</code> 中的 <code>entryPoint</code> 函数稍作改变，然后移至一个文件中：</p>
-<pre><code class="language-dart">// A script file for ex745.dart
+<p><code>Isolate.spawnUri()</code> 与 <code>Isolate.spawnUri()</code>类似，区别在于前者的 entryPoint 是由一个脚本文件提供。我们将 <code>ex752</code> 中的 <code>entryPoint</code> 函数稍作改变，然后移至一个文件中：</p>
+<pre><code class="language-dart">// A script file for ex754.dart
 import 'dart:isolate';
 
 void main(List&lt;String&gt; args, SendPort sendPort) async {
@@ -410,21 +410,21 @@ void main(List&lt;String&gt; args, SendPort sendPort) async {
   sendPort.send('DONE');
 }
 </code></pre>
-<p>请注意观察这里的函数及其签名：原来的entryPoint变成了main函数，第二个入参代表初始消息。然后 <code>ex743.dart</code> 剩余的部分也稍作变化：</p>
-<pre><code class="language-dart">// ex745.dart
+<p>请注意观察这里的函数及其签名：原来的entryPoint变成了main函数，第二个入参代表初始消息。然后 <code>ex752.dart</code> 剩余的部分也稍作变化：</p>
+<pre><code class="language-dart">// ex754.dart
 import 'dart:isolate';
 
 void main() async {
   // ... (omitted for brevity)
   
   final receivePort = ReceivePort(); // 1
-  var uri = Uri.file('./ex745a.dart');
+  var uri = Uri.file('./ex754a.dart');
   await Isolate.spawnUri(uri, ['arg1', 'arg2'], receivePort.sendPort);
 
   // ... (omitted for brevity)
 }
 </code></pre>
-<p>请尝试运行修改后得到的新示例（<code>ex745</code>）并观察程序输出。</p>
+<p>请尝试运行修改后得到的新示例（<code>ex754</code>）并观察程序输出。</p>
 <p><em>常见约束与避坑指南</em></p>
 <ul>
 <li><code>spawnUri()</code> 会重新加载其依赖的所有库。如果外部脚本也依赖了 <code>dart:math</code>，它会在新 Isolate 中拥有一份独立的拷贝。</li>
@@ -441,8 +441,27 @@ void main() async {
 </tbody></table>
 </div>
 <h2 id="flutter-特色compute"><a class="header" href="#flutter-特色compute"><code>Flutter 特色：compute()</code></a></h2>
+<p>Flutter 的 <code>compute()</code> 函数在用法上与 <code>Isolate.run()</code> 有些类似。下面是示例 <code>ex751</code>的Flutter/compute 版本。</p>
+<pre><code class="language-dart">// ex755.dart
+import 'package:flutter/foundation.dart'; // compute
+
+Future&lt;void&gt; main() async {
+  final result = await compute(heavyTask, 100_000_000);
+  debugPrint('result: $result'); // Output:  99999999
+}
+
+int heavyTask(int count) {
+  var sum = 0;
+  for (int i = 0; i &lt; count; i++) {
+    sum += i % 3;
+  }
+  return sum;
+}
+</code></pre>
+<p><code>compute()</code> 函数第一个入参数是回调函数（callback），第二入参将传递给callback（作为callback的入参）。为保持接口简洁，这里的callback只能有一个入参，如果你要传递多个参数，可以将这些参数打包成Record或Map。</p>
 <h2 id="isolate-生命周期"><a class="header" href="#isolate-生命周期">Isolate 生命周期</a></h2>
 <h2 id="零拷贝zero-copy"><a class="header" href="#零拷贝zero-copy">零拷贝（Zero-copy）</a></h2>
+<h2 id="worker-poolisolate-池"><a class="header" href="#worker-poolisolate-池">Worker Pool（Isolate 池）</a></h2>
 <h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
 <ul>
 <li>
