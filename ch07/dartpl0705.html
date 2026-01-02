@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Isolate 应用篇 - 从0开始学Dart</title>
+        <title>Isolate 基础应用篇 - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -164,7 +164,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="isolate-应用篇"><a class="header" href="#isolate-应用篇">Isolate 应用篇</a></h1>
+                        <h1 id="isolate-基础应用篇"><a class="header" href="#isolate-基础应用篇">Isolate 基础应用篇</a></h1>
 <p>按使用场景（是简单的计算还是长期的后台任务）的不同，有三种主流的创建方式：</p>
 <ul>
 <li><code>Isolate.run()</code>（单次轻量）：Dart会自动处理 Isolate 的创建、参数传递、结果返回以及最后的销毁</li>
@@ -320,7 +320,7 @@ sequenceDiagram
     W-&gt;&gt;M: 通过 mainRP 发回处理结果
     end
     
-    M-&gt;&gt;M: 处理结果
+    M-&gt;&gt;M: 后续处理
 </pre>
 <p>如下示例由示例<code>ex752</code>改写而成，它演示了两个Isolate间的双向通信，请读者自行分析。</p>
 <pre><code class="language-dart">// ex753.dart
@@ -396,7 +396,7 @@ void entryPoint(SendPort mainSendPort) async {
 }
 </code></pre>
 <h2 id="isolatespawnuri"><a class="header" href="#isolatespawnuri"><code>Isolate.spawnUri()</code></a></h2>
-<p><code>Isolate.spawnUri()</code> 与 <code>Isolate.spawnUri()</code>类似，区别在于前者的 entryPoint 是由一个脚本文件提供。我们将 <code>ex752</code> 中的 <code>entryPoint</code> 函数稍作改变，然后移至一个文件中：</p>
+<p><code>Isolate.spawnUri()</code> 与 <code>Isolate.spawn()</code>类似，区别在于前者的 entryPoint 是由一个脚本文件提供。我们将 <code>ex752</code> 中的 <code>entryPoint</code> 函数稍作改变，然后移至一个文件中：</p>
 <pre><code class="language-dart">// A script file for ex754.dart
 import 'dart:isolate';
 
@@ -459,9 +459,6 @@ int heavyTask(int count) {
 }
 </code></pre>
 <p><code>compute()</code> 函数第一个入参数是回调函数（callback），第二入参将传递给callback（作为callback的入参）。为保持接口简洁，这里的callback只能有一个入参，如果你要传递多个参数，可以将这些参数打包成Record或Map。</p>
-<h2 id="isolate-生命周期"><a class="header" href="#isolate-生命周期">Isolate 生命周期</a></h2>
-<h2 id="零拷贝zero-copy"><a class="header" href="#零拷贝zero-copy">零拷贝（Zero-copy）</a></h2>
-<h2 id="worker-poolisolate-池"><a class="header" href="#worker-poolisolate-池">Worker Pool（Isolate 池）</a></h2>
 <h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
 <ul>
 <li>
@@ -480,7 +477,7 @@ int heavyTask(int count) {
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../ch08/dartpl0801.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ch07/dartpl0706.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -494,7 +491,7 @@ int heavyTask(int count) {
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../ch08/dartpl0801.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ch07/dartpl0706.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
