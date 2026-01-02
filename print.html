@@ -6631,7 +6631,7 @@ int heavyTask(int count) {
 </li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="零拷贝"><a class="header" href="#零拷贝">零拷贝</a></h1>
-<p>Dart的零拷贝与Java的零拷贝指向的是完全不同的应用场景。熟悉Java的朋友知道Java 的零拷贝主要解决内核态（Kernel Space）与用户态（User Space）之间反复的数据拷贝开销。而Dart 的零拷贝是为了打破 Isolate 之间内存绝对隔离带来的通信开销。</p>
+<p>Dart的零拷贝与Java的零拷贝指向的是完全不同的应用场景。熟悉Java的朋友知道Java 的零拷贝主要解决内核态（Kernel Space）与用户态（User Space）之间反复的数据拷贝开销。而Dart 的零拷贝是为了省去 Isolate 之间内存绝对隔离带来的通信开销。</p>
 <p>Dart提供两种方式的零拷贝：</p>
 <ul>
 <li><code>Isolate.exit()</code>（所有权转让）</li>
