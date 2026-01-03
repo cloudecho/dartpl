@@ -190,6 +190,93 @@
     end
 </pre>
 <p>Isolate 这种设计让 Dart 能够实现 “无停顿垃圾回收”。因为每个 Isolate 的 GC 是独立的，当子 Isolate 在后台清理垃圾时，不会阻塞主 Isolate 的 UI 渲染，这正是 Flutter 保持流畅（60/120 FPS）的底层秘诀之一。</p>
+<h2 id="isolate"><a class="header" href="#isolate">Isolate</a></h2>
+<p>每一个 Isolate 到底初始化了什么？ 当你 spawn 一个新的 Isolate 时，Dart VM 实际上做了以下工作：</p>
+<ul>
+<li>分配独立的堆内存：用于存放该 Isolate 产生的对象。</li>
+<li>创建Event Loop（事件循环）：每个 Isolate 都有自己的事件队列和调度器。</li>
+<li>创建调用栈（Stack）：独立的执行上下文。</li>
+<li>独立的垃圾回收器（Private GC）：Isolate A 在进行 GC 时，不会停止 Isolate B 的运行（即没有全系统的 Stop-the-world）。</li>
+</ul>
+<pre class="mermaid">graph TD
+    %% 全局容器
+    subgraph Isolate_Internal [&quot;Dart Isolate Instance&quot;]
+        direction TB
+
+        %% 内存空间
+        subgraph Memory_Space [&quot;私有内存堆 (Private Heap)&quot;]
+            Objects([对象/实例])
+            GC[垃圾回收器]
+        end
+
+        %% 事件驱动核心
+        subgraph Event_System [&quot;事件处理系统 (Event Loop System)&quot;]
+            MQ@{shape: das, label: &quot;微任务队列 Microtask Queue&quot; }
+            EQ@{shape: das, label: &quot;事件队列 Event Queue&quot; }
+            Loop((⚙️ 事件循环 Event Loop))
+        end
+
+        %% 运行栈
+        Stack[[调用栈 Stack]]
+
+        %% 外部接口
+        subgraph Ports [&quot;通信网关 (Communication)&quot;]
+            RP[ReceivePort 接收端口]
+            SP[SendPort 发送端口]
+        end
+    end
+
+    %% 连接逻辑
+    Loop --&gt; MQ
+    MQ --&gt;|处理| Stack
+    Loop --&gt; EQ
+    EQ --&gt;|处理| Stack
+    Stack --&gt;|修改/读取| Objects
+    
+    %% 通信逻辑
+    External((外部其他 Isolate)) &lt;-.-&gt;|消息传递/数据拷贝| Ports
+    RP --&gt;|触发事件| EQ
+
+    %% 样式美化
+    style Isolate_Internal fill:#f5f5f5,stroke:#333,stroke-width:2px
+    style Memory_Space fill:#e3f2fd,stroke:#1565c0
+    style Event_System fill:#fff3e0,stroke:#e65100
+    style Ports fill:#f1f8e9,stroke:#33691e
+    style Loop fill:#673AB7,stroke:#311B92,stroke-width:2px,color:#fff
+    style MQ fill:#FFF9C4,stroke:#FBC02D
+    style EQ fill:#E1F5FE,stroke:#0288D1
+    style Stack fill:#4CAF50,stroke:#1B5E20,color:#fff
+</pre>
+<h3 id="isolate-生命周期"><a class="header" href="#isolate-生命周期">Isolate 生命周期</a></h3>
+<p>在 Dart 中，Isolate 的生命周期是一个闭环的异步过程。由于 Isolate 之间不共享内存，其状态切换高度依赖于 <strong>事件循环（Event Loop）<strong>和</strong>通信端口（Port）</strong>。</p>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Spawning: Isolate.spawn()
+    
+    state Spawning {
+        [*] --&gt; Allocating: 分配独立堆内存
+        Allocating --&gt; Loading: 加载代码与入口函数
+    }
+
+    Spawning --&gt; Running: entryPoint（入口函数）开始执行
+    
+    state Running {
+        [*] --&gt; EventLoop
+        EventLoop --&gt; MicrotaskQueue: 处理微任务
+        MicrotaskQueue --&gt; EventQueue: 处理事件/消息
+        EventQueue --&gt; EventLoop: 循环往复
+        
+        state &quot;Active (Listening)&quot; as Active
+        EventLoop --&gt; Active: ReceivePort 开启
+        Active --&gt; EventLoop: 收到消息
+    }
+
+    Running --&gt; Exiting: entryPoint执行完毕 &amp;&amp; 无活跃端口
+    Running --&gt; Exiting: 收到 kill 信号
+    Running --&gt; ErrorState: 未捕获的异常
+    
+    ErrorState --&gt; Exiting: 触发 ErrorListener
+    Exiting --&gt; [*]: 资源回收/内存释放
+</pre>
 <h2 id="event-loop"><a class="header" href="#event-loop">Event Loop</a></h2>
 <p>Isolate与Event Loop是密不可分的，每个Isolate都有唯一的一个Event Loop与之对应。Isolate 是物理边界，而 Event Loop 是运行逻辑。</p>
 <pre class="mermaid">graph TD

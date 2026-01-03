@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Dart 常用 package - 从0开始学Dart</title>
+        <title>Worker Pool（续1） - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -164,17 +164,118 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="dart-常用-package"><a class="header" href="#dart-常用-package">Dart 常用 package</a></h1>
+                        <h1 id="worker-pool续1残余请求问题"><a class="header" href="#worker-pool续1残余请求问题">Worker Pool（续1）：残余请求问题</a></h1>
+<p>本节及 <a href="./dartpl0709.html">下一节</a> 是 <a href="./dartpl0707.html">上一节 Worker Pool （Isolate 池）</a> 的深度延伸。本节我们将探讨并发编程中一个棘手的边缘场景：残余请求——即那些在系统关闭瞬间仍处于传输或执行状态的残留任务。</p>
+<h2 id="残余请求问题"><a class="header" href="#残余请求问题">残余请求问题</a></h2>
+<p>在 WorkerPool 关闭时，残余请求通常以两种形式存在：</p>
+<ul>
+<li>在途请求（In-flight）：任务已离开队列（<code>_taskQueue</code>），正处在发往 Worker 的途中；</li>
+<li>执行中请求（In-progress）：Worker 已经接收并正在执行计算任务。</li>
+</ul>
+<p>我们不妨将它们分别标记为 <em><code>Q1</code></em> 和 <em><code>Q2</code>。</em></p>
+<p><em><code>Q1.</code></em> ”在途请求“要求我们在关闭 <code>_resultPort</code>之前，先关闭所有<code>worker</code>的 <code>ReceivePort</code>，以防止worker处理完任务后访问已关闭的资源（<code>resultPort</code>）。记住：永远先关闭‘输入端’，后关闭‘输出端’。</p>
+<p><em><code>Q2.</code></em> “执行中请求”要求我们考虑这样一个问题：在关闭 WorkerPool时，所有的Woker都必须处于空闲状态吗（即没有任务在执行中）？ 这就是 <code>WorkerPool.close()</code>方法中 <code>ensureExecutingTaskCompleted</code>参数存在的原因。</p>
+<h2 id="解决方案"><a class="header" href="#解决方案">解决方案</a></h2>
+<p>我们定义如下 <em>WorkerPool 优雅关闭协议</em>。</p>
+<pre class="mermaid">sequenceDiagram
+    autonumber
+    participant M as WorkerPool (Main Isolate)
+    participant W as Worker (Worker Isolate)
+
+    Note over M, W: --- 阶段 1: 拦截 Q1 (断源) ---
+    M-&gt;&gt;M: 设置 _closed = true
+    
+    par 临界竞争
+        M-&gt;&gt;W: 发送 shutdown 指令
+        M-&gt;&gt;W: 在途任务 (Q1)
+    end
+
+    Note right of W: Worker 优先处理 #shutdown
+    W-&gt;&gt;W: 自行关闭 ReceivePort
+    Note right of W: 后续抵达的 Q1 任务被自动忽略
+
+    Note over M, W: --- 阶段 2: 消化 Q2 (排空) ---
+    loop 轮询直到 busy == false
+        W-&gt;&gt;W: 继续处理执行中的 Q2 任务
+        W--&gt;&gt;M: 回传 Q2 结果
+    end
+
+    Note over M, W: --- 阶段 3: 终结 (清理) ---
+    M-&gt;&gt;M: 关闭 _resultPort
+    M-&gt;&gt;W: 执行 isolate.kill()
+    
+</pre>
+<h3 id="q1在途请求"><a class="header" href="#q1在途请求">Q1（在途请求）</a></h3>
+<p>在关闭 <code>_resultPort</code> 之前，先关闭所有<code>worker</code>的 <code>ReceivePort</code>，该如何实现这一点呢？<code>Worker</code>要想收到 <code>close</code> 指令，必须由 <code>WorkerPool</code> 发送给它，我们可以将这个<code>close</code>指令称为<code>shutdown</code>消息。</p>
+<p><em>首先定义<code>_shutdownSignal</code>常量，它表示 <code>shutdown</code>消息：</em></p>
+<pre><code class="language-dart">const _shutdownSignal = #shutdown;
+</code></pre>
+<p><em>然后修改 <code>workerEntryPoint</code>，让其处理 <code>_shutdownSignal</code>：</em></p>
+<pre><code class="language-dart">void workerEntryPoint((int workerId, SendPort resultPort) message) {
+  // ... (omitted for brevity)
+
+  workerReceivePort.listen((data) async {
+    if (data case TaskData taskData) {
+      // ... (omitted for brevity)
+    } else if (data == _shutdownSignal) {
+      workerReceivePort.close();
+      print('${Isolate.current.debugName} closed');
+    }
+  });
+}
+</code></pre>
+<p><em>最后修改<code>WorkerPoo.close()</code>方法，给Worker发送<code>_shutdownSignal</code></em>:</p>
+<pre><code class="language-dart">Future close({
+    bool ensureExecutingTaskCompleted = true,
+    bool ensureTaskQueueEmpty = true,
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
+    if (_closed) return;
+    _closed = true;
+
+    // Notify workers to shutdown
+    for (var w in _workers.values) {
+      w.sendPort.send(_shutdownSignal);
+    }
+
+    // ... (omitted for brevity)
+}
+</code></pre>
+<h3 id="q2执行中请求"><a class="header" href="#q2执行中请求">Q2（执行中请求）</a></h3>
+<p><code>WorkerPool.close()</code>方法中 <code>ensureExecutingTaskCompleted</code>参数的默认值为<code>true</code>，表示WorkerPool要等到当前所有待执行任务完成后，才会去执行close逻辑（目前的代码已实现）。
+而当<code>ensureExecutingTaskCompleted</code> 值为<code>false</code>时，表示强制结束当前所有的待执行任务，其参考实现如下。</p>
+<pre><code class="language-dart">  Future close({
+    bool ensureExecutingTaskCompleted = true,
+    bool ensureTaskQueueEmpty = true,
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
+    if (_closed) return;
+    _closed = true;
+
+    // Complete the futures
+    if (!ensureExecutingTaskCompleted) {
+      for (var w in _workers.values) {
+        if (w.completer != null &amp;&amp; !w.completer!.isCompleted) {
+          w.completer!.completeError('worker pool force closed');
+        }
+      }
+    }
+
+    // ... (omitted for brevity)
+  }  
+</code></pre>
+<h2 id="结束语"><a class="header" href="#结束语">结束语</a></h2>
+<p>本节讨论了Dart并发编程中的残余请求问题及解决方案（含代码示例），下一节将讨论 WorkerPool的最后一块拼图 ——  重启意外崩溃的 Isolate。</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ch0a/dartpl0d.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ch07/dartpl0707.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../ch0a/dartpl0f.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ch07/dartpl0709.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -184,11 +285,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ch0a/dartpl0d.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ch07/dartpl0707.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../ch0a/dartpl0f.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ch07/dartpl0709.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

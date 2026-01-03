@@ -165,7 +165,344 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="worker-pool-isolate-池"><a class="header" href="#worker-pool-isolate-池">Worker Pool （Isolate 池）</a></h1>
-<h2 id="isolate-生命周期"><a class="header" href="#isolate-生命周期">Isolate 生命周期</a></h2>
+<p>Dart Worker Pool （Isolate 池）类似于Java中的线程池。在 Dart 中，Spawn 一个 Isolate 比创建线程更贵（因为它要初始化独立的堆内存）。使用Worker Pool可以 <em>避免冷启动开销</em> 和 <em>控制内存配额</em>。</p>
+<ul>
+<li>
+<p><em>避免冷启动开销</em>：如果你的应用需要频繁处理小任务（如每隔 100ms 滤镜一张图片），不断地 Isolate.run 会导致 CPU 在频繁的创建/销毁中空转。</p>
+</li>
+<li>
+<p><em>控制内存配额</em>：由于每个 Isolate 都有独立的堆内存，无节制地开启 Isolate 会迅速导致 OOM（内存溢出）。池化可以强制将并发数限制在 CPU 核心数左右。</p>
+</li>
+</ul>
+<p>在 Dart 的世界里，池化不只是为了复用线程，更是为了维持一组‘热就绪’的隔离空间。如果你在做音视频剪辑、大型游戏逻辑解析，Isolate 池就是你的后台工厂。</p>
+<h2 id="实现方案"><a class="header" href="#实现方案">实现方案</a></h2>
+<p><code>Worer Pool</code> 需要维持一组长期存活的后台 <code>Isolate</code>，并维护它们的 <code>SendPort</code>，以便向其分发任务。当 <code>Worker Pool</code> 收到一个任务（<code>Task</code>）时，它分发给空闲的<code>Worker</code>，如果此时所有的<code>Worker</code>都忙，就将任务放入待执行队列（<code>TaskQueue</code>）。<code>Worker Pool</code>的核心指责就是尽快撮合 <code>Task</code> 与 <code>Worker</code>，一旦<code>Worker</code>空闲，它就去<code>TaskQueue</code>里取出任务交给<code>Worker</code>去执行。</p>
+<p>下面是该方案的 <em>时序图</em> 和 <em>类图</em> 。</p>
+<pre class="mermaid">sequenceDiagram
+    autonumber
+    participant Client as main(Task Submitter)
+    participant Pool as Worker Pool (Manager)
+    participant W as Worker (Isolate 0..N)
+
+    Note over Pool, W: --- 初始化 (建立长存连接) ---
+    Pool-&gt;&gt;W: 创建并保持 Isolate 存活
+    W--&gt;&gt;Pool: 回传通信凭证 (SendPort)
+    Note over Pool: 维护 Worker 状态列表
+
+    Note over Client, W: --- 场景 A: 任务处理 (直接执行) ---
+    Client-&gt;&gt;Pool: submit(任务 1)
+    Pool-&gt;&gt;W: 寻找空闲工人并派发
+    W-&gt;&gt;W: 执行计算
+    W--&gt;&gt;Pool: 返回结果 1
+    Pool-&gt;&gt;Client: 交付结果 1 (Future 完成)
+
+    Note over Client, W: --- 场景 B: 负载均衡 (排队与复用) ---
+    Client-&gt;&gt;Pool: submit(任务 2)
+    Client-&gt;&gt;Pool: submit(任务 3)
+    Note over Pool: (此时工人忙碌，内部暂存任务)
+    W--&gt;&gt;Pool: (工人忙完任务 2) 返回结果 2
+    Pool-&gt;&gt;Client: 交付结果 2
+    Pool-&gt;&gt;W: 自动派发暂存的任务 3
+    W--&gt;&gt;Pool: 返回结果 3
+    Pool-&gt;&gt;Client: 交付结果 3
+</pre>
+<pre class="mermaid">classDiagram
+    class TaskData {
+        +Function task
+        +Record data
+        +TaskData(Function task, Record data)
+    }
+
+    class Worker {
+        +Isolate isolate
+        +SendPort sendPort
+        +bool idle
+        +Completer? completer
+        +Worker(Isolate isolate, SendPort sendPort)
+    }
+
+    class WorkerPool {
+        +int size
+        -Map~int, Worker~ _workers
+        -Queue~~ _taskQueue
+        -StreamController _idleWorkerController
+        -ReceivePort? _resultPort
+        -bool _closed
+        
+        +WorkerPool(int size)
+        +Future~T~ submit&amp;lt;T&amp;gt;(TaskData taskData)
+        +Future~void~ close()
+    }
+
+    class GlobalFunctions {
+        &lt;&lt;Global&gt;&gt;
+        +void workerEntryPoint(Record message)
+    }
+
+    WorkerPool &quot;1&quot; *-- &quot;0..*&quot; Worker : 维护并调度
+    WorkerPool ..&gt; TaskData : 处理任务请求（submit）
+    Worker ..&gt; TaskData : 通过 SendPort 发送任务给 Worker Isolate
+    Worker ..&gt; GlobalFunctions : Isolate 运行入口
+</pre>
+<p>该方案的示例代码如下。</p>
+<pre><code class="language-dart">// ex771.dart
+import 'dart:async';
+import 'dart:collection';
+import 'dart:isolate';
+
+int add((int, int) args) =&gt; args.$1 + args.$2; // 1
+
+// 2
+final watch = Stopwatch()..start();
+var count = 0;
+void myprint(o) =&gt; print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
+
+void main() async {
+  var pool = WorkerPool(3); // 3
+  await Future.delayed(Duration(seconds: 1)); // 3a
+
+  const n = 9; // 4
+  var results = await Future.wait([
+    for (var x = 1; x &lt;= n; x++) pool.submit(TaskData(add, (x, x))),
+  ]);
+  myprint(results); // 5
+
+  await pool.close(); // 6
+
+  /* An example output:
+out0 0ms: main: 🤝 pool-worker-0 握手成功
+out1 11ms: main: 🤝 pool-worker-1 握手成功
+out2 18ms: main: 🤝 pool-worker-2 握手成功
+out3 989ms: pool-worker-1 returns 4
+out4 994ms: pool-worker-0 returns 2
+out5 994ms: pool-worker-2 returns 6
+out6 995ms: pool-worker-1 returns 8
+out7 995ms: pool-worker-0 returns 10
+out8 995ms: pool-worker-2 returns 12
+out9 995ms: pool-worker-1 returns 14
+out10 995ms: pool-worker-0 returns 16
+out11 995ms: pool-worker-2 returns 18
+out12 997ms: [2, 4, 6, 8, 10, 12, 14, 16, 18]
+out13 1111ms: closed
+ */
+}
+
+// 7
+class TaskData {
+  final Function task;
+  final Record data;
+  TaskData(this.task, this.data);
+}
+
+class WorkerPool {
+  final String name;
+  final int size; // 8
+  final _workers = &lt;int, Worker&gt;{}; // 9
+  final _taskQueue = Queue&lt;(TaskData, Completer)&gt;(); // 10
+  final _idleWorkerController = StreamController(); // 11
+
+  ReceivePort? _resultPort;
+  var _closed = false;
+
+  String _workerName(int id) =&gt; '$name-worker-$id';
+
+  WorkerPool(int size) : this.named(size, 'pool');
+
+  WorkerPool.named(this.size, this.name) {
+    _init();
+    _start();
+  }
+
+  Future&lt;void&gt; _init() async {
+    final resultPort = ReceivePort();
+    final isolates = &lt;int, Isolate&gt;{};
+    // 12
+    for (int workerId = 0; workerId &lt; size; workerId++) {
+      isolates[workerId] = await Isolate.spawn(workerEntryPoint, (
+        workerId,
+        resultPort.sendPort,
+      ), debugName: _workerName(workerId));
+    }
+    // 13
+    resultPort.listen((message) {
+      // 13b
+      if (message case (int workerId, bool ok, dynamic result)) {
+        _handleResult(workerId, ok, result);
+      } // 13a
+      else if (message case (int workerId, SendPort workerPort)) {
+        _workers[workerId] = Worker(isolates[workerId]!, workerPort);
+        myprint('main: 🤝 ${_workerName(workerId)} 握手成功');
+      }
+    });
+
+    _resultPort = resultPort;
+  }
+
+  // 14
+  void _handleResult(int workerId, bool ok, dynamic result) {
+    myprint('${_workerName(workerId)} returns $result');
+    final worker = _workers[workerId]!;
+    if (ok) {
+      worker.completer?.complete(result);
+    } else {
+      worker.completer?.completeError(result);
+    }
+    worker.completer = null;
+    _idleWorkerController.sink.add(worker);
+  }
+
+  void _start() {
+    // 15
+    _idleWorkerController.stream.listen((worker) {
+      if (_taskQueue.isNotEmpty) {
+        final (task, completer) = _taskQueue.removeFirst();
+        _execute(worker, task, completer);
+      } else {
+        worker.idle = true;
+      }
+    });
+  }
+
+  // 16
+  void _execute(worker, TaskData taskData, Completer completer) {
+    worker.idle = false;
+    worker.completer = completer;
+    worker.sendPort.send(taskData);
+  }
+
+  // 17
+  Future&lt;T&gt; submit&lt;T&gt;(TaskData taskData) {
+    final completer = Completer&lt;T&gt;();
+    if (_closed) {
+      completer.completeError('worker pool closed');
+    } else {
+      var worker = _workers.values.where((w) =&gt; w.idle).firstOrNull;
+      if (worker == null) {
+        _taskQueue.add((taskData, completer));
+      } else {
+        _execute(worker, taskData, completer);
+      }
+    }
+    return completer.future;
+  }
+
+  // 18
+  Future close({
+    bool ensureExecutingTaskCompleted = true,
+    bool ensureTaskQueueEmpty = true,
+  }) async {
+    if (_closed) return;
+    _closed = true;
+
+    // Waiting to complete
+    while (true) {
+      final buzy =
+          ensureExecutingTaskCompleted &amp;&amp;
+          _workers.values.where((w) =&gt; !w.idle).isNotEmpty;
+      final awaitTaskQueue = ensureTaskQueueEmpty &amp;&amp; _taskQueue.isNotEmpty;
+      if (_resultPort == null || buzy || awaitTaskQueue) {
+        await Future.delayed(Duration(milliseconds: 100));
+        continue;
+      }
+      break;
+    }
+
+    _resultPort!.close();
+    _idleWorkerController.close();
+    myprint('$name closed');
+  }
+}
+
+// 13a
+class Worker {
+  final Isolate isolate;
+  final SendPort sendPort;
+  bool idle = true;
+  Completer? completer;
+
+  Worker(this.isolate, this.sendPort);
+}
+
+// 12a
+void workerEntryPoint((int workerId, SendPort resultPort) message) {
+  final workerReceivePort = ReceivePort();
+  final workerId = message.$1;
+  final resultPort = message.$2;
+  resultPort.send((workerId, workerReceivePort.sendPort));
+
+  workerReceivePort.listen((data) async {
+    if (data case TaskData taskData) {
+      try {
+        var result = taskData.task.call(taskData.data);
+        resultPort.send((workerId, true, result));
+      } catch (e) {
+        resultPort.send((workerId, false, e));
+      }
+    }
+  });
+}
+</code></pre>
+<ol>
+<li><code>add</code> 是一个全局函数，用来模拟一个计算任务。</li>
+<li><code>myprint</code> 是一个辅助函数，用来打印一些日志，方便分析（在生产环境中用 <code>logger</code> 包）。</li>
+<li><code>main</code> 函数启用了一个 <code>WorkerPool</code>（<code>pool</code>，<code>size=3</code>表示将启用 3个<code>Worker Isolate</code>），随后等待1秒钟，让其有充分的时间初始化（方便演示）。</li>
+<li><code>main isolate</code> 向 <code>pool</code> 连续提交 <code>n</code>（此处<code>n=9</code>）个计算任务，并等待结果。</li>
+<li>打印结果集。</li>
+<li>关闭 <code>pool</code>，释放相关资源。</li>
+<li><code>TaskData</code> 代表了待执行任务，此处简单地封装了一个函数<code>task</code>及其需要的参数<code>data</code>。</li>
+<li><code>size</code> 表示 <code>Worker Isolate</code> 的个数。</li>
+<li><code>_workers</code> 形式上是一个Map（<code>workerId-&gt;Worker</code>），是Worker isolate及其状态（闲/忙）的列表。</li>
+<li><code>_taskQueue</code> 待执行任务队列，其成员的数据类型是 <code>Record (TaskData, Completer)</code>。</li>
+<li><code>_idleWorkerController</code> 是空闲 <code>worker</code> 的一个 <code>Stream</code>，用来实现响应式（Reactive）任务调度（及时撮合<code>task</code>与<code>worker</code>）。</li>
+<li>启动 <code>Worker Isolate</code> ，建立<code>WorkerPool</code>与<code>Worker</code>的双向通信，顶级函数 <code>workerEntryPoint</code> 是<code>Worker</code>的执行入口。</li>
+<li>处理 <code>Worker Isolate</code> 发来的消息，根据消息类型分别处理：a. <code> (int workerId, SendPort workerPort)</code> ，对应通信握手；b. <code>(int workerId, bool ok, dynamic result)</code>，对应计算结果。</li>
+<li><code>_handleResult</code>做了两件事：首先满足了调用方的 Future，然后立即通过 <code>_idleWorkerController</code> 宣告 Worker 可用。这正是 Reactive 编程核心：数据流动驱动逻辑执行。</li>
+<li><code>_idleWorkerController.listen()</code> 监听空闲Worker事件，及时分发任务。</li>
+<li>分发任务：将任务交给<code>Worker Isolate</code>去执行。</li>
+<li><code>submit()</code> 向 <code>WorkerPool</code> 提交任务。</li>
+<li>关闭 <code>WorkerPool</code>，释放相关资源。</li>
+</ol>
+<h2 id="优雅关闭释放资源"><a class="header" href="#优雅关闭释放资源">优雅关闭（释放资源）</a></h2>
+<p>现在让我们把视线聚焦在 <code>WorkerPool.close()</code> 方法。</p>
+<pre><code class="language-dart">  // 18
+  Future close({
+    bool ensureExecutingTaskCompleted = true,
+    bool ensureTaskQueueEmpty = true,
+  }) async {
+    if (_closed) return;
+    _closed = true;
+
+    // Waiting to complete
+    while (true) {
+      final buzy =
+          ensureExecutingTaskCompleted &amp;&amp;
+          _workers.values.where((w) =&gt; !w.idle).isNotEmpty;
+      final awaitTaskQueue = ensureTaskQueueEmpty &amp;&amp; _taskQueue.isNotEmpty;
+      if (_resultPort == null || buzy || awaitTaskQueue) {
+        await Future.delayed(Duration(milliseconds: 100));
+        continue;
+      }
+      break;
+    }
+
+    _resultPort!.close();
+    _idleWorkerController.close();
+    myprint('$name closed');
+  }
+</code></pre>
+<p>目前代码主要存在如下问题：</p>
+<ul>
+<li>
+<p><strong><code>while(true)</code>死循环</strong>：默认参数情况下，如果某个 Isolate 内部的任务永远不返回，<code>close()</code> 也会永远卡住。考虑增加一个 <code>timeout</code> 参数，如果超过指定时间<code>_taskQueue</code>还没清空，<code>强制执行后面的</code>close<code>逻辑</code>（跳出 <code>while</code> 循环）。</p>
+</li>
+<li>
+<p><strong>Isolate 的销毁</strong>：目前只是关闭了<code>WorkerPool</code> 的 <code>ReceivePort</code> （<code>_resultPort</code>），<code>Worker Isolate</code>进程其实还在运行（虽然没有新任务了）。在 close 的最后，应该调用 <code>worker.isolate.kill() </code>来释放系统线程资源。</p>
+</li>
+<li>
+<p><strong>Completer 的善后</strong>：如果用户选择了 <code>ensureTaskQueueEmpty: false</code>，<code>_taskQueue</code> 中剩余任务的 <code>Completer</code> 应该手动 <code>completeError()</code>，否则调用方的 <code>await</code> 会永久挂起。</p>
+</li>
+</ul>
+<p>作为练习，请读者针对以上问题完善 <code>WorkerPool.close()</code> 。</p>
 <h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
 <ul>
 <li>https://dart.dev/language/isolates</li>
@@ -180,7 +517,7 @@
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../ch08/dartpl0801.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ch07/dartpl0708.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -194,7 +531,7 @@
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../ch08/dartpl0801.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ch07/dartpl0708.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

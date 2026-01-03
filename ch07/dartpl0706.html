@@ -173,8 +173,7 @@
 </ul>
 <h2 id="isolateexit"><a class="header" href="#isolateexit"><code>Isolate.exit()</code></a></h2>
 <p>试想你要解析一个巨大的JSON字符串（如50MB），你启用一个Worker Isolate来解析它：Main Isolate将JSON字符串的文件路径或HTTP URL发给 Worker Isolate，后者将解析结果（<code>bigMap</code>）传回。此类应用场景正是Dart零拷贝的用武之地。我们先来看一下零拷贝方案的时序图。</p>
-<pre class="mermaid">%%{init: {'themeVariables': {'actorBkg': '#673AB7'} }}%%
-sequenceDiagram
+<pre class="mermaid">sequenceDiagram
 	  autonumber
     participant M as Main Isolate
     participant FS as File System / Network
@@ -311,8 +310,7 @@ void worker(SendPort mainSendPort) {
   });
 }
 </code></pre>
-<pre class="mermaid">%%{init: {'themeVariables': {'actorBkg': '#673AB7'} }}%%
-sequenceDiagram
+<pre class="mermaid">sequenceDiagram
     autonumber
     participant M as Main Isolate
     participant W as Worker Isolate

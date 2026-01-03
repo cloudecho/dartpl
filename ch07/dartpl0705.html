@@ -165,7 +165,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="isolate-基础应用篇"><a class="header" href="#isolate-基础应用篇">Isolate 基础应用篇</a></h1>
-<p>按使用场景（是简单的计算还是长期的后台任务）的不同，有三种主流的创建方式：</p>
+<p>按使用场景（是简单的计算还是长期的后台任务）的不同，Isolate有三种主流的创建方式：</p>
 <ul>
 <li><code>Isolate.run()</code>（单次轻量）：Dart会自动处理 Isolate 的创建、参数传递、结果返回以及最后的销毁</li>
 <li><code>Isolate.spawn()</code>（常驻/双向通信）：如果你需要一个常驻的后台服务</li>
@@ -220,8 +220,7 @@ int heavyTask(int count) {
 </pre>
 <h3 id="单向通信生产-消费"><a class="header" href="#单向通信生产-消费">单向通信（“生产-消费”）</a></h3>
 <p>在单向通信（“生产-消费”）模式中，Main Isolate 充当“听众” （即数据的消费者），Worker Isolate 充当数据的“生产者”。</p>
-<pre class="mermaid">%%{init: {'themeVariables': {'actorBkg': '#673AB7'} }}%%
-sequenceDiagram
+<pre class="mermaid">sequenceDiagram
 	autonumber
     participant M as Main Isolate
     participant W as Worker Isolate
@@ -293,10 +292,10 @@ void entryPoint(SendPort sendPort) async {
 <li>处理worker发来的消息；</li>
 <li><code>receivePort.close()</code> 释放work Isolate相关资源，最终work Isolate终止。</li>
 </ol>
+<p><em>最佳实践</em>： <code>Isolate.spawn()</code> 必须指向一个顶级函数或静态方法（如此例中的 <code>entryPoint()</code>），这是为了满足跨线程（<code>Isolate</code>）序列化的要求。</p>
 <h3 id="双向通信"><a class="header" href="#双向通信">双向通信</a></h3>
 <p>我们在理解了单向通信模式之后，就不难理解双向通信模式。main isolate要想发消息给work isolate，必须通过worker的SendPort，因此我们要设法将worker的SendPort传递给main isolate。在<code>entrypoint</code> 函数中，worker调用<code>mainRP.send(...)</code>即可实现这一点（<code>mainRP</code>即main isolate的ReceivePort）。</p>
-<pre class="mermaid">%%{init: {'themeVariables': {'actorBkg': '#673AB7'} }}%%
-sequenceDiagram
+<pre class="mermaid">sequenceDiagram
     autonumber
     participant M as Main Isolate
     participant W as Worker Isolate
@@ -459,14 +458,25 @@ int heavyTask(int count) {
 }
 </code></pre>
 <p><code>compute()</code> 函数第一个入参数是回调函数（callback），第二入参将传递给callback（作为callback的入参）。为保持接口简洁，这里的callback只能有一个入参，如果你要传递多个参数，可以将这些参数打包成Record或Map。</p>
+<h2 id="跨-isolate-传递数据"><a class="header" href="#跨-isolate-传递数据">跨 Isolate 传递数据</a></h2>
+<p>在 Dart 中，跨 Isolate 传递数据的机制被称为消息传递（Message Passing）。为了保证内存隔离的安全，Dart 限制了可以通过 SendPort 发送的对象类型。</p>
+<p>以下是根据 Dart 官方文档整理的跨 Isolate 传递数据类型表：</p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: left">类别</th><th style="text-align: left">具体数据类型</th><th style="text-align: left">说明</th></tr></thead><tbody>
+<tr><td style="text-align: left"><strong>基础类型</strong></td><td style="text-align: left"><code>Null</code>, <code>bool</code>, <code>int</code>, <code>double</code>, <code>String</code></td><td style="text-align: left">最常用的基础数据，直接支持。</td></tr>
+<tr><td style="text-align: left"><strong>集合类型</strong></td><td style="text-align: left"><code>List</code>, <code>Map</code>, <code>Set</code></td><td style="text-align: left">容器内的元素也必须是此表中的可传递类型。</td></tr>
+<tr><td style="text-align: left"><strong>二进制数据</strong></td><td style="text-align: left"><code>TypedData</code> (如 <code>Uint8List</code> 等)</td><td style="text-align: left">效率极高，支持通过内存移交（Transfer）机制处理。</td></tr>
+<tr><td style="text-align: left"><strong>通信对象</strong></td><td style="text-align: left"><code>SendPort</code></td><td style="text-align: left">允许发送一个端口给另一个 Isolate，实现双向通信。</td></tr>
+<tr><td style="text-align: left"><strong>函数</strong></td><td style="text-align: left"><strong>顶级函数</strong> 或 <strong>静态方法</strong></td><td style="text-align: left">必须是全局可见的，不能是捕获了上下文的闭包或实例方法。</td></tr>
+<tr><td style="text-align: left"><strong>系统对象</strong></td><td style="text-align: left"><code>Capability</code>, <code>RegExp</code>, <code>StackTrace</code></td><td style="text-align: left">Dart 内部定义的特殊支持对象。</td></tr>
+<tr><td style="text-align: left"><strong>自定义对象</strong></td><td style="text-align: left"><strong>仅限 <code>Isolate.exit()</code> 场景</strong></td><td style="text-align: left">在普通 <code>send</code> 中不支持，但在退出 Isolate 时可移交内存所有权。</td></tr>
+</tbody></table>
+</div>
+<p><strong>注意</strong>： 当你发送一个集合（如 List）时，Dart 实际上是在目标 Isolate 中创建了一个深拷贝。这意味着在子 Isolate 中修改该 List，不会影响主 Isolate 中的原始数据。唯一的例外是使用 <code>Isolate.exit()</code> 。</p>
 <h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
 <ul>
-<li>
-<p><a href="https://dart.dev/articles/event-loop/">Dart asynchronous programming: Isolates and event loops</a></p>
-</li>
-<li>
-<p>https://api.dart.dev/dart-isolate/Isolate-class.html</p>
-</li>
+<li><a href="https://dart.dev/articles/event-loop/">Dart asynchronous programming: Isolates and event loops</a></li>
+<li>https://dart.dev/language/isolates</li>
+<li>https://api.dart.dev/dart-isolate/Isolate-class.html</li>
 </ul>
 
                     </main>

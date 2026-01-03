@@ -6181,6 +6181,93 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
     end
 </pre>
 <p>Isolate 这种设计让 Dart 能够实现 “无停顿垃圾回收”。因为每个 Isolate 的 GC 是独立的，当子 Isolate 在后台清理垃圾时，不会阻塞主 Isolate 的 UI 渲染，这正是 Flutter 保持流畅（60/120 FPS）的底层秘诀之一。</p>
+<h2 id="isolate"><a class="header" href="#isolate">Isolate</a></h2>
+<p>每一个 Isolate 到底初始化了什么？ 当你 spawn 一个新的 Isolate 时，Dart VM 实际上做了以下工作：</p>
+<ul>
+<li>分配独立的堆内存：用于存放该 Isolate 产生的对象。</li>
+<li>创建Event Loop（事件循环）：每个 Isolate 都有自己的事件队列和调度器。</li>
+<li>创建调用栈（Stack）：独立的执行上下文。</li>
+<li>独立的垃圾回收器（Private GC）：Isolate A 在进行 GC 时，不会停止 Isolate B 的运行（即没有全系统的 Stop-the-world）。</li>
+</ul>
+<pre class="mermaid">graph TD
+    %% 全局容器
+    subgraph Isolate_Internal [&quot;Dart Isolate Instance&quot;]
+        direction TB
+
+        %% 内存空间
+        subgraph Memory_Space [&quot;私有内存堆 (Private Heap)&quot;]
+            Objects([对象/实例])
+            GC[垃圾回收器]
+        end
+
+        %% 事件驱动核心
+        subgraph Event_System [&quot;事件处理系统 (Event Loop System)&quot;]
+            MQ@{shape: das, label: &quot;微任务队列 Microtask Queue&quot; }
+            EQ@{shape: das, label: &quot;事件队列 Event Queue&quot; }
+            Loop((⚙️ 事件循环 Event Loop))
+        end
+
+        %% 运行栈
+        Stack[[调用栈 Stack]]
+
+        %% 外部接口
+        subgraph Ports [&quot;通信网关 (Communication)&quot;]
+            RP[ReceivePort 接收端口]
+            SP[SendPort 发送端口]
+        end
+    end
+
+    %% 连接逻辑
+    Loop --&gt; MQ
+    MQ --&gt;|处理| Stack
+    Loop --&gt; EQ
+    EQ --&gt;|处理| Stack
+    Stack --&gt;|修改/读取| Objects
+    
+    %% 通信逻辑
+    External((外部其他 Isolate)) &lt;-.-&gt;|消息传递/数据拷贝| Ports
+    RP --&gt;|触发事件| EQ
+
+    %% 样式美化
+    style Isolate_Internal fill:#f5f5f5,stroke:#333,stroke-width:2px
+    style Memory_Space fill:#e3f2fd,stroke:#1565c0
+    style Event_System fill:#fff3e0,stroke:#e65100
+    style Ports fill:#f1f8e9,stroke:#33691e
+    style Loop fill:#673AB7,stroke:#311B92,stroke-width:2px,color:#fff
+    style MQ fill:#FFF9C4,stroke:#FBC02D
+    style EQ fill:#E1F5FE,stroke:#0288D1
+    style Stack fill:#4CAF50,stroke:#1B5E20,color:#fff
+</pre>
+<h3 id="isolate-生命周期"><a class="header" href="#isolate-生命周期">Isolate 生命周期</a></h3>
+<p>在 Dart 中，Isolate 的生命周期是一个闭环的异步过程。由于 Isolate 之间不共享内存，其状态切换高度依赖于 <strong>事件循环（Event Loop）<strong>和</strong>通信端口（Port）</strong>。</p>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Spawning: Isolate.spawn()
+    
+    state Spawning {
+        [*] --&gt; Allocating: 分配独立堆内存
+        Allocating --&gt; Loading: 加载代码与入口函数
+    }
+
+    Spawning --&gt; Running: entryPoint（入口函数）开始执行
+    
+    state Running {
+        [*] --&gt; EventLoop
+        EventLoop --&gt; MicrotaskQueue: 处理微任务
+        MicrotaskQueue --&gt; EventQueue: 处理事件/消息
+        EventQueue --&gt; EventLoop: 循环往复
+        
+        state &quot;Active (Listening)&quot; as Active
+        EventLoop --&gt; Active: ReceivePort 开启
+        Active --&gt; EventLoop: 收到消息
+    }
+
+    Running --&gt; Exiting: entryPoint执行完毕 &amp;&amp; 无活跃端口
+    Running --&gt; Exiting: 收到 kill 信号
+    Running --&gt; ErrorState: 未捕获的异常
+    
+    ErrorState --&gt; Exiting: 触发 ErrorListener
+    Exiting --&gt; [*]: 资源回收/内存释放
+</pre>
 <h2 id="event-loop"><a class="header" href="#event-loop">Event Loop</a></h2>
 <p>Isolate与Event Loop是密不可分的，每个Isolate都有唯一的一个Event Loop与之对应。Isolate 是物理边界，而 Event Loop 是运行逻辑。</p>
 <pre class="mermaid">graph TD
@@ -6327,7 +6414,7 @@ sequenceDiagram
 </li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="isolate-基础应用篇"><a class="header" href="#isolate-基础应用篇">Isolate 基础应用篇</a></h1>
-<p>按使用场景（是简单的计算还是长期的后台任务）的不同，有三种主流的创建方式：</p>
+<p>按使用场景（是简单的计算还是长期的后台任务）的不同，Isolate有三种主流的创建方式：</p>
 <ul>
 <li><code>Isolate.run()</code>（单次轻量）：Dart会自动处理 Isolate 的创建、参数传递、结果返回以及最后的销毁</li>
 <li><code>Isolate.spawn()</code>（常驻/双向通信）：如果你需要一个常驻的后台服务</li>
@@ -6382,8 +6469,7 @@ int heavyTask(int count) {
 </pre>
 <h3 id="单向通信生产-消费"><a class="header" href="#单向通信生产-消费">单向通信（“生产-消费”）</a></h3>
 <p>在单向通信（“生产-消费”）模式中，Main Isolate 充当“听众” （即数据的消费者），Worker Isolate 充当数据的“生产者”。</p>
-<pre class="mermaid">%%{init: {'themeVariables': {'actorBkg': '#673AB7'} }}%%
-sequenceDiagram
+<pre class="mermaid">sequenceDiagram
 	autonumber
     participant M as Main Isolate
     participant W as Worker Isolate
@@ -6455,10 +6541,10 @@ void entryPoint(SendPort sendPort) async {
 <li>处理worker发来的消息；</li>
 <li><code>receivePort.close()</code> 释放work Isolate相关资源，最终work Isolate终止。</li>
 </ol>
+<p><em>最佳实践</em>： <code>Isolate.spawn()</code> 必须指向一个顶级函数或静态方法（如此例中的 <code>entryPoint()</code>），这是为了满足跨线程（<code>Isolate</code>）序列化的要求。</p>
 <h3 id="双向通信"><a class="header" href="#双向通信">双向通信</a></h3>
 <p>我们在理解了单向通信模式之后，就不难理解双向通信模式。main isolate要想发消息给work isolate，必须通过worker的SendPort，因此我们要设法将worker的SendPort传递给main isolate。在<code>entrypoint</code> 函数中，worker调用<code>mainRP.send(...)</code>即可实现这一点（<code>mainRP</code>即main isolate的ReceivePort）。</p>
-<pre class="mermaid">%%{init: {'themeVariables': {'actorBkg': '#673AB7'} }}%%
-sequenceDiagram
+<pre class="mermaid">sequenceDiagram
     autonumber
     participant M as Main Isolate
     participant W as Worker Isolate
@@ -6621,14 +6707,25 @@ int heavyTask(int count) {
 }
 </code></pre>
 <p><code>compute()</code> 函数第一个入参数是回调函数（callback），第二入参将传递给callback（作为callback的入参）。为保持接口简洁，这里的callback只能有一个入参，如果你要传递多个参数，可以将这些参数打包成Record或Map。</p>
+<h2 id="跨-isolate-传递数据"><a class="header" href="#跨-isolate-传递数据">跨 Isolate 传递数据</a></h2>
+<p>在 Dart 中，跨 Isolate 传递数据的机制被称为消息传递（Message Passing）。为了保证内存隔离的安全，Dart 限制了可以通过 SendPort 发送的对象类型。</p>
+<p>以下是根据 Dart 官方文档整理的跨 Isolate 传递数据类型表：</p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: left">类别</th><th style="text-align: left">具体数据类型</th><th style="text-align: left">说明</th></tr></thead><tbody>
+<tr><td style="text-align: left"><strong>基础类型</strong></td><td style="text-align: left"><code>Null</code>, <code>bool</code>, <code>int</code>, <code>double</code>, <code>String</code></td><td style="text-align: left">最常用的基础数据，直接支持。</td></tr>
+<tr><td style="text-align: left"><strong>集合类型</strong></td><td style="text-align: left"><code>List</code>, <code>Map</code>, <code>Set</code></td><td style="text-align: left">容器内的元素也必须是此表中的可传递类型。</td></tr>
+<tr><td style="text-align: left"><strong>二进制数据</strong></td><td style="text-align: left"><code>TypedData</code> (如 <code>Uint8List</code> 等)</td><td style="text-align: left">效率极高，支持通过内存移交（Transfer）机制处理。</td></tr>
+<tr><td style="text-align: left"><strong>通信对象</strong></td><td style="text-align: left"><code>SendPort</code></td><td style="text-align: left">允许发送一个端口给另一个 Isolate，实现双向通信。</td></tr>
+<tr><td style="text-align: left"><strong>函数</strong></td><td style="text-align: left"><strong>顶级函数</strong> 或 <strong>静态方法</strong></td><td style="text-align: left">必须是全局可见的，不能是捕获了上下文的闭包或实例方法。</td></tr>
+<tr><td style="text-align: left"><strong>系统对象</strong></td><td style="text-align: left"><code>Capability</code>, <code>RegExp</code>, <code>StackTrace</code></td><td style="text-align: left">Dart 内部定义的特殊支持对象。</td></tr>
+<tr><td style="text-align: left"><strong>自定义对象</strong></td><td style="text-align: left"><strong>仅限 <code>Isolate.exit()</code> 场景</strong></td><td style="text-align: left">在普通 <code>send</code> 中不支持，但在退出 Isolate 时可移交内存所有权。</td></tr>
+</tbody></table>
+</div>
+<p><strong>注意</strong>： 当你发送一个集合（如 List）时，Dart 实际上是在目标 Isolate 中创建了一个深拷贝。这意味着在子 Isolate 中修改该 List，不会影响主 Isolate 中的原始数据。唯一的例外是使用 <code>Isolate.exit()</code> 。</p>
 <h2 id="reference-2"><a class="header" href="#reference-2">Reference</a></h2>
 <ul>
-<li>
-<p><a href="https://dart.dev/articles/event-loop/">Dart asynchronous programming: Isolates and event loops</a></p>
-</li>
-<li>
-<p>https://api.dart.dev/dart-isolate/Isolate-class.html</p>
-</li>
+<li><a href="https://dart.dev/articles/event-loop/">Dart asynchronous programming: Isolates and event loops</a></li>
+<li>https://dart.dev/language/isolates</li>
+<li>https://api.dart.dev/dart-isolate/Isolate-class.html</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="零拷贝"><a class="header" href="#零拷贝">零拷贝</a></h1>
 <p>Dart的零拷贝与Java的零拷贝指向的是完全不同的应用场景。熟悉Java的朋友知道Java 的零拷贝主要解决内核态（Kernel Space）与用户态（User Space）之间反复的数据拷贝开销。而Dart 的零拷贝是为了省去 Isolate 之间内存绝对隔离带来的通信开销。</p>
@@ -6639,8 +6736,7 @@ int heavyTask(int count) {
 </ul>
 <h2 id="isolateexit"><a class="header" href="#isolateexit"><code>Isolate.exit()</code></a></h2>
 <p>试想你要解析一个巨大的JSON字符串（如50MB），你启用一个Worker Isolate来解析它：Main Isolate将JSON字符串的文件路径或HTTP URL发给 Worker Isolate，后者将解析结果（<code>bigMap</code>）传回。此类应用场景正是Dart零拷贝的用武之地。我们先来看一下零拷贝方案的时序图。</p>
-<pre class="mermaid">%%{init: {'themeVariables': {'actorBkg': '#673AB7'} }}%%
-sequenceDiagram
+<pre class="mermaid">sequenceDiagram
 	  autonumber
     participant M as Main Isolate
     participant FS as File System / Network
@@ -6777,8 +6873,7 @@ void worker(SendPort mainSendPort) {
   });
 }
 </code></pre>
-<pre class="mermaid">%%{init: {'themeVariables': {'actorBkg': '#673AB7'} }}%%
-sequenceDiagram
+<pre class="mermaid">sequenceDiagram
     autonumber
     participant M as Main Isolate
     participant W as Worker Isolate
@@ -6819,12 +6914,452 @@ sequenceDiagram
 <li>https://api.dart.dev/dart-isolate/Isolate-class.html</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="worker-pool-isolate-池"><a class="header" href="#worker-pool-isolate-池">Worker Pool （Isolate 池）</a></h1>
-<h2 id="isolate-生命周期"><a class="header" href="#isolate-生命周期">Isolate 生命周期</a></h2>
+<p>Dart Worker Pool （Isolate 池）类似于Java中的线程池。在 Dart 中，Spawn 一个 Isolate 比创建线程更贵（因为它要初始化独立的堆内存）。使用Worker Pool可以 <em>避免冷启动开销</em> 和 <em>控制内存配额</em>。</p>
+<ul>
+<li>
+<p><em>避免冷启动开销</em>：如果你的应用需要频繁处理小任务（如每隔 100ms 滤镜一张图片），不断地 Isolate.run 会导致 CPU 在频繁的创建/销毁中空转。</p>
+</li>
+<li>
+<p><em>控制内存配额</em>：由于每个 Isolate 都有独立的堆内存，无节制地开启 Isolate 会迅速导致 OOM（内存溢出）。池化可以强制将并发数限制在 CPU 核心数左右。</p>
+</li>
+</ul>
+<p>在 Dart 的世界里，池化不只是为了复用线程，更是为了维持一组‘热就绪’的隔离空间。如果你在做音视频剪辑、大型游戏逻辑解析，Isolate 池就是你的后台工厂。</p>
+<h2 id="实现方案"><a class="header" href="#实现方案">实现方案</a></h2>
+<p><code>Worer Pool</code> 需要维持一组长期存活的后台 <code>Isolate</code>，并维护它们的 <code>SendPort</code>，以便向其分发任务。当 <code>Worker Pool</code> 收到一个任务（<code>Task</code>）时，它分发给空闲的<code>Worker</code>，如果此时所有的<code>Worker</code>都忙，就将任务放入待执行队列（<code>TaskQueue</code>）。<code>Worker Pool</code>的核心指责就是尽快撮合 <code>Task</code> 与 <code>Worker</code>，一旦<code>Worker</code>空闲，它就去<code>TaskQueue</code>里取出任务交给<code>Worker</code>去执行。</p>
+<p>下面是该方案的 <em>时序图</em> 和 <em>类图</em> 。</p>
+<pre class="mermaid">sequenceDiagram
+    autonumber
+    participant Client as main(Task Submitter)
+    participant Pool as Worker Pool (Manager)
+    participant W as Worker (Isolate 0..N)
+
+    Note over Pool, W: --- 初始化 (建立长存连接) ---
+    Pool-&gt;&gt;W: 创建并保持 Isolate 存活
+    W--&gt;&gt;Pool: 回传通信凭证 (SendPort)
+    Note over Pool: 维护 Worker 状态列表
+
+    Note over Client, W: --- 场景 A: 任务处理 (直接执行) ---
+    Client-&gt;&gt;Pool: submit(任务 1)
+    Pool-&gt;&gt;W: 寻找空闲工人并派发
+    W-&gt;&gt;W: 执行计算
+    W--&gt;&gt;Pool: 返回结果 1
+    Pool-&gt;&gt;Client: 交付结果 1 (Future 完成)
+
+    Note over Client, W: --- 场景 B: 负载均衡 (排队与复用) ---
+    Client-&gt;&gt;Pool: submit(任务 2)
+    Client-&gt;&gt;Pool: submit(任务 3)
+    Note over Pool: (此时工人忙碌，内部暂存任务)
+    W--&gt;&gt;Pool: (工人忙完任务 2) 返回结果 2
+    Pool-&gt;&gt;Client: 交付结果 2
+    Pool-&gt;&gt;W: 自动派发暂存的任务 3
+    W--&gt;&gt;Pool: 返回结果 3
+    Pool-&gt;&gt;Client: 交付结果 3
+</pre>
+<pre class="mermaid">classDiagram
+    class TaskData {
+        +Function task
+        +Record data
+        +TaskData(Function task, Record data)
+    }
+
+    class Worker {
+        +Isolate isolate
+        +SendPort sendPort
+        +bool idle
+        +Completer? completer
+        +Worker(Isolate isolate, SendPort sendPort)
+    }
+
+    class WorkerPool {
+        +int size
+        -Map~int, Worker~ _workers
+        -Queue~~ _taskQueue
+        -StreamController _idleWorkerController
+        -ReceivePort? _resultPort
+        -bool _closed
+        
+        +WorkerPool(int size)
+        +Future~T~ submit&amp;lt;T&amp;gt;(TaskData taskData)
+        +Future~void~ close()
+    }
+
+    class GlobalFunctions {
+        &lt;&lt;Global&gt;&gt;
+        +void workerEntryPoint(Record message)
+    }
+
+    WorkerPool &quot;1&quot; *-- &quot;0..*&quot; Worker : 维护并调度
+    WorkerPool ..&gt; TaskData : 处理任务请求（submit）
+    Worker ..&gt; TaskData : 通过 SendPort 发送任务给 Worker Isolate
+    Worker ..&gt; GlobalFunctions : Isolate 运行入口
+</pre>
+<p>该方案的示例代码如下。</p>
+<pre><code class="language-dart">// ex771.dart
+import 'dart:async';
+import 'dart:collection';
+import 'dart:isolate';
+
+int add((int, int) args) =&gt; args.$1 + args.$2; // 1
+
+// 2
+final watch = Stopwatch()..start();
+var count = 0;
+void myprint(o) =&gt; print('out${count++} ${watch.elapsed.inMilliseconds}ms: $o');
+
+void main() async {
+  var pool = WorkerPool(3); // 3
+  await Future.delayed(Duration(seconds: 1)); // 3a
+
+  const n = 9; // 4
+  var results = await Future.wait([
+    for (var x = 1; x &lt;= n; x++) pool.submit(TaskData(add, (x, x))),
+  ]);
+  myprint(results); // 5
+
+  await pool.close(); // 6
+
+  /* An example output:
+out0 0ms: main: 🤝 pool-worker-0 握手成功
+out1 11ms: main: 🤝 pool-worker-1 握手成功
+out2 18ms: main: 🤝 pool-worker-2 握手成功
+out3 989ms: pool-worker-1 returns 4
+out4 994ms: pool-worker-0 returns 2
+out5 994ms: pool-worker-2 returns 6
+out6 995ms: pool-worker-1 returns 8
+out7 995ms: pool-worker-0 returns 10
+out8 995ms: pool-worker-2 returns 12
+out9 995ms: pool-worker-1 returns 14
+out10 995ms: pool-worker-0 returns 16
+out11 995ms: pool-worker-2 returns 18
+out12 997ms: [2, 4, 6, 8, 10, 12, 14, 16, 18]
+out13 1111ms: closed
+ */
+}
+
+// 7
+class TaskData {
+  final Function task;
+  final Record data;
+  TaskData(this.task, this.data);
+}
+
+class WorkerPool {
+  final String name;
+  final int size; // 8
+  final _workers = &lt;int, Worker&gt;{}; // 9
+  final _taskQueue = Queue&lt;(TaskData, Completer)&gt;(); // 10
+  final _idleWorkerController = StreamController(); // 11
+
+  ReceivePort? _resultPort;
+  var _closed = false;
+
+  String _workerName(int id) =&gt; '$name-worker-$id';
+
+  WorkerPool(int size) : this.named(size, 'pool');
+
+  WorkerPool.named(this.size, this.name) {
+    _init();
+    _start();
+  }
+
+  Future&lt;void&gt; _init() async {
+    final resultPort = ReceivePort();
+    final isolates = &lt;int, Isolate&gt;{};
+    // 12
+    for (int workerId = 0; workerId &lt; size; workerId++) {
+      isolates[workerId] = await Isolate.spawn(workerEntryPoint, (
+        workerId,
+        resultPort.sendPort,
+      ), debugName: _workerName(workerId));
+    }
+    // 13
+    resultPort.listen((message) {
+      // 13b
+      if (message case (int workerId, bool ok, dynamic result)) {
+        _handleResult(workerId, ok, result);
+      } // 13a
+      else if (message case (int workerId, SendPort workerPort)) {
+        _workers[workerId] = Worker(isolates[workerId]!, workerPort);
+        myprint('main: 🤝 ${_workerName(workerId)} 握手成功');
+      }
+    });
+
+    _resultPort = resultPort;
+  }
+
+  // 14
+  void _handleResult(int workerId, bool ok, dynamic result) {
+    myprint('${_workerName(workerId)} returns $result');
+    final worker = _workers[workerId]!;
+    if (ok) {
+      worker.completer?.complete(result);
+    } else {
+      worker.completer?.completeError(result);
+    }
+    worker.completer = null;
+    _idleWorkerController.sink.add(worker);
+  }
+
+  void _start() {
+    // 15
+    _idleWorkerController.stream.listen((worker) {
+      if (_taskQueue.isNotEmpty) {
+        final (task, completer) = _taskQueue.removeFirst();
+        _execute(worker, task, completer);
+      } else {
+        worker.idle = true;
+      }
+    });
+  }
+
+  // 16
+  void _execute(worker, TaskData taskData, Completer completer) {
+    worker.idle = false;
+    worker.completer = completer;
+    worker.sendPort.send(taskData);
+  }
+
+  // 17
+  Future&lt;T&gt; submit&lt;T&gt;(TaskData taskData) {
+    final completer = Completer&lt;T&gt;();
+    if (_closed) {
+      completer.completeError('worker pool closed');
+    } else {
+      var worker = _workers.values.where((w) =&gt; w.idle).firstOrNull;
+      if (worker == null) {
+        _taskQueue.add((taskData, completer));
+      } else {
+        _execute(worker, taskData, completer);
+      }
+    }
+    return completer.future;
+  }
+
+  // 18
+  Future close({
+    bool ensureExecutingTaskCompleted = true,
+    bool ensureTaskQueueEmpty = true,
+  }) async {
+    if (_closed) return;
+    _closed = true;
+
+    // Waiting to complete
+    while (true) {
+      final buzy =
+          ensureExecutingTaskCompleted &amp;&amp;
+          _workers.values.where((w) =&gt; !w.idle).isNotEmpty;
+      final awaitTaskQueue = ensureTaskQueueEmpty &amp;&amp; _taskQueue.isNotEmpty;
+      if (_resultPort == null || buzy || awaitTaskQueue) {
+        await Future.delayed(Duration(milliseconds: 100));
+        continue;
+      }
+      break;
+    }
+
+    _resultPort!.close();
+    _idleWorkerController.close();
+    myprint('$name closed');
+  }
+}
+
+// 13a
+class Worker {
+  final Isolate isolate;
+  final SendPort sendPort;
+  bool idle = true;
+  Completer? completer;
+
+  Worker(this.isolate, this.sendPort);
+}
+
+// 12a
+void workerEntryPoint((int workerId, SendPort resultPort) message) {
+  final workerReceivePort = ReceivePort();
+  final workerId = message.$1;
+  final resultPort = message.$2;
+  resultPort.send((workerId, workerReceivePort.sendPort));
+
+  workerReceivePort.listen((data) async {
+    if (data case TaskData taskData) {
+      try {
+        var result = taskData.task.call(taskData.data);
+        resultPort.send((workerId, true, result));
+      } catch (e) {
+        resultPort.send((workerId, false, e));
+      }
+    }
+  });
+}
+</code></pre>
+<ol>
+<li><code>add</code> 是一个全局函数，用来模拟一个计算任务。</li>
+<li><code>myprint</code> 是一个辅助函数，用来打印一些日志，方便分析（在生产环境中用 <code>logger</code> 包）。</li>
+<li><code>main</code> 函数启用了一个 <code>WorkerPool</code>（<code>pool</code>，<code>size=3</code>表示将启用 3个<code>Worker Isolate</code>），随后等待1秒钟，让其有充分的时间初始化（方便演示）。</li>
+<li><code>main isolate</code> 向 <code>pool</code> 连续提交 <code>n</code>（此处<code>n=9</code>）个计算任务，并等待结果。</li>
+<li>打印结果集。</li>
+<li>关闭 <code>pool</code>，释放相关资源。</li>
+<li><code>TaskData</code> 代表了待执行任务，此处简单地封装了一个函数<code>task</code>及其需要的参数<code>data</code>。</li>
+<li><code>size</code> 表示 <code>Worker Isolate</code> 的个数。</li>
+<li><code>_workers</code> 形式上是一个Map（<code>workerId-&gt;Worker</code>），是Worker isolate及其状态（闲/忙）的列表。</li>
+<li><code>_taskQueue</code> 待执行任务队列，其成员的数据类型是 <code>Record (TaskData, Completer)</code>。</li>
+<li><code>_idleWorkerController</code> 是空闲 <code>worker</code> 的一个 <code>Stream</code>，用来实现响应式（Reactive）任务调度（及时撮合<code>task</code>与<code>worker</code>）。</li>
+<li>启动 <code>Worker Isolate</code> ，建立<code>WorkerPool</code>与<code>Worker</code>的双向通信，顶级函数 <code>workerEntryPoint</code> 是<code>Worker</code>的执行入口。</li>
+<li>处理 <code>Worker Isolate</code> 发来的消息，根据消息类型分别处理：a. <code> (int workerId, SendPort workerPort)</code> ，对应通信握手；b. <code>(int workerId, bool ok, dynamic result)</code>，对应计算结果。</li>
+<li><code>_handleResult</code>做了两件事：首先满足了调用方的 Future，然后立即通过 <code>_idleWorkerController</code> 宣告 Worker 可用。这正是 Reactive 编程核心：数据流动驱动逻辑执行。</li>
+<li><code>_idleWorkerController.listen()</code> 监听空闲Worker事件，及时分发任务。</li>
+<li>分发任务：将任务交给<code>Worker Isolate</code>去执行。</li>
+<li><code>submit()</code> 向 <code>WorkerPool</code> 提交任务。</li>
+<li>关闭 <code>WorkerPool</code>，释放相关资源。</li>
+</ol>
+<h2 id="优雅关闭释放资源"><a class="header" href="#优雅关闭释放资源">优雅关闭（释放资源）</a></h2>
+<p>现在让我们把视线聚焦在 <code>WorkerPool.close()</code> 方法。</p>
+<pre><code class="language-dart">  // 18
+  Future close({
+    bool ensureExecutingTaskCompleted = true,
+    bool ensureTaskQueueEmpty = true,
+  }) async {
+    if (_closed) return;
+    _closed = true;
+
+    // Waiting to complete
+    while (true) {
+      final buzy =
+          ensureExecutingTaskCompleted &amp;&amp;
+          _workers.values.where((w) =&gt; !w.idle).isNotEmpty;
+      final awaitTaskQueue = ensureTaskQueueEmpty &amp;&amp; _taskQueue.isNotEmpty;
+      if (_resultPort == null || buzy || awaitTaskQueue) {
+        await Future.delayed(Duration(milliseconds: 100));
+        continue;
+      }
+      break;
+    }
+
+    _resultPort!.close();
+    _idleWorkerController.close();
+    myprint('$name closed');
+  }
+</code></pre>
+<p>目前代码主要存在如下问题：</p>
+<ul>
+<li>
+<p><strong><code>while(true)</code>死循环</strong>：默认参数情况下，如果某个 Isolate 内部的任务永远不返回，<code>close()</code> 也会永远卡住。考虑增加一个 <code>timeout</code> 参数，如果超过指定时间<code>_taskQueue</code>还没清空，<code>强制执行后面的</code>close<code>逻辑</code>（跳出 <code>while</code> 循环）。</p>
+</li>
+<li>
+<p><strong>Isolate 的销毁</strong>：目前只是关闭了<code>WorkerPool</code> 的 <code>ReceivePort</code> （<code>_resultPort</code>），<code>Worker Isolate</code>进程其实还在运行（虽然没有新任务了）。在 close 的最后，应该调用 <code>worker.isolate.kill() </code>来释放系统线程资源。</p>
+</li>
+<li>
+<p><strong>Completer 的善后</strong>：如果用户选择了 <code>ensureTaskQueueEmpty: false</code>，<code>_taskQueue</code> 中剩余任务的 <code>Completer</code> 应该手动 <code>completeError()</code>，否则调用方的 <code>await</code> 会永久挂起。</p>
+</li>
+</ul>
+<p>作为练习，请读者针对以上问题完善 <code>WorkerPool.close()</code> 。</p>
 <h2 id="reference-4"><a class="header" href="#reference-4">Reference</a></h2>
 <ul>
 <li>https://dart.dev/language/isolates</li>
 <li>https://api.dart.dev/dart-isolate/Isolate-class.html</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="worker-pool续1残余请求问题"><a class="header" href="#worker-pool续1残余请求问题">Worker Pool（续1）：残余请求问题</a></h1>
+<p>本节及 <a href="ch07/./dartpl0709.html">下一节</a> 是 <a href="ch07/./dartpl0707.html">上一节 Worker Pool （Isolate 池）</a> 的深度延伸。本节我们将探讨并发编程中一个棘手的边缘场景：残余请求——即那些在系统关闭瞬间仍处于传输或执行状态的残留任务。</p>
+<h2 id="残余请求问题"><a class="header" href="#残余请求问题">残余请求问题</a></h2>
+<p>在 WorkerPool 关闭时，残余请求通常以两种形式存在：</p>
+<ul>
+<li>在途请求（In-flight）：任务已离开队列（<code>_taskQueue</code>），正处在发往 Worker 的途中；</li>
+<li>执行中请求（In-progress）：Worker 已经接收并正在执行计算任务。</li>
+</ul>
+<p>我们不妨将它们分别标记为 <em><code>Q1</code></em> 和 <em><code>Q2</code>。</em></p>
+<p><em><code>Q1.</code></em> ”在途请求“要求我们在关闭 <code>_resultPort</code>之前，先关闭所有<code>worker</code>的 <code>ReceivePort</code>，以防止worker处理完任务后访问已关闭的资源（<code>resultPort</code>）。记住：永远先关闭‘输入端’，后关闭‘输出端’。</p>
+<p><em><code>Q2.</code></em> “执行中请求”要求我们考虑这样一个问题：在关闭 WorkerPool时，所有的Woker都必须处于空闲状态吗（即没有任务在执行中）？ 这就是 <code>WorkerPool.close()</code>方法中 <code>ensureExecutingTaskCompleted</code>参数存在的原因。</p>
+<h2 id="解决方案"><a class="header" href="#解决方案">解决方案</a></h2>
+<p>我们定义如下 <em>WorkerPool 优雅关闭协议</em>。</p>
+<pre class="mermaid">sequenceDiagram
+    autonumber
+    participant M as WorkerPool (Main Isolate)
+    participant W as Worker (Worker Isolate)
+
+    Note over M, W: --- 阶段 1: 拦截 Q1 (断源) ---
+    M-&gt;&gt;M: 设置 _closed = true
+    
+    par 临界竞争
+        M-&gt;&gt;W: 发送 shutdown 指令
+        M-&gt;&gt;W: 在途任务 (Q1)
+    end
+
+    Note right of W: Worker 优先处理 #shutdown
+    W-&gt;&gt;W: 自行关闭 ReceivePort
+    Note right of W: 后续抵达的 Q1 任务被自动忽略
+
+    Note over M, W: --- 阶段 2: 消化 Q2 (排空) ---
+    loop 轮询直到 busy == false
+        W-&gt;&gt;W: 继续处理执行中的 Q2 任务
+        W--&gt;&gt;M: 回传 Q2 结果
+    end
+
+    Note over M, W: --- 阶段 3: 终结 (清理) ---
+    M-&gt;&gt;M: 关闭 _resultPort
+    M-&gt;&gt;W: 执行 isolate.kill()
+    
+</pre>
+<h3 id="q1在途请求"><a class="header" href="#q1在途请求">Q1（在途请求）</a></h3>
+<p>在关闭 <code>_resultPort</code> 之前，先关闭所有<code>worker</code>的 <code>ReceivePort</code>，该如何实现这一点呢？<code>Worker</code>要想收到 <code>close</code> 指令，必须由 <code>WorkerPool</code> 发送给它，我们可以将这个<code>close</code>指令称为<code>shutdown</code>消息。</p>
+<p><em>首先定义<code>_shutdownSignal</code>常量，它表示 <code>shutdown</code>消息：</em></p>
+<pre><code class="language-dart">const _shutdownSignal = #shutdown;
+</code></pre>
+<p><em>然后修改 <code>workerEntryPoint</code>，让其处理 <code>_shutdownSignal</code>：</em></p>
+<pre><code class="language-dart">void workerEntryPoint((int workerId, SendPort resultPort) message) {
+  // ... (omitted for brevity)
+
+  workerReceivePort.listen((data) async {
+    if (data case TaskData taskData) {
+      // ... (omitted for brevity)
+    } else if (data == _shutdownSignal) {
+      workerReceivePort.close();
+      print('${Isolate.current.debugName} closed');
+    }
+  });
+}
+</code></pre>
+<p><em>最后修改<code>WorkerPoo.close()</code>方法，给Worker发送<code>_shutdownSignal</code></em>:</p>
+<pre><code class="language-dart">Future close({
+    bool ensureExecutingTaskCompleted = true,
+    bool ensureTaskQueueEmpty = true,
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
+    if (_closed) return;
+    _closed = true;
+
+    // Notify workers to shutdown
+    for (var w in _workers.values) {
+      w.sendPort.send(_shutdownSignal);
+    }
+
+    // ... (omitted for brevity)
+}
+</code></pre>
+<h3 id="q2执行中请求"><a class="header" href="#q2执行中请求">Q2（执行中请求）</a></h3>
+<p><code>WorkerPool.close()</code>方法中 <code>ensureExecutingTaskCompleted</code>参数的默认值为<code>true</code>，表示WorkerPool要等到当前所有待执行任务完成后，才会去执行close逻辑（目前的代码已实现）。
+而当<code>ensureExecutingTaskCompleted</code> 值为<code>false</code>时，表示强制结束当前所有的待执行任务，其参考实现如下。</p>
+<pre><code class="language-dart">  Future close({
+    bool ensureExecutingTaskCompleted = true,
+    bool ensureTaskQueueEmpty = true,
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
+    if (_closed) return;
+    _closed = true;
+
+    // Complete the futures
+    if (!ensureExecutingTaskCompleted) {
+      for (var w in _workers.values) {
+        if (w.completer != null &amp;&amp; !w.completer!.isCompleted) {
+          w.completer!.completeError('worker pool force closed');
+        }
+      }
+    }
+
+    // ... (omitted for brevity)
+  }  
+</code></pre>
+<h2 id="结束语"><a class="header" href="#结束语">结束语</a></h2>
+<p>本节讨论了Dart并发编程中的残余请求问题及解决方案（含代码示例），下一节将讨论 WorkerPool的最后一块拼图 ——  重启意外崩溃的 Isolate。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="worker-pool续2重启意外崩溃的-isolate"><a class="header" href="#worker-pool续2重启意外崩溃的-isolate">Worker Pool（续2）：重启意外崩溃的 Isolate</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="testgroup"><a class="header" href="#testgroup">test/group</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="测试异步代码"><a class="header" href="#测试异步代码">测试异步代码</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="mockito"><a class="header" href="#mockito">mockito</a></h1>
@@ -6833,6 +7368,7 @@ sequenceDiagram
 <div style="break-before: page; page-break-before: always;"></div><h1 id="编写dart命令行程序"><a class="header" href="#编写dart命令行程序">编写Dart命令行程序</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="编写dart服务端编程"><a class="header" href="#编写dart服务端编程">编写Dart服务端编程</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="dart-常用-package"><a class="header" href="#dart-常用-package">Dart 常用 package</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="e-dart-ffi"><a class="header" href="#e-dart-ffi">E Dart FFI</a></h1>
 
                     </main>
 
