@@ -5845,9 +5845,48 @@ out16 114ms: 4
    */
 }
 </code></pre>
+<h2 id="timeout超时"><a class="header" href="#timeout超时">Timeout（超时）</a></h2>
+<p><code>Future.timeout()</code>实例方法是一个实用的守时工具。它允许我们为一个异步操作设置一个最大容忍时间（<code>timeLimit</code>）。简单来说，它的逻辑是：“要么在规定时间内给我结果，要么我就抛出异常走人。”</p>
+<pre><code class="language-dart">// ex726.dart
+void main() async {
+  var data = await fetchData().timeout(Duration(milliseconds: 2000)); // 1
+  print(data); // Output: ok
+
+  data = await fetchData().timeout(Duration(milliseconds: 500)); // 2
+  print(data);
+  /* Output:
+Unhandled exception:
+TimeoutException after 0:00:00.500000: Future not completed
+*/
+}
+
+Future&lt;String&gt; fetchData() async {
+  // Simulate a long task
+  await Future.delayed(Duration(seconds: 1));
+  return 'ok';
+}
+</code></pre>
+<ol>
+<li><code>fetchData()</code>函数在 <code>timeLimit(2s)</code> 到达之前完成了，<code>timeout()</code>方法返回的 Future 会正常返回原任务的结果，就好像 <code>timeout()</code> 从未存在过一样。</li>
+<li><code>timeLimit(0.5s)</code>耗尽时<code>fetchData()</code>函数还没执行完，于是这一行代码抛出了<code>TimeoutException</code>。</li>
+</ol>
+<p>通过给<code>timeout()</code>提供 <code>onTimeout</code> 参数 ，可以避免遭遇<code>TimeoutException</code>。 <code>onTimeout</code> 函数返回一个超时的保底值。</p>
+<pre><code class="language-dart">// ex727.dart
+void main() async {
+  var data = await fetchData().timeout(
+    Duration(milliseconds: 500),
+    onTimeout: () =&gt; 'timeout',
+  );
+  print(data); // Output: timeout
+}
+
+Future&lt;String&gt; fetchData() async {
+  // ... (omitted for brevity)
+}
+</code></pre>
 <h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
 <ul>
-<li>https://api.dart.dev/dart-async/Future-class.html</li>
+<li><a href="https://api.dart.dev/dart-async/Future-class.html">https://api.dart.dev/dart-async/Future-class.html</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="stream流"><a class="header" href="#stream流">Stream（流）</a></h1>
 <p>如果说 Future 是“一次性买卖”，那么 Stream 就是“订阅服务”。Stream 是一系列异步事件的序列。它会随着时间的推移发出多个值，直到任务完成或发生错误。</p>
@@ -7147,7 +7186,7 @@ class WorkerPool {
     while (true) {
       final buzy =
           ensureExecutingTaskCompleted &amp;&amp;
-          _workers.values.where((w) =&gt; !w.idle).isNotEmpty;
+          _workers.values.any((w) =&gt; !w.idle);
       final awaitTaskQueue = ensureTaskQueueEmpty &amp;&amp; _taskQueue.isNotEmpty;
       if (_resultPort == null || buzy || awaitTaskQueue) {
         await Future.delayed(Duration(milliseconds: 100));
@@ -7225,7 +7264,7 @@ void workerEntryPoint((int workerId, SendPort resultPort) message) {
     while (true) {
       final buzy =
           ensureExecutingTaskCompleted &amp;&amp;
-          _workers.values.where((w) =&gt; !w.idle).isNotEmpty;
+          _workers.values.any((w) =&gt; !w.idle);
       final awaitTaskQueue = ensureTaskQueueEmpty &amp;&amp; _taskQueue.isNotEmpty;
       if (_resultPort == null || buzy || awaitTaskQueue) {
         await Future.delayed(Duration(milliseconds: 100));

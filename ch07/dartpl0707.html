@@ -398,7 +398,7 @@ class WorkerPool {
     while (true) {
       final buzy =
           ensureExecutingTaskCompleted &amp;&amp;
-          _workers.values.where((w) =&gt; !w.idle).isNotEmpty;
+          _workers.values.any((w) =&gt; !w.idle);
       final awaitTaskQueue = ensureTaskQueueEmpty &amp;&amp; _taskQueue.isNotEmpty;
       if (_resultPort == null || buzy || awaitTaskQueue) {
         await Future.delayed(Duration(milliseconds: 100));
@@ -476,7 +476,7 @@ void workerEntryPoint((int workerId, SendPort resultPort) message) {
     while (true) {
       final buzy =
           ensureExecutingTaskCompleted &amp;&amp;
-          _workers.values.where((w) =&gt; !w.idle).isNotEmpty;
+          _workers.values.any((w) =&gt; !w.idle);
       final awaitTaskQueue = ensureTaskQueueEmpty &amp;&amp; _taskQueue.isNotEmpty;
       if (_resultPort == null || buzy || awaitTaskQueue) {
         await Future.delayed(Duration(milliseconds: 100));
