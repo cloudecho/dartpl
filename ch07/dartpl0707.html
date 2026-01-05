@@ -299,7 +299,7 @@ class WorkerPool {
   final int size; // 8
   final _workers = &lt;int, Worker&gt;{}; // 9
   final _taskQueue = Queue&lt;(TaskData, Completer)&gt;(); // 10
-  final _idleWorkerController = StreamController(); // 11
+  final _idleWorkerController = StreamController&lt;Worker&gt;(); // 11
 
   ReceivePort? _resultPort;
   var _closed = false;
@@ -364,7 +364,7 @@ class WorkerPool {
   }
 
   // 16
-  void _execute(worker, TaskData taskData, Completer completer) {
+  void _execute(Worker worker, TaskData taskData, Completer completer) {
     worker.idle = false;
     worker.completer = completer;
     worker.sendPort.send(taskData);
