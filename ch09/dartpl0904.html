@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>注释 - 从0开始学Dart</title>
+        <title>理解 Macros（元编程的未来） - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -164,56 +164,17 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="注释"><a class="header" href="#注释">注释</a></h1>
-<p>代码中的注释帮助人们阅读代码，文档注释还用于生成API（应用编程接口）文档。Dart 支持三种注释：</p>
-<ul>
-<li><a href="#%E5%8D%95%E8%A1%8C%E6%B3%A8%E9%87%8A">单行注释</a></li>
-<li><a href="#%E5%A4%9A%E8%A1%8C%E6%B3%A8%E9%87%8A">多行注释</a></li>
-<li><a href="#%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A">文档注释</a></li>
-</ul>
-<p>单行注释和多行注释会被编译器忽略，而文档注释可用于Dart的文档生成工具，<code>dart doc</code>。</p>
-<h2 id="单行注释"><a class="header" href="#单行注释">单行注释</a></h2>
-<p>单行注释以<code>//</code>开头，从<code>//</code>到这一行的末尾，都会被Dart编译器忽略。</p>
-<pre><code class="language-dart">  // This line will be ignored by Dart compiler
-  print('Hello');
-</code></pre>
-<h2 id="多行注释"><a class="header" href="#多行注释">多行注释</a></h2>
-<p>多行注释以 <code>/*</code> 开头，以<code>*/</code> 结尾。</p>
-<pre><code class="language-dart">  /*
-  This whole paragraph will be ignored by Dart compiler.
-  Greetings to Dart.
-  */
-  print("Hello Dart!");
-</code></pre>
-<h2 id="文档注释"><a class="header" href="#文档注释">文档注释</a></h2>
-<p>文档注释以<code>///</code>开头（单行文档注释），或以<code>/**</code>开始以<code>*/</code>结束（多行文档注释）。在连续的行上使用 <code>///</code> 与多行文档注释具有相同的效果。</p>
-<pre><code class="language-dart">// ex162.dart
-
-/// A student class encapsulates student information,
-/// including id, name and birthdate.
-/// 
-/// This class is immutable.
-class Student {
-  final int id;
-  final String name;
-  final DateTime birthdate;
-  const Student(this.id, this.name, this.birthdate);
-}
-</code></pre>
-<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
-<ul>
-<li><a href="https://dart.dev/language/comments">https://dart.dev/language/comments</a></li>
-</ul>
+                        <h1 id="理解-macros元编程的未来"><a class="header" href="#理解-macros元编程的未来">理解 Macros（元编程的未来）</a></h1>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ch01/dartpl0105.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ch09/dartpl0903.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../ch01/dartpl0107.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ch09/dartpl0905.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -223,11 +184,11 @@ class Student {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ch01/dartpl0105.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ch09/dartpl0903.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../ch01/dartpl0107.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ch09/dartpl0905.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

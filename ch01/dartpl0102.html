@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>变量与 Null safety - 从0开始学Dart</title>
+        <title>变量与 Null Safety - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -164,7 +164,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="变量与null-safety"><a class="header" href="#变量与null-safety">变量与Null safety</a></h1>
+                        <h1 id="变量与null-safety"><a class="header" href="#变量与null-safety">变量与Null Safety</a></h1>
 <h2 id="什么是变量"><a class="header" href="#什么是变量">什么是变量</a></h2>
 <p>计算机编程语言里的变量（Variable）与数学公式里的变量类似。请看下面这段Dart代码:</p>
 <pre><code class="language-dart">// ex121
@@ -213,7 +213,7 @@ void main(){
 }
 </code></pre>
 <p>这里的数字、字符串等，就是所谓的数据类型（本章第4节内容，这里不再展开）。</p>
-<h2 id="优先使用-var-声明变量"><a class="header" href="#优先使用-var-声明变量">优先使用 <code>var </code>声明变量</a></h2>
+<h2 id="使用-var-声明变量"><a class="header" href="#使用-var-声明变量">使用 <code>var</code> 声明变量</a></h2>
 <p>对于  <code>var x = 3;</code> 也可以写成 <code>int x = 3</code>，你可能有个疑问，哪种情况下用哪种方式呢？官方的建议是，多数情况下，我们应该使用 var (而非实际类型) 声明变量，这样做除了可以使代码更短之外，还能提高代码的可读性。</p>
 <p>如果我们仅仅声明变量（不赋值），应该写出实际的类型，因为这时候Dart无法推断出变量的数据类型，如</p>
 <pre><code class="language-dart">int x;
@@ -234,7 +234,7 @@ void main() {
 }
 </code></pre>
 <p>这里先了解下，第4章会有更多关于 <code>late</code>  的讨论。</p>
-<h2 id="null-safety"><a class="header" href="#null-safety">Null safety</a></h2>
+<h2 id="null-safety"><a class="header" href="#null-safety">Null Safety</a></h2>
 <h3 id="nnbd"><a class="header" href="#nnbd">NNBD</a></h3>
 <p>从Dart 2.10 开始，变量默认非 <code>null</code>（non-nullable by defaullt, NNBD)；<code>null</code> 表示空值。 比如下面这段代码无法编译</p>
 <pre><code class="language-dart">// ex126
@@ -268,7 +268,7 @@ void main() {
 <p>我想这便是Dart  NNBD的原因。</p>
 <h3 id="访问nullable变量"><a class="header" href="#访问nullable变量">访问nullable变量</a></h3>
 <p>有几个nullable变量相关的访问/赋值，有必要介绍一下，你以后再看到下面这些符号就不会感到陌生了。</p>
-<h3 id="----"><a class="header" href="#----"><code>??</code> 、 <code>??=</code>、  <code>!</code></a></h3>
+<h4 id="----"><a class="header" href="#----"><code>??</code> 、 <code>??=</code>、  <code>!</code></a></h4>
 <pre><code class="language-dart">// ex128
 void main() {
   int? x;
@@ -296,7 +296,7 @@ void main() {
 <li>断言<code>y</code>一定非空(<code>null</code>)，并将<code>y</code>的值赋给<code>a</code>；如果<code>y</code>为<code>null</code>，在程序运行时会出现一个Null check异常（见3a）。</li>
 </ol>
 <p>请对比 1和1a， 2和2a，以及3和3a的结果。</p>
-<h3 id="-"><a class="header" href="#-"><code>?.</code> 、<code>?[]</code></a></h3>
+<h4 id="-"><a class="header" href="#-"><code>?.</code> 、<code>?[]</code></a></h4>
 <pre><code class="language-dart">// ex129
 void main() {
   var abc = 'ABCD';
@@ -320,7 +320,7 @@ void main() {
 <li>这是一个综合的例子，同时使用了 <code>?.</code>与 <code>??</code> 符号。</li>
 </ol>
 <p>注：本例中的 <code>abc[0]</code> 返回第0个（下标从0开始）unicode字符，<code>abc.length</code>返回<code>abc</code>的长度。</p>
-<h3 id=""><a class="header" href="#"><code>...?</code></a></h3>
+<h4 id=""><a class="header" href="#"><code>...?</code></a></h4>
 <pre><code class="language-dart">// ex12a
 void main() {
   var arr = [1, 2, 3];

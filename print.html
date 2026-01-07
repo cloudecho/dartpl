@@ -355,7 +355,7 @@ export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
 <ul>
 <li><a href="https://docs.flutter.cn/community/china/">https://docs.flutter.cn/community/china/</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="变量与null-safety"><a class="header" href="#变量与null-safety">变量与Null safety</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="变量与null-safety"><a class="header" href="#变量与null-safety">变量与Null Safety</a></h1>
 <h2 id="什么是变量"><a class="header" href="#什么是变量">什么是变量</a></h2>
 <p>计算机编程语言里的变量（Variable）与数学公式里的变量类似。请看下面这段Dart代码:</p>
 <pre><code class="language-dart">// ex121
@@ -404,7 +404,7 @@ void main(){
 }
 </code></pre>
 <p>这里的数字、字符串等，就是所谓的数据类型（本章第4节内容，这里不再展开）。</p>
-<h2 id="优先使用-var-声明变量"><a class="header" href="#优先使用-var-声明变量">优先使用 <code>var </code>声明变量</a></h2>
+<h2 id="使用-var-声明变量"><a class="header" href="#使用-var-声明变量">使用 <code>var</code> 声明变量</a></h2>
 <p>对于  <code>var x = 3;</code> 也可以写成 <code>int x = 3</code>，你可能有个疑问，哪种情况下用哪种方式呢？官方的建议是，多数情况下，我们应该使用 var (而非实际类型) 声明变量，这样做除了可以使代码更短之外，还能提高代码的可读性。</p>
 <p>如果我们仅仅声明变量（不赋值），应该写出实际的类型，因为这时候Dart无法推断出变量的数据类型，如</p>
 <pre><code class="language-dart">int x;
@@ -425,7 +425,7 @@ void main() {
 }
 </code></pre>
 <p>这里先了解下，第4章会有更多关于 <code>late</code>  的讨论。</p>
-<h2 id="null-safety"><a class="header" href="#null-safety">Null safety</a></h2>
+<h2 id="null-safety"><a class="header" href="#null-safety">Null Safety</a></h2>
 <h3 id="nnbd"><a class="header" href="#nnbd">NNBD</a></h3>
 <p>从Dart 2.10 开始，变量默认非 <code>null</code>（non-nullable by defaullt, NNBD)；<code>null</code> 表示空值。 比如下面这段代码无法编译</p>
 <pre><code class="language-dart">// ex126
@@ -459,7 +459,7 @@ void main() {
 <p>我想这便是Dart  NNBD的原因。</p>
 <h3 id="访问nullable变量"><a class="header" href="#访问nullable变量">访问nullable变量</a></h3>
 <p>有几个nullable变量相关的访问/赋值，有必要介绍一下，你以后再看到下面这些符号就不会感到陌生了。</p>
-<h3 id="----"><a class="header" href="#----"><code>??</code> 、 <code>??=</code>、  <code>!</code></a></h3>
+<h4 id="----"><a class="header" href="#----"><code>??</code> 、 <code>??=</code>、  <code>!</code></a></h4>
 <pre><code class="language-dart">// ex128
 void main() {
   int? x;
@@ -487,7 +487,7 @@ void main() {
 <li>断言<code>y</code>一定非空(<code>null</code>)，并将<code>y</code>的值赋给<code>a</code>；如果<code>y</code>为<code>null</code>，在程序运行时会出现一个Null check异常（见3a）。</li>
 </ol>
 <p>请对比 1和1a， 2和2a，以及3和3a的结果。</p>
-<h3 id="-"><a class="header" href="#-"><code>?.</code> 、<code>?[]</code></a></h3>
+<h4 id="-"><a class="header" href="#-"><code>?.</code> 、<code>?[]</code></a></h4>
 <pre><code class="language-dart">// ex129
 void main() {
   var abc = 'ABCD';
@@ -511,7 +511,7 @@ void main() {
 <li>这是一个综合的例子，同时使用了 <code>?.</code>与 <code>??</code> 符号。</li>
 </ol>
 <p>注：本例中的 <code>abc[0]</code> 返回第0个（下标从0开始）unicode字符，<code>abc.length</code>返回<code>abc</code>的长度。</p>
-<h3 id=""><a class="header" href="#"><code>...?</code></a></h3>
+<h4 id=""><a class="header" href="#"><code>...?</code></a></h4>
 <pre><code class="language-dart">// ex12a
 void main() {
   var arr = [1, 2, 3];
@@ -1221,6 +1221,177 @@ class Student {
 <h2 id="参考资料-5"><a class="header" href="#参考资料-5">参考资料</a></h2>
 <ul>
 <li><a href="https://dart.dev/language/comments">https://dart.dev/language/comments</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="再谈-null-safety从语法到运行时"><a class="header" href="#再谈-null-safety从语法到运行时">再谈 Null Safety：从语法到运行时</a></h1>
+<p>在 Dart 中，?（可空性）和 !（空断言）不仅仅是语法糖，它们深深植根于 Dart 的健全类型系统（Sound Static Type System）。理解它们的底层机制，需要从编译时分析与运行时检查两个维度入手。</p>
+<h2 id="dart-类型系统"><a class="header" href="#dart-类型系统">Dart 类型系统</a></h2>
+<p>Dart 的 Null Safety 并不是一个孤立的功能，它本质上是对类型层级图的一次重构。 在深入探讨 Null Safety 机制之前，我们先对 Dart <strong>健全类型系统（Sound Type System）</strong> 做一个系统性的梳理。</p>
+<p><em>类型层级图</em></p>
+<pre class="mermaid">graph TD
+    %% 顶层类型
+    Object_Q[&quot;Object? (Top Type)&quot;]
+    
+    %% 中间层与可空分支
+    Null[&quot;Null&quot;]
+    Object[&quot;Object (Non-nullable)&quot;]
+    
+    %% 基础类型
+    num[&quot;num&quot;]
+    int[&quot;int&quot;]
+    double[&quot;double&quot;]
+    String[&quot;String&quot;]
+    bool[&quot;bool&quot;]
+    List[&quot;List&amp;lt;T&amp;gt;&quot;]
+    Function[&quot;Function&quot;]
+    Other[&quot;...&quot;]
+    
+    %% 特殊类型
+    dynamic[&quot;dynamic (Static Check Bypass)&quot;]
+    void[&quot;void (No return value)&quot;]
+    Never[&quot;Never (Bottom Type)&quot;]
+
+    %% 关系连接：从顶层向下
+    Object_Q --- Object
+    Object_Q --- dynamic
+    Object_Q --- void
+    Object_Q --- Null
+    
+    %% Object 的直接子类
+    Object --- num
+    Object --- String
+    Object --- bool
+    Object --- List
+    Object --- Function
+    Object --- Other
+    
+    %% num 的具体实现
+    num --- int
+    num --- double
+    
+    %% Never 的关系 (作为所有类型的最底层)
+    int --- Never
+    double --- Never
+    String --- Never
+    bool --- Never
+    List --- Never
+    Function --- Never
+    Other --- Never
+    Null --- Never
+
+    %% 样式美化
+    style Object_Q fill:#f9f,stroke:#333,stroke-width:2px
+    style Never fill:#ff9,stroke:#333,stroke-width:2px
+    style dynamic fill:#eee,stroke:#333,stroke-dasharray: 5 5
+    style Object fill:#e1f5fe,stroke:#01579b
+</pre>
+<p><code>Object?</code> 位于类型层级图的顶层，<code>Never</code>位于底层，第二层是 <code>Object</code>、<code>dynamic</code>、<code>void</code> 和 <code>Null</code>。在 Dart 类型规范中，<code>Object?</code>、<code>dynamic</code> 和 <code>void</code> 通常被并列视为顶层类型（Top Types），但由于 <code>Object?</code>是所有类型的超集（包含 <code>Null</code>），将其放在最顶层作为“根节点”是非常直观且正确的理解。</p>
+<p>在 Dart 的类型系统中，<code>Never</code> 是一个非常特殊且强大的存在。它被称为底层类型 (Bottom Type)，意味着它是所有其他类型的子类，而它本身没有任何实例。 <code>Never</code> 最常见的用途是标识“永不返回”的函数:</p>
+<pre><code class="language-dart">Never fail(String message) {
+  throw Exception(message); // 函数在此中断，不会返回任何值
+}
+</code></pre>
+<h2 id="-可空类型的底层机制"><a class="header" href="#-可空类型的底层机制"><code>?</code>: 可空类型的底层机制</a></h2>
+<p>在 Dart 运行时，<code>int</code> 和 <code>int?</code> 实际上被视为两种不同的类型。那么<code>int?</code> 到底位于类型层级图的哪里？ 实际上 <code>int?</code> 则是 <code>int</code> 与 <code>Null</code> 类型的联合类型（Union Type），只能位于类型层级图的第二层。我们可以通过下表来展示这种“联合类型”的层级位置，你会发现，<code>int?</code> 实际上扮演了一个中转站的角色：</p>
+<pre class="mermaid">graph TD
+    %% 顶层
+    Object_Q[&quot;Object?&quot;]
+
+    %% 第二层：可空包装层 (Union Types)
+    subgraph Nullable_Layer [第二层：可空联合类型]
+        direction LR
+        int_Q[&quot;int? (int ∪ Null)&quot;]
+        String_Q[&quot;String? (String ∪ Null)&quot;]
+        bool_Q[&quot;bool? (bool ∪ Null)&quot;]
+    end
+
+    %% 第三层：基础不可空类型
+    Object[&quot;Object&quot;]
+    Null[&quot;Null&quot;]
+    int[&quot;int&quot;]
+    String[&quot;String&quot;]
+    bool[&quot;bool&quot;]
+
+    %% 关系连接
+    Object_Q --- int_Q
+    Object_Q --- String_Q
+    Object_Q --- bool_Q
+    Object_Q --- Object
+
+    %% 联合类型的构成
+    int_Q --- int
+    int_Q --- Null
+    
+    String_Q --- String
+    String_Q --- Null
+    
+    bool_Q --- bool
+    bool_Q --- Null
+
+    %% Object 的子类
+    Object --- int
+    Object --- String
+    Object --- bool
+
+    %% 底部
+    Never[&quot;Never&quot;]
+    int --- Never
+    String --- Never
+    bool --- Never
+    Null --- Never
+
+    style int_Q fill:#e1f5fe,stroke:#01579b,stroke-dasharray: 5 5
+    style Nullable_Layer fill:#f9f9f9,stroke:#ccc
+</pre>
+<p>当你尝试将 <code>int?</code>类型的值 赋给 <code>int</code> 时，Dart 编译器会报错。这是因为在层级图中，你是在尝试向上转型（从联合类型转到更具体的子类型），这是不安全的。</p>
+<p>当我们声明一个非空类型变量 <code>int x</code>，我们就向编译器做出了永久性承诺。在 AOT 编译阶段，由于确定 <code>x</code> 永远不会是 <code>null</code>，编译器可以大胆地移除所有原本需要插入的 <code>if (x == null)</code> 检查指令。这种 <strong>“非空检查消减（Null Check Elimination）”</strong> 让生成的机器码更加紧凑、执行路径更加单一。这也是为什么 <em>Null Safety 能提升程序执行性能</em>。</p>
+<h2 id="-的运行时代价隐式分支检查"><a class="header" href="#-的运行时代价隐式分支检查"><code>!</code> 的运行时代价：隐式分支检查</a></h2>
+<p><code>!</code> 操作符（非空断言）实际上是静态检查的“逃生舱”，但它是有代价的。每当我们使用 <code>x!</code>，Dart 编译器会在该位置强制注入一段检查逻辑。在 CPU 执行层面，<code>!</code> 触发的是一次条件跳转（Conditional Branch），如果 <code>x</code> 恰好为 <code>null</code>，它会跳转到异常处理路径；虽然单次执行极快，但在高性能计算（如我们会学到的 WorkerPool）中频繁使用 <code>!</code> 会干扰 CPU 的分支预测。</p>
+<p>在编写高性能代码时，我们应尽量通过架构设计（如构造函数初始化）确保变量非空，从而利用编译器的检查消减特性提示性能，而不是依赖运行时频繁的 <code>!</code> 检查。</p>
+<h2 id="type-promotion类型提升"><a class="header" href="#type-promotion类型提升">Type Promotion（类型提升）</a></h2>
+<p>Type Promotion 是 Dart 编译器的一项智能特性。它指的是：当编译器能够通过逻辑流分析（Flow Analysis）确定一个变量在特定范围内绝对属于某种更窄的类型时，它会自动临时改变该变量的类型。简单来说，就是编译器帮你省去了手动进行强制类型转换（如使用 <code>as</code> 关键字）的麻烦。 例如：</p>
+<pre><code class="language-dart">void process(Object data) {
+  if (data is List) {
+    // 💡 data 从 Object 提升到了 List
+    print(data.length); // 现在可以直接访问 List 的属性
+  }
+}
+</code></pre>
+<h3 id="null-safety-提升"><a class="header" href="#null-safety-提升">Null Safety 提升</a></h3>
+<p>这是 Dart 开发者每天都会遇到的。当一个变量是“可空类型”（如 String?），我们对其进行非空检查后，在该分支内它会被自动提升为“非空类型”（String）。</p>
+<pre><code class="language-dart">void printLength(String? text) {
+  // print(text.length); // 报错：Property 'length' cannot be accessed on 'String?'
+
+  if (text != null) {
+    // 💡 在这个 if 块内，text 被自动提升为 String (非空)
+    print(text.length); // 正常运行
+  }
+}
+</code></pre>
+<h3 id="为什么-if-objfield--null-之后依然报错"><a class="header" href="#为什么-if-objfield--null-之后依然报错">为什么 <code>if (obj.field != null)</code> 之后依然报错？</a></h3>
+<p>这是开发者最常遇到的困惑：为什么 <code>if (obj.field != null)</code> 之后，直接使用 <code>obj.field</code> 依然 <em>可能</em> 报错？</p>
+<p>原因在于内存竞争与 Getter 不确定性:</p>
+<ul>
+<li>
+<p><strong>Isolate 并发</strong>： Dart 虽然是单线程模型，多 Isolate 之间虽然不共享内存，但在某些底层交互或 FFI(Foreign function interface) 场景下，数据的状态可能改变。</p>
+</li>
+<li>
+<p><strong>Getter 覆盖</strong>：底层 VM 无法保证 <code>obj.field</code> 是一块静态内存。它可能是一个 <code>get</code> 函数，每次调用都返回不同的值。</p>
+</li>
+</ul>
+<p>解决方案：使用局部变量快照（Shadowing）。</p>
+<pre><code class="language-dart">  final val = obj.field; // 将状态“锁定”在当前栈帧
+  if (val != null) {
+    print(val.length);
+  }
+</code></pre>
+<h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
+<ul>
+<li>
+<p><a href="https://dart.dev/null-safety/understanding-null-safety">https://dart.dev/null-safety/understanding-null-safety</a></p>
+</li>
+<li>
+<p><a href="https://dart.dev/language/type-system">https://dart.dev/language/type-system</a></p>
+</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="if-与-switch-语句"><a class="header" href="#if-与-switch-语句">if 与 switch 语句</a></h1>
 <p>程序的控制结构包括：</p>
@@ -5884,7 +6055,7 @@ Future&lt;String&gt; fetchData() async {
   // ... (omitted for brevity)
 }
 </code></pre>
-<h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
+<h2 id="reference-1"><a class="header" href="#reference-1">Reference</a></h2>
 <ul>
 <li><a href="https://api.dart.dev/dart-async/Future-class.html">https://api.dart.dev/dart-async/Future-class.html</a></li>
 </ul>
@@ -6442,7 +6613,7 @@ Future&lt;String&gt; task() async {
 <tr><td>图像/视频处理</td><td>Isolate</td><td>属于高强度计算，必须移出 Main Isolate。</td></tr>
 </tbody></table>
 </div>
-<h2 id="reference-1"><a class="header" href="#reference-1">Reference</a></h2>
+<h2 id="reference-2"><a class="header" href="#reference-2">Reference</a></h2>
 <ul>
 <li>
 <p><a href="https://dart.dev/articles/event-loop/">Dart asynchronous programming: Isolates and event loops</a></p>
@@ -6759,7 +6930,7 @@ int heavyTask(int count) {
 </tbody></table>
 </div>
 <p><strong>注意</strong>： 当你发送一个集合（如 List）时，Dart 实际上是在目标 Isolate 中创建了一个深拷贝。这意味着在子 Isolate 中修改该 List，不会影响主 Isolate 中的原始数据。唯一的例外是使用 <code>Isolate.exit()</code> 。</p>
-<h2 id="reference-2"><a class="header" href="#reference-2">Reference</a></h2>
+<h2 id="reference-3"><a class="header" href="#reference-3">Reference</a></h2>
 <ul>
 <li><a href="https://dart.dev/articles/event-loop/">Dart asynchronous programming: Isolates and event loops</a></li>
 <li>https://dart.dev/language/isolates</li>
@@ -6946,7 +7117,7 @@ void worker(SendPort mainSendPort) {
 <li>Worker 获得：Worker 调用 <code>materialize()</code> 后，这块内存被“绑定”到 Worker 空间。</li>
 </ul>
 <p>c. 零拷贝的本质： 数据本身在物理内存（RAM）中并没有被复制，只是访问权限从 Main 转移到了 Worker。</p>
-<h2 id="reference-3"><a class="header" href="#reference-3">Reference</a></h2>
+<h2 id="reference-4"><a class="header" href="#reference-4">Reference</a></h2>
 <ul>
 <li>https://dart.dev/language/isolates</li>
 <li>https://api.dart.dev/dart-isolate/Isolate-class.html</li>
@@ -7290,7 +7461,7 @@ void workerEntryPoint((int workerId, SendPort resultPort) message) {
 </li>
 </ul>
 <p>作为练习，请读者针对以上问题完善 <code>WorkerPool.close()</code> 。</p>
-<h2 id="reference-4"><a class="header" href="#reference-4">Reference</a></h2>
+<h2 id="reference-5"><a class="header" href="#reference-5">Reference</a></h2>
 <ul>
 <li>https://dart.dev/language/isolates</li>
 <li>https://api.dart.dev/dart-isolate/Isolate-class.html</li>
@@ -7853,7 +8024,7 @@ out54 2451ms: pool closed
 <p>软件工程中有一句名言：<em>“编写并发程序很难，而编写能够正确处理故障的并发程序更难。”</em></p>
 <p>我们所做的每一点改进——处理残余请求的<code>_shutdownSignal</code>、那 50ms 的随机抖动、那看似多余的<code>isolate.kill()</code>、那个接管任务的握手协议——都是为了让我们的系统在面对真实的生产压力、网络波动与硬件极限时，不仅仅是“活着”，而是优雅且稳健地运行。</p>
 <p>希望通过对 WorkerPool 的学习，能助您建立起关于<strong>防御性并发编程</strong>的思维模型。</p>
-<h2 id="reference-5"><a class="header" href="#reference-5">Reference</a></h2>
+<h2 id="reference-6"><a class="header" href="#reference-6">Reference</a></h2>
 <ul>
 <li><a href="https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/">Exponential Backoff And Jitter</a></li>
 </ul>
@@ -7863,12 +8034,18 @@ out54 2451ms: pool closed
 <div style="break-before: page; page-break-before: always;"></div><h1 id="异步代码测试"><a class="header" href="#异步代码测试">异步代码测试</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="依赖模拟与-mock-实践"><a class="header" href="#依赖模拟与-mock-实践">依赖模拟与 Mock 实践</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="质量度量与工程化实践"><a class="header" href="#质量度量与工程化实践">质量度量与工程化实践</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="为什么需要元编程"><a class="header" href="#为什么需要元编程">为什么需要元编程？</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="build_runner"><a class="header" href="#build_runner">build_runner</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="自定义生成器-generator"><a class="header" href="#自定义生成器-generator">自定义生成器 (Generator)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="理解-macros元编程的未来"><a class="header" href="#理解-macros元编程的未来">理解 Macros（元编程的未来）</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="模版编程与代码脚手架scaffolding"><a class="header" href="#模版编程与代码脚手架scaffolding">模版编程与代码脚手架(Scaffolding)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="最佳实践与陷阱"><a class="header" href="#最佳实践与陷阱">最佳实践与陷阱</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="dart命令行工具"><a class="header" href="#dart命令行工具">dart命令行工具</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="solid编码准则"><a class="header" href="#solid编码准则">SOLID编码准则</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="编写dart命令行程序"><a class="header" href="#编写dart命令行程序">编写Dart命令行程序</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="编写dart服务端编程"><a class="header" href="#编写dart服务端编程">编写Dart服务端编程</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="dart-服务端与云原生"><a class="header" href="#dart-服务端与云原生">Dart 服务端与云原生</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="dart-常用-package"><a class="header" href="#dart-常用-package">Dart 常用 package</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="e-dart-ffi"><a class="header" href="#e-dart-ffi">E Dart FFI</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="dart-ffi"><a class="header" href="#dart-ffi">Dart FFI</a></h1>
 
                     </main>
 
