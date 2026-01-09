@@ -310,7 +310,7 @@
 }
 </code></pre>
 <h3 id="为什么-if-objfield--null-之后依然报错"><a class="header" href="#为什么-if-objfield--null-之后依然报错">为什么 <code>if (obj.field != null)</code> 之后依然报错？</a></h3>
-<p>这是开发者最常遇到的困惑：为什么 <code>if (obj.field != null)</code> 之后，直接使用 <code>obj.field</code> 依然 <em>可能</em> 报错？</p>
+<p>这是开发者最常遇到的困惑：为什么 <code>if (obj.field != null)</code> 之后，直接使用 <code>obj.field</code> 依然报错？</p>
 <p>原因在于内存竞争与 Getter 不确定性:</p>
 <ul>
 <li>
