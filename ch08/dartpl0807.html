@@ -169,7 +169,7 @@
 <h2 id="分析工具"><a class="header" href="#分析工具">分析工具</a></h2>
 <p>命令 <code>dart analyze</code> 是Dart SDK自带的利器，它通过解析抽象语法树（AST）来发现潜在问题 —— 类型不匹配、未使用的变量、可能的空指针异常、不规范的命名等。使用方法是在 Project 根目录下执行该命令即可。</p>
 <h2 id="配置文件"><a class="header" href="#配置文件">配置文件</a></h2>
-<p><code>dart analyze</code> 使用 Project 根目录下的 <code>analysis_options.yaml</code> 作为其配置文件，该文件定义了Lint规则。文件文件内容示例如下:</p>
+<p><code>dart analyze</code> 使用 <code>analysis_options.yaml</code> 作为其配置文件，该文件定义了Lint规则。文件文件内容示例如下:</p>
 <pre><code class="language-yaml">include: package:lints/recommended.yaml # 引入官方推荐规则
 
 analyzer:
