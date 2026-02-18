@@ -164,7 +164,534 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="断言与匹配器-matchers"><a class="header" href="#断言与匹配器-matchers">断言与匹配器 (Matchers)</a></h1>
+                        <h1 id="断言assertion与匹配器-matchers"><a class="header" href="#断言assertion与匹配器-matchers">断言（Assertion）与匹配器 (Matchers)</a></h1>
+<p>Dart 测试的核心围绕断言（Assertion）展开。 我们通常使用 expect 函数来执行校验，其基本语法如下：</p>
+<pre><code class="language-dart">  expect(dynamic actual, dynamic matcher)
+</code></pre>
+<p>以之前的 <code>expect(f.num, 1)</code> 为例：该语句断言变量 <code>f.num</code>（实际值 <code>actual</code>）等于 <code>1</code>（期望值 <code>matcher</code>）。</p>
+<p>其中，<code>matcher</code>（匹配器）是断言机制中最灵活、最强大的部分。它不仅能进行简单的值比较，还能处理复杂的逻辑校验。本文将结合示例简要介绍下常用的各类匹配器：</p>
+<ul>
+<li><a href="#%E5%9F%BA%E7%A1%80%E5%8C%B9%E9%85%8D%E5%99%A8-basic-matchers">基础匹配器 (Basic Matchers)</a></li>
+<li><a href="#%E6%95%B0%E5%80%BC%E5%8C%B9%E9%85%8D%E5%99%A8-numeric-matchers">数值匹配器 (Numeric Matchers)</a></li>
+<li><a href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D%E5%99%A8string-matchers">字符串匹配器（String Matchers）</a></li>
+<li><a href="#%E9%9B%86%E5%90%88%E5%8C%B9%E9%85%8D%E5%99%A8-collection-matchers">集合匹配器 (Collection Matchers)</a></li>
+<li><a href="#%E7%B1%BB%E5%9E%8B%E5%8C%B9%E9%85%8D%E5%99%A8-type-matchers">类型匹配起 (Type Matchers)</a></li>
+<li><a href="#%E5%BC%82%E5%B8%B8%E5%8C%B9%E9%85%8D%E5%99%A8-error-matchers">异常匹配器 (Error Matchers)</a></li>
+<li><a href="#%E9%80%BB%E8%BE%91%E7%BB%84%E5%90%88-logical-combinators">逻辑组合</a></li>
+</ul>
+<p>本文最后还将介绍如何<a href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8C%B9%E9%85%8D%E5%99%A8">自定义匹配器</a>。</p>
+<h2 id="基础匹配器-basic-matchers"><a class="header" href="#基础匹配器-basic-matchers">基础匹配器 (Basic Matchers)</a></h2>
+<ul>
+<li><code>equals(v)</code>:	检查值是否相等（通常直接写值即可，如 <code>expect(a, 10)</code>）</li>
+<li><code>isTrue / isFalse</code>:	检查布尔值</li>
+<li><code>isNull / isNotNull</code>:	 检查是否为 Null</li>
+<li><code>same(obj)</code>:	检查是否为同一个对象实例（内存地址相同）</li>
+</ul>
+<pre><code class="language-dart">// m_basic_test.dart
+import 'package:test/test.dart';
+
+void main() {
+  group('基础匹配器用法演示', () {
+    // equals(v) - 检查值是否相等
+    test('equals 匹配器', () {
+      var name = 'Dart';
+      // 实际上 expect(name, 'Dart') 内部也会自动调用 equals
+      expect(name, equals('Dart'));
+      expect(1 + 1, equals(2));
+
+      // 对于集合，equals 会深度比较内容
+      expect([1, 2], equals([1, 2]));
+    });
+
+    // isTrue / isFalse - 检查布尔状态
+    test('布尔匹配器', () {
+      var isVisible = true;
+      var hasError = false;
+
+      expect(isVisible, isTrue);
+      expect(hasError, isFalse);
+    });
+
+    // isNull / isNotNull - 检查空值状态
+    test('Null 匹配器', () {
+      String? errorMessage;
+      expect(errorMessage, isNull);
+
+      errorMessage = '404 Not Found';
+      expect(errorMessage, isNotNull);
+    });
+
+    // same(v) - 检查是否为同一个实例（内存地址）
+    test('same 匹配器 (身份验证)', () {
+      final listA = [1, 2, 3];
+      final listB = [1, 2, 3];
+      final listC = listA;
+
+      // 重点：listA 和 listB 内容相同，但不是同一个对象
+      expect(listA, equals(listB)); // 通过：值相等
+      expect(listA, isNot(same(listB))); // 通过：内存地址不同
+
+      // listC 是 listA 的引用
+      expect(listA, same(listC)); // 通过：指向同一个实例
+    });
+  });
+}
+</code></pre>
+<h2 id="数值匹配器-numeric-matchers"><a class="header" href="#数值匹配器-numeric-matchers">数值匹配器 (Numeric Matchers)</a></h2>
+<p>处理数字时，除了相等，我们还经常需要范围判断。</p>
+<ul>
+<li><code>greaterThan(n) / lessThan(n)</code>: 大于 / 小于。</li>
+<li><code>greaterThanOrEqualTo(n) / lessThanOrEqualTo(n)</code>: 大于等于 / 小于等于。</li>
+<li><code>closeTo(value, delta)</code>: 用于浮点数比较。由于精度问题，直接比较浮点数容易出错。</li>
+<li><code>isNegative / isZero / isPositive</code>: 是否负数 / 0 / 正数</li>
+<li><code>isNonNegative / isNonPositive</code>: 是否非负数 / 非正数</li>
+</ul>
+<pre><code class="language-dart">// m_numeric_test.dart
+import 'package:test/test.dart';
+
+void main() {
+  group('数值匹配器 (Numeric Matchers) 演示', () {
+    
+    test('大小比较', () {
+      num score = 85;
+
+      // 严格大于/小于
+      expect(score, greaterThan(80));
+      expect(score, lessThan(100));
+
+      // 包含边界的小于等于/大于等于
+      expect(score, greaterThanOrEqualTo(85));
+      expect(score, lessThanOrEqualTo(85));
+    });
+
+    test('正负号与特殊值判断', () {
+      expect(-3, isNegative);     // 是否为负数
+      expect(0, isZero);          // 是否为 0
+      expect(1, isPositive);      // 是否为正数
+      expect(10, isNonNegative);  // 是否为非负数 (&gt;= 0)
+      expect(-5, isNonPositive);  // 是否为非正数 (&lt;= 0)
+    });
+
+    test('浮点数精度匹配 (closeTo)', () {
+      /* 由于计算机二进制表示的原因，0.1 + 0.2 并不完全等于 0.3。
+       在测试中直接使用 equals(0.3) 可能会失败。
+      */
+      double result = 0.1 + 0.2;
+
+      // 语法：closeTo(期望值, 容差范围)
+      // 只要结果在 0.3 ± 0.0001 之间即视为通过
+      expect(result, closeTo(0.3, 0.0001));
+    });
+
+    test('组合范围检查', () {
+      num temperature = 25;
+
+      // 使用 allOf 检查数值是否在某个区间内 (20 &lt; temp &lt; 30)
+      expect(temperature, allOf([
+        greaterThan(20),
+        lessThan(30)
+      ]));
+    });
+
+  });
+}
+</code></pre>
+<h2 id="字符串匹配器string-matchers"><a class="header" href="#字符串匹配器string-matchers">字符串匹配器（String Matchers）</a></h2>
+<p>字符串匹配器（String Matchers）专门用于校验文本内容。它们允许你检查字符串的部分特征（如开头、结尾、是否包含）或者使用正则表达式进行复杂的模式匹配。</p>
+<ul>
+<li><code>startsWith('prefix') / endsWith('suffix')</code>: 前缀/后缀。</li>
+<li><code>contains('substring')</code>: 包含子串。</li>
+<li><code>matches(RegExp(...))</code>: 使用正则表达式匹配。</li>
+<li><code>isEmpty / isNotEmpty</code>: 空/非空字符串</li>
+<li><code>equalsIgnoringCase</code>: 判断字符串相等时忽略大小写</li>
+</ul>
+<pre><code class="language-dart">// m_string_test.dart
+import 'package:test/test.dart';
+
+void main() {
+  group('字符串匹配器 (String Matchers) 演示', () {
+    
+    test('位置与包含匹配', () {
+      var report = 'Error: Battery low on device_01';
+
+      // 检查是否以特定字符串开头/结尾
+      expect(report, startsWith('Error'));
+      expect(report, endsWith('device_01'));
+
+      // 检查是否包含子串
+      expect(report, contains('Battery'));
+      expect(report, contains('low'));
+    });
+
+    test('忽略大小写与空白', () {
+      var email = 'User@Example.Com';
+
+      // equalsIgnoringCase 检查内容是否一致，但不区分大小写
+      expect(email, equalsIgnoringCase('user@example.com'));
+
+      // collapseWhitespace 匹配时会将多个空格、换行符压缩为一个空格
+      var multiLine = 'Hello    \n  World';
+      expect(multiLine, equalsIgnoringWhitespace('Hello World'));
+    });
+
+    test('正则表达式匹配 (matches)', () {
+      var id = 'ABC-12345';
+
+      // 使用 matches 配合正则表达式进行复杂校验
+      // 校验规则：三个大写字母 + 短横线 + 五位数字
+      expect(id, matches(RegExp(r'^[A-Z]{3}-\d{5}$')));
+    });
+
+    test('空字符串校验', () {
+      var emptyStr = '';
+      var spaceStr = '   ';
+
+      expect(emptyStr, isEmpty);
+      expect(spaceStr, isNotEmpty);
+      
+      // 只有全是空格的字符串可以这样检查其内容
+      expect(spaceStr.trim(), isEmpty);
+    });
+
+  });
+}
+</code></pre>
+<h2 id="集合匹配器-collection-matchers"><a class="header" href="#集合匹配器-collection-matchers">集合匹配器 (Collection Matchers)</a></h2>
+<p>集合匹配器（Collection Matchers）不仅能检查 List、Set 或 Map 是否包含某个元素，还能校验集合的长度、顺序以及元素类型。</p>
+<ul>
+<li>内容检查
+<ul>
+<li><code>contains(element)</code>: 包含某个元素。</li>
+<li><code>isIn(iterable)</code>: 实际值是否在给定的集合中。</li>
+</ul>
+</li>
+<li>长度检查
+<ul>
+<li><code>hasLength(n)</code>: 检查集合、字符串的长度。</li>
+</ul>
+</li>
+<li>列表顺序
+<ul>
+<li><code>containsAll([a, b])</code>: 包含所有指定元素，顺序不限。</li>
+<li><code>containsAllInOrder([a, b])</code>: 包含所有元素，且顺序必须一致。</li>
+</ul>
+</li>
+<li>Map 专用
+<ul>
+<li><code>containsValue(v)</code>: 检查值</li>
+<li><code>containsPair(key, valueOrMatcher)</code>: 检查键值对。</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-dart">// m_collection_test.dart
+import 'package:test/test.dart';
+
+void main() {
+  group('集合匹配器 (Collection Matchers) 演示', () {
+    test('内容与长度检查', () {
+      var fruits = ['apple', 'banana', 'cherry'];
+
+      expect(fruits, isNotEmpty);
+      expect(fruits, hasLength(3));
+      expect(fruits, contains('banana'));
+    });
+
+    test('列表元素匹配 (List)', () {
+      var numbers = [1, 2, 3, 4, 5];
+
+      // 包含所有指定元素，顺序不限
+      expect(numbers, containsAll([3, 1, 5]));
+
+      // 包含所有指定元素，且顺序必须一致
+      expect(numbers, containsAllInOrder([2, 3, 4]));
+
+      // 检查列表中的每一个元素是否都符合某个条件
+      // 比如：所有数字都大于 0
+      expect(numbers, everyElement(greaterThan(0)));
+
+      // 检查列表中是否有【至少一个】元素符合条件
+      expect(numbers, anyElement(greaterThan(4)));
+    });
+
+    test('Map 键值对检查', () {
+      var config = {
+        'id': 101,
+        'status': 'active',
+        'tags': ['admin', 'web'],
+      };
+
+      expect(config, contains('status')); // contains key
+      expect(config, containsValue('active'));
+
+      expect(config, containsPair('id', 101));
+    });
+
+    test('组合逻辑校验', () {
+      var users = ['Alice', 'Bob', 'Charlie'];
+
+      // 检查集合是否：不为空 且 长度小于 5 且 包含 'Alice'
+      expect(
+        users,
+        allOf([isNotEmpty, hasLength(lessThan(5)), contains('Alice')]),
+      );
+    });
+  });
+}
+</code></pre>
+<h2 id="类型匹配器-type-matchers"><a class="header" href="#类型匹配器-type-matchers">类型匹配器 (Type Matchers)</a></h2>
+<p>类型匹配器（Type Matchers） 用于验证对象的类、接口或具体的子类型。这在处理多态、依赖注入或解析 API 返回的动态数据时至关重要。</p>
+<ul>
+<li><code>isA&lt;T&gt;()</code>: 检查类型</li>
+<li><code>isA&lt;T&gt;().having(feature, description, matcher)</code> : 在确认类型后，直接对该类型的属性进行链式校验
+<ul>
+<li>第一个参数：特征提取器（Feature extractor），通常是一个匿名函数。</li>
+<li>第二个参数：描述文字（Description），当测试失败时，会显示在错误报告中。</li>
+<li>第三个参数：期望值或另一个匹配器。</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-dart">// m_type_test.dart
+import 'package:test/test.dart';
+
+void main() {
+  test('类型校验', () {
+    var name = 'Kitty';
+    var numbers = [1, 2, 3];
+
+    expect(name, isA&lt;String&gt;());
+    expect(numbers, isA&lt;List&lt;int&gt;&gt;());
+
+    // 也可以检查接口或父类
+    expect(numbers, isA&lt;Iterable&gt;());
+  });
+
+  test('检查对象类型及其属性', () {
+    var admin = User('Alice', 99);
+
+    expect(
+      admin,
+      isA&lt;User&gt;()
+          .having((u) =&gt; u.name, 'name', 'Alice') // 检查名字
+          .having((u) =&gt; u.level, 'level', greaterThan(90)), // 检查等级
+    );
+  });
+}
+
+class User {
+  final String name;
+  final int level;
+  User(this.name, this.level);
+}
+</code></pre>
+<p>为了方便使用，test 库提供了一些预定义的类型匹配器。</p>
+<div class="table-wrapper"><table><thead><tr><th>匹配器</th><th>等效于</th></tr></thead><tbody>
+<tr><td><code>isList</code></td><td><code>isA&lt;List&gt;()</code></td></tr>
+<tr><td><code>isMap</code></td><td><code>isA&lt;Map&gt;()</code></td></tr>
+<tr><td><code>isArgumentError</code></td><td><code>isA&lt;ArgumentError&gt;()</code></td></tr>
+<tr><td><code>isException</code></td><td><code>isA&lt;Exception&gt;()</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="异常匹配器-error-matchers"><a class="header" href="#异常匹配器-error-matchers">异常匹配器 (Error Matchers)</a></h2>
+<p>检查代码是否会抛出异常是健壮性测试的重要组成部分。为了测试异常，<code>expect</code>函数的第一个参数必须是一个闭包（匿名函数），这样测试框架才能捕获执行过程中抛出的错误。</p>
+<ul>
+<li><code>throwsException</code>: 抛出任何异常。</li>
+<li><code>throwsA&lt;T&gt;</code>: 抛出特定类型的异常。</li>
+</ul>
+<pre><code class="language-dart">// m_ex_test.dart
+import 'package:test/test.dart';
+
+void main() {
+  group('异常匹配器 (Error Matchers) 演示', () {
+    // 异常检查
+    test('捕获任意异常', () {
+      // 必须包装在 () =&gt; 中
+      expect(() =&gt; throw Exception('oops'), throwsException);
+    });
+
+    // 检查特定的异常类型 (使用 throwsA)
+    test('捕获特定类型的错误', () {
+      // 检查是否抛出了 StateError
+      expect(() =&gt; List.empty().first, throwsA(isA&lt;StateError&gt;()));
+
+      // 检查是否抛出了 ArgumentError
+      expect(() =&gt; int.parse('not_a_number'), throwsA(isA&lt;FormatException&gt;()));
+    });
+
+    // 检查异常的具体内容
+    test('检查异常消息内容', () {
+      expect(
+        () =&gt; throw ArgumentError('invalid id'),
+        throwsA(
+          isA&lt;ArgumentError&gt;().having(
+            (e) =&gt; e.message, // 特性提取器 (Property getter)
+            'message', // 描述（用于报错显示）
+            contains('invalid'), // 匹配器
+          ),
+        ),
+      );
+    });
+
+    // 断言错误 (AssertionError)
+    test('捕获断言失败', () {
+      expect(() {
+        assert(1 == 2, 'Logic error');
+      }, throwsA(isA&lt;AssertionError&gt;()));
+    });
+
+    // 异步异常处理
+    test('捕获 Future 中的异常', () async {
+      Future&lt;void&gt; asyncError() async {
+        await Future.delayed(Duration(milliseconds: 10));
+        throw Exception('async error');
+      }
+
+      await expectLater(asyncError(), throwsA(isA&lt;Exception&gt;()));
+    });
+  });
+}
+</code></pre>
+<h2 id="逻辑组合-logical-combinators"><a class="header" href="#逻辑组合-logical-combinators">逻辑组合 (Logical Combinators)</a></h2>
+<p>逻辑组合匹配器 (Logical Combinators) 允许你将多个基础匹配器组合成复杂的校验逻辑，就像在代码中使用 <code>&amp;&amp;</code> (AND)、<code>||</code> (OR) 和 <code>!</code> (NOT) 一样。</p>
+<ul>
+<li><code>allOf([m1, m2])</code>: 必须满足所有匹配器（逻辑与）。</li>
+<li><code>anyOf([m1, m2])</code>: 满足其中之一即可（逻辑或）。</li>
+<li><code>isNot(matcher)</code>: 取反</li>
+</ul>
+<pre><code class="language-dart">// m_logic_test.dart
+import 'package:test/test.dart';
+
+void main() {
+  test('allOf 演示：数值范围与特征', () {
+    var score = 64;
+
+    // 检查数值是否：大于 80 且 小于 100 且 是偶数
+    expect(
+      score,
+      allOf([
+        greaterThan(60),
+        lessThan(100),
+        predicate&lt;int&gt;((n) =&gt; n % 2 == 0, 'is even'),
+      ]),
+    );
+  });
+
+  test('anyOf 演示：多选一校验', () {
+    var status = 'loading';
+
+    // 状态必须是 'success'、'error' 或 'loading' 中的一种
+    expect(
+      status,
+      anyOf([equals('success'), equals('error'), 'loading']),
+    );
+
+    // 也可以混合不同类型的匹配器
+    var value = 5;
+    expect(value, anyOf([isNegative, isZero, 5]));
+  });
+
+  test('isNot 演示：排除特定状态', () {
+    var token = 'secure_token_123';
+
+    expect(token, isNot(isEmpty));
+    expect(token, isNot(startsWith('debug_')));
+    expect(token, isNot(contains('password')));
+  });
+}
+</code></pre>
+<h2 id="自定义匹配器"><a class="header" href="#自定义匹配器">自定义匹配器</a></h2>
+<p>当现有的匹配器无法满足复杂的业务需求时，我们可以通过 继承 <code>Matcher</code> 或 <code>CustomMatcher</code> 来自定义匹配器。</p>
+<h3 id="通过继承-matcher-来自定义匹配器"><a class="header" href="#通过继承-matcher-来自定义匹配器">通过继承 <code>Matcher</code> 来自定义匹配器</a></h3>
+<p>这里要实现一个自定义匹配器，需要重写三个核心方法：</p>
+<ul>
+<li><code>matches(item, matchState)</code>: 核心逻辑。返回 true 表示匹配成功。</li>
+<li><code>describe(Description description)</code>: 描述“期望值”是什么。</li>
+<li><code>describeMismatch(...)</code> (可选): 当匹配失败时，描述“实际值”为什么不对。</li>
+</ul>
+<p>下面例子中的自定义匹配器 <code>isEmail</code> ，用来校验一个字符串是否为 Email 格式。</p>
+<pre><code class="language-dart">// m_email_test.dart
+import 'package:test/test.dart';
+
+void main() {
+  test('自定义匹配器演示', () {
+    expect('hello@example.com', isEmail);
+    expect('invalid-email', isNot(isEmail));
+  });
+}
+
+// 定义匹配器类
+class _IsEmail extends Matcher {
+  const _IsEmail();
+
+  @override
+  bool matches(dynamic item, Map matchState) {
+    if (item is! String) return false;
+    // 简单的正则示例
+    return RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+$").hasMatch(item);
+  }
+
+  @override
+  Description describe(Description description) {
+    return description.add('是一个合法的 Email 地址');
+  }
+
+  @override
+  Description describeMismatch(
+    dynamic item,
+    Description mismatchDescription,
+    Map matchState,
+    bool verbose,
+  ) {
+    return mismatchDescription
+        .add('实际值是 ')
+        .addDescriptionOf(item)
+        .add('，不符合邮箱格式');
+  }
+}
+
+// 封装成一个全局常量
+const Matcher isEmail = _IsEmail();
+</code></pre>
+<h3 id="通过继承-custommatcher-来自定义匹配器"><a class="header" href="#通过继承-custommatcher-来自定义匹配器">通过继承 <code>CustomMatcher</code> 来自定义匹配器</a></h3>
+<p>如果只需要对某个类的属性做检查，继承 <code>CustomMatcher</code> 会更简单。</p>
+<pre><code class="language-dart">// m_adult_test.dart
+import 'package:test/test.dart';
+
+void main() {
+  test('自定义匹配器演示(CustomMatcher)', () {
+    expect(User('Sally', 18), isAdult);
+    expect(User('Andrew', 12), isNotAdult);
+  });
+}
+
+final isAdult = _IsAdult();
+final isNotAdult = isNot(isAdult);
+
+class _IsAdult extends CustomMatcher {
+  _IsAdult() : super("age&gt;=18", "age", greaterThanOrEqualTo(18));
+
+  @override
+  Object? featureValueOf(actual) =&gt; (actual as User).age;
+}
+
+class User {
+  String name = '';
+  int age = 0;
+  User(this.name, this.age);
+}
+</code></pre>
+<h2 id="predicate"><a class="header" href="#predicate"><code>predicate</code></a></h2>
+<p>当你不想为了一个简单的逻辑去写一个 <code>CustomMatcher</code> 类时，<code>predicate</code> 就是你的最佳选择。</p>
+<pre><code class="language-dart">  test('使用 predicate 校验 age', () {
+    expect(User('Sally', 18), predicate&lt;User&gt;((u) =&gt; u.age &gt;= 18, 'age&gt;=18'));
+  });
+</code></pre>
+<h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
+<ul>
+<li><a href="https://pub.dev/packages/test">https://pub.dev/packages/test</a></li>
+<li><a href="https://pub.dev/packages/matcher">https://pub.dev/packages/matcher</a></li>
+<li><a href="https://pub.dev/documentation/matcher/latest/matcher/">https://pub.dev/documentation/matcher/latest/matcher/</a></li>
+<li><a href="https://pub.dev/documentation/matcher/latest/matcher/CustomMatcher-class.html">CustomMatcher</a></li>
+</ul>
 
                     </main>
 

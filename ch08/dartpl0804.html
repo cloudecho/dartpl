@@ -165,6 +165,124 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="异步代码测试"><a class="header" href="#异步代码测试">异步代码测试</a></h1>
+<p>在 Dart 中测试异步代码主要处理两种模式：Future（单次异步回调）和 Stream（持续的数据流）。
+Dart 的 <code>test</code> 库提供了 <code>expectLater</code> 和专门的异步匹配器（如 <code>completion</code> 和 <code>emits</code>），让异步断言像同步代码一样自然。</p>
+<h2 id="测试-future"><a class="header" href="#测试-future">测试 Future</a></h2>
+<p>如下示例演示了测试 Future的两种主流方式。</p>
+<pre><code class="language-dart">// a_futrue_test.dart
+import 'package:test/test.dart';
+import 'dart:async';
+
+void main() {
+  group('Future 测试演示', () {
+    test('方式 A：使用 await 配合 expect (简单直观)', () async {
+      final result = await fetchUsername();
+      expect(result, equals('Strawberry'));
+    });
+
+    test('方式 B：使用 expectLater 与 completion (更具声明性)', () async {
+      // completion 匹配器会等待 Future 完成并校验其结果
+      await expectLater(fetchUsername(), completion(startsWith('Straw')));
+    });
+
+    test('异步异常校验', () async {
+      Future&lt;void&gt; failTask() async =&gt; throw Exception('Connection Error');
+
+      // 使用 throwsA 捕获异步抛出的异常
+      await expectLater(failTask(), throwsException);
+    });
+  });
+}
+
+// 模拟一个异步 API 请求
+Future&lt;String&gt; fetchUsername() async {
+  await Future.delayed(Duration(milliseconds: 100));
+  return 'Strawberry';
+}
+</code></pre>
+<h2 id="测试-stream"><a class="header" href="#测试-stream">测试 Stream</a></h2>
+<p>测试 Stream 时，通常需要校验流发出的一系列值，这就要用到 <code>emits</code> 系列匹配器。</p>
+<pre><code class="language-dart">// a_stram_test.dart
+
+import 'package:test/test.dart';
+
+void main() {
+  group('Stream 测试演示', () {
+    test('校验流发出的多个值', () async {
+      final stream = countStream(3);
+
+      // expectLater 会按顺序校验流中的事件
+      await expectLater(
+        stream,
+        emitsInOrder([
+          1, // 第一个值
+          2, // 第二个值
+          3, // 第三个值
+          emitsDone, // 校验流已正常关闭
+        ]),
+      );
+    });
+
+    test('校验流中的部分特征', () async {
+      final stream = countStream(5);
+      expect(stream, emitsAnyOf([emits(1), contains(5)]));
+    });
+  });
+}
+
+// 模拟一个计数器流
+Stream&lt;int&gt; countStream(int max) async* {
+  for (int i = 1; i &lt;= max; i++) {
+    yield i;
+  }
+}
+</code></pre>
+<h2 id="异步匹配器一览"><a class="header" href="#异步匹配器一览">异步匹配器一览</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>匹配器</th><th>用途</th></tr></thead><tbody>
+<tr><td><code>completion(m)</code></td><td>等待 <code>Future</code> 完成，并对结果应用匹配器 <code>m</code></td></tr>
+<tr><td><code>emits(v)</code>	断言 <code>Stream</code></td><td>发出的下一个值是 <code>v</code></td></tr>
+<tr><td><code>emitsInOrder([...])</code></td><td>按顺序断言 <code>Stream</code> 发出的一系列值</td></tr>
+<tr><td><code>emitsDone</code></td><td>断言 <code>Stream</code> 已经结束，没有更多事件</td></tr>
+<tr><td><code>emitsError(m)</code></td><td>断言 <code>Stream</code> 会发出一个符合 <code>m</code> 的错误事件</td></tr>
+</tbody></table>
+</div>
+<h2 id="fakeasync"><a class="header" href="#fakeasync">FakeAsync</a></h2>
+<p>FakeAsync 允许你通过“虚构时间”来瞬间完成原本需要等待数秒甚至数小时的任务（如 <code>Future.delayed</code> 或 <code>Timer</code>）。
+这里需要引入 <code>fake_async</code> 包。</p>
+<pre><code class="language-bash">dart pub add dev:fake_async
+</code></pre>
+<p>下面的例子演示了如何使用FaskAsync。</p>
+<pre><code class="language-dart">// a_fake_test.dart
+import 'package:test/test.dart';
+import 'package:fake_async/fake_async.dart';
+
+void main() {
+  test('使用 fakeAsync 瞬间完成 1 分钟的等待', () {
+    fakeAsync((async) {
+      bool isTriggered = false;
+
+      // 1. 设置一个长时间的异步任务
+      Future.delayed(Duration(minutes: 1), () {
+        isTriggered = true;
+      });
+
+      // 2. 此时任务还没执行
+      expect(isTriggered, isFalse);
+
+      // 3. 关键操作：拨动时钟，快进 1 分钟
+      async.elapse(Duration(minutes: 1));
+
+      // 4. 现在任务已经执行了！
+      expect(isTriggered, isTrue);
+    });
+  });
+}
+</code></pre>
+<p><code>fakeAsync</code> 创建了一个“时间沙盒”。在这个沙盒里，Dart 的事件循环不再依赖系统时钟，而是由 <code>async.elapse()</code> 手动驱动。只有在 <code>fakeAsync((async) { ... })</code> 闭包内部启动的异步任务（<code>Future, Timer, Stream</code>）会被受控。在 <code>fakeAsync</code> 内部不要使用 <code>await Future.delayed</code>（这会导致微任务挂起），而应该使用 <code>async.elapse()</code>。如果你只想运行挂起的异步微任务而不推进时钟，可以使用 <code>async.flushMicrotasks()</code>。</p>
+<h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
+<ul>
+<li><a href="https://pub.dev/packages/test">https://pub.dev/packages/test</a></li>
+</ul>
 
                     </main>
 

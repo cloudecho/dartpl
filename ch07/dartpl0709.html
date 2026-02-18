@@ -511,7 +511,7 @@ class Worker {
 <pre><code class="language-dart">        _retryCounts[workerId] = 0; // reset reborn count
 </code></pre>
 <p><em>要点解析</em>:</p>
-<p>a. <em>避免群效应</em>：代码中的随机抖动 <code>jitter = Random().nextInt(50) ms</code> ，看似这微小，但却是<em>多Isolate或分布式</em>系统中的“防洪坝”——它能有效避免多个 <code>Isolate</code> 在同一时刻重启而产生的 CPU 峰值（即惊群效应），因为这些重启请求将被均匀地摊分在时间轴上。</p>
+<p>a. <em>避免惊群效应</em>：代码中的随机抖动 <code>jitter = Random().nextInt(50) ms</code> ，看似这微小，但却是<em>多Isolate或分布式</em>系统中的“防洪坝”——它能有效避免多个 <code>Isolate</code> 在同一时刻重启而产生的 CPU 峰值（即惊群效应），因为这些重启请求将被均匀地摊分在时间轴上。</p>
 <p>b. <em>递归重启</em>： 在 catch 块中通过判断 <code>delay &lt; _maxDelay</code> 再次调用<code>_reborn</code>，形成了一个自动重试的闭环。只要延迟没达到上限且 WorkerPool 未关闭，系统就会持续尝试恢复健康。</p>
 <p>c. 在 <code>Future.delayed</code> 的开始和 <code>_spawn</code> 之前双重检查 <code>if (_closed) return</code>，确保了在 WorkerPool 关闭期间不会有“幽灵 Isolate”被创建出来。</p>
 <h3 id="其它细节"><a class="header" href="#其它细节">其它细节</a></h3>

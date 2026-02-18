@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>质量度量与工程化实践 - 从0开始学Dart</title>
+        <title>测试质量度量 - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -164,7 +164,204 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="质量度量与工程化实践"><a class="header" href="#质量度量与工程化实践">质量度量与工程化实践</a></h1>
+                        <h1 id="测试质量度量"><a class="header" href="#测试质量度量">测试质量度量</a></h1>
+<p>评估一个测试套件的“含金量”，我们通常关注如下四个维度：</p>
+<ul>
+<li><a href="#%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87">代码覆盖率 (Code Coverage)</a>：通过行覆盖和分支覆盖，识别未经测试的“逻辑盲区”。</li>
+<li><a href="#%E6%B5%8B%E8%AF%95%E6%9C%89%E6%95%88%E6%80%A7">测试有效性 (Test Effectiveness)</a>：引入变异测试（Mutation Testing），确保断言（Expectations）具有捕获缺陷的能力。</li>
+<li><a href="#%E6%B5%8B%E8%AF%95%E8%BF%90%E8%A1%8C%E6%80%A7%E8%83%BD">测试运行性能 (Performance)</a>：监控测试执行时长，避免缓慢的测试套件拖累持续集成（CI）效率。</li>
+<li><a href="./dartpl0807.html">静态代码分析 (Static Analysis)</a>：利用 <code>dart analyze</code> 确保测试代码的严谨性与一致性。</li>
+</ul>
+<p>本节将讨论前三个维度，而将最后一个维度留在下一节讨论。</p>
+<h2 id="代码覆盖率"><a class="header" href="#代码覆盖率">代码覆盖率</a></h2>
+<h3 id="覆盖率及度量标准"><a class="header" href="#覆盖率及度量标准">覆盖率及度量标准</a></h3>
+<p>代码覆盖率衡量的是在运行测试套件时，生产代码中有多少行/分支被执行到了。</p>
+<p>其度量标准有：</p>
+<ul>
+<li>行覆盖率 (Line Coverage): 执行到的代码行数百分比。</li>
+<li>分支覆盖率 (Branch Coverage): <code>if/else</code>、<code>switch</code> 等逻辑分支的覆盖情况。</li>
+</ul>
+<p><em>注：在目前的 Dart SDK 版本(3.8)中，原生覆盖率工具并不支持 Branch Coverage。</em></p>
+<h2 id="实战1覆盖率"><a class="header" href="#实战1覆盖率">实战1：覆盖率</a></h2>
+<p>在 Dart 的原生测试流程中，<code>dart test --coverage=&lt;coverage_data_dir&gt;</code> 默认生成的是 <code>.vm.json</code> 格式的原始数据。要将这些 JSON 文件转换为人类可读的 HTML 报告，需要先将其转换为 <code>LCOV</code> 格式，再生成 HTML。
+整个过程可以参考如下脚本：</p>
+<pre><code class="language-bash">#!/bin/bash
+# gencov.sh
+
+# 检查 coverage 工具是否已全局安装
+if ! command -v format_coverage &amp;&gt; /dev/null; then
+    echo "正在安装 coverage 工具..."
+    dart pub global activate coverage
+fi
+
+# 移除旧的覆盖率数据
+rm -rf coverage/
+
+# 运行测试并生成 JSON 数据
+dart test --coverage=coverage
+
+# 格式化转换 
+dart pub global run coverage:format_coverage \
+  --in=coverage \
+  --out=coverage/lcov.info \
+  --report-on=lib \
+  --lcov \
+  --check-ignore
+
+# 生成可视化报告
+if [ -f "coverage/lcov.info" ]; then
+    genhtml coverage/lcov.info -o coverage/html
+    echo "✅ 报告生成成功: coverage/html/index.html"
+    # open coverage/html/index.html
+else
+    echo "❌ 失败：未找到 lcov.info"
+fi
+</code></pre>
+<p>理想的测试覆盖率应遵循金字塔结构。</p>
+<div class="table-wrapper"><table><thead><tr><th>测试类型</th><th>参考比例</th><th>度量重点</th></tr></thead><tbody>
+<tr><td>Integration/E2E Tests (集成测试)</td><td>5-10%</td><td>跨层级流转、真实数据库/网络请求。速度慢，维护成本高。</td></tr>
+<tr><td>Widget/Component Tests (组件测试)</td><td>15-20%</td><td>UI 交互、组件渲染逻辑。</td></tr>
+<tr><td>Unit Tests (单元测试)</td><td>70-80%</td><td>核心逻辑、算法、纯 Dart 代码。速度极快。</td></tr>
+</tbody></table>
+</div>
+<p>具体的测试覆盖率分配参考：</p>
+<ul>
+<li>核心业务逻辑 (Services/Models)：目标 95%+。这里是 Bug 出现最多的地方。重点测试各种边界条件、异常处理、状态转换。</li>
+<li>工具类 (Utils)：目标 100%。工具函数必须绝对纯净可靠。</li>
+<li>UI 渲染层 (Widgets)：目标 40% - 60%。重点测试交互逻辑和状态流转而非视觉表现。</li>
+<li>第三方配置 (Config/Firebase)：目标 0%。排除这些文件，避免虚高的覆盖率掩盖真实问题。</li>
+</ul>
+<h2 id="测试有效性"><a class="header" href="#测试有效性">测试有效性</a></h2>
+<p>如果说覆盖率是评估测试的<em>广度</em>，那么测试有效性（Test Effectiveness）则是评估测试的<em>深度与真实性</em>。测试有效性关注的是：如果代码出现了逻辑错误，现有的测试套件是否会报错（Fail）？</p>
+<h3 id="提升测试有效性的三个维度"><a class="header" href="#提升测试有效性的三个维度">提升测试有效性的三个维度</a></h3>
+<p><em>拒绝“为了覆盖而覆盖”的测试</em></p>
+<p>有些开发者为了刷指标，会写出没有 <code>expect()</code> 的测试。</p>
+<pre><code class="language-dart">test('void test', () {
+  someFunction(); // 跑过了，覆盖率涨了，但没有任何断言
+});
+</code></pre>
+<p>此类无效测试增加了维护成本，提供的却是虚假的安全感。</p>
+<p><em>边界值与等价类划分</em></p>
+<p>有效的测试不应只测“正常情况”，还要重点关注边界值与异常值。</p>
+<ul>
+<li>正常值：2 / 1 = 2</li>
+<li>边界值：最大整数、空字符串、数值区间的边界等。</li>
+<li>异常值：传入非预期的 Null、0、负数或格式错误的 JSON 等。</li>
+</ul>
+<p><em>模拟真实环境</em></p>
+<p>如果 Mock 对象总是返回正确的结果，那么永远测不到代码处理<em>网络超时</em>或 <em>500 错误</em>的逻辑。因此我们必须有意识地编写针对各类异常情况的负向测试用例（Negative Cases）。</p>
+<h3 id="变异测试"><a class="header" href="#变异测试">变异测试</a></h3>
+<p>衡量测试有效性最科学的方法是<strong>变异测试</strong> (Mutation Testing)，其<em>原理</em>是：工具会自动修改你的源代码（称为“注入变异”），例如将 <code>a &gt; b</code> 改为<code> a &gt;= b</code>，或者将 <code>+</code> 改为 <code>-</code>。</p>
+<p><em>指标</em></p>
+<ul>
+<li>被杀死的变异体 (Killed Mutants)：测试失败了。说明你的测试有效，捕捉到了逻辑变化。</li>
+<li>存活的变异体 (Survived Mutants)：测试依然通过。说明你的测试存在盲区，即使逻辑改错了也发现不了。</li>
+<li>变异分数 (Mutation Score)</li>
+</ul>
+<p>$$Mutation\ Score = \frac{\text{Killed Mutants}}{\text{Total Mutants}} \times \text{100%}$$</p>
+<p><em>变异分数解读</em></p>
+<ul>
+<li>80%+：极高。代码逻辑极其稳健。</li>
+<li>60% - 80%：良好。核心逻辑有保障。</li>
+<li>40%：危险。即便覆盖率是 100%，测试也可能只是在“空跑”。</li>
+</ul>
+<h3 id="实战2-变异测试"><a class="header" href="#实战2-变异测试">实战2: 变异测试</a></h3>
+<p>下面我们拿之前编写的 <code>fraction.dart</code> 演示一下变异测试。</p>
+<p>首先安装工具（<code>mutation_test</code>）：</p>
+<pre><code class="language-bash">dart pub global activate mutation_test
+</code></pre>
+<p>然后编写一个规则文件 （<code>mutation-test.yaml</code>，此例只测试<code>lib/fraction.dart</code>）：</p>
+<pre><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;mutations version="1.1"&gt;
+  &lt;commands&gt;
+    &lt;command group="test" timeout="10"&gt;dart test test/fraction_test.dart&lt;/command&gt;
+  &lt;/commands&gt;
+
+  &lt;exclude&gt;
+    &lt;file&gt;lib/hellodart.dart&lt;/file&gt;
+    
+    &lt;regex pattern=".*\.g\.dart" /&gt;
+    &lt;directory&gt;test&lt;/directory&gt;
+
+    &lt;token begin="//" end="\n" /&gt;
+    &lt;regex pattern="/\*[\s\S]*?\*/" dotAll="true" /&gt;
+    &lt;token begin="///" end="\n" /&gt;
+
+    &lt;regex pattern="String toString\(\)[\s\S]*?\}" /&gt;
+  &lt;/exclude&gt;
+
+  &lt;rules&gt;
+    &lt;literal text="+"&gt; &lt;mutation text="-"/&gt; &lt;/literal&gt;
+    &lt;literal text="-"&gt; &lt;mutation text="+"/&gt; &lt;/literal&gt;
+    &lt;literal text="*"&gt; &lt;mutation text="/"/&gt; &lt;/literal&gt;
+    &lt;literal text="/"&gt; &lt;mutation text="*"/&gt; &lt;/literal&gt;
+
+    &lt;literal text="=="&gt; &lt;mutation text="!="/&gt; &lt;/literal&gt;
+    &lt;literal text="&amp;lt;0"&gt; &lt;mutation text="&amp;gt;0"/&gt; &lt;/literal&gt; 
+    &lt;literal text="~/ "&gt; &lt;mutation text="/ "/&gt; &lt;/literal&gt;
+
+    &lt;regex pattern="b == 0 \? a :"&gt;
+      &lt;mutation text="b != 0 ? a :"/&gt;
+      &lt;mutation text="b == 0 ? b :"/&gt;
+    &lt;/regex&gt;
+  &lt;/rules&gt;
+
+  &lt;threshold failure="80"&gt;
+    &lt;rating over="80" name="A - 极高可靠性" /&gt;
+    &lt;rating over="60" name="B - 逻辑达标" /&gt;
+  &lt;/threshold&gt;
+&lt;/mutations&gt;
+</code></pre>
+<p>最后运行变异测试：</p>
+<pre><code class="language-bash">$ dart pub global run mutation_test --rules mutation-rules.xml
+Found 30 mutations in 1 source files!
+lib/fraction.dart : 30 mutations
+OK: 3/30 (10.00%) mutations were not detected!                                 
+  --- Results ---
+Test group statistics:
+  Group : test, Found mutations: 27
+
+Total tests: 30
+Undetected Mutations: 3 (10.00%)
+Timeouts: 0
+Not covered by tests: 0
+Elapsed: 0:01:15.163499
+Success: true, Quality rating: A - 极高可靠性
+Output has been written to mutation-test-report
+</code></pre>
+<p>测试报告输出至 <code>mutation-test-report</code> 文件夹中，可通过浏览器查看（<code>mutation-test-report/mutation-test-report.html</code>）。</p>
+<h2 id="测试运行性能"><a class="header" href="#测试运行性能">测试运行性能</a></h2>
+<p>如果测试运行太慢，CI/CD (持续集成/开发)流水线会变成开发的瓶颈。在 Dart 和 Flutter 生态中，优化测试性能有其独特的策略。</p>
+<h3 id="并行测试"><a class="header" href="#并行测试">并行测试</a></h3>
+<p>Dart 的测试运行器默认会尝试并行运行不同的测试文件。因此应该将一个大的测试文件拆分成多个小文件。实战中我们指定测试并行数（根据 CPU 核心数调整）：</p>
+<pre><code class="language-bash">dart test -j 4
+</code></pre>
+<h3 id="延迟初始化"><a class="header" href="#延迟初始化">延迟初始化</a></h3>
+<p><code>setUpAll</code> 用于初始化在某个测试组中通用的一些对象，例如 Mock 数据库。此类操作往往昂贵（费时），可采用延迟初始化的策略 —— 只在真正需要时才执行。</p>
+<h3 id="优化变异测试的性能"><a class="header" href="#优化变异测试的性能">优化变异测试的性能</a></h3>
+<p><em>增量变异 (Incremental Analysis)</em></p>
+<p>在 CI 中，可以通过 <code>git diff </code>只针对本次修改的文件运行变异测试。</p>
+<pre><code class="language-bash">dart pub global run mutation_test \
+  --rules mutation-rules.xml \
+  $(echo $(git diff --name-only HEAD HEAD~1 | grep -v "^test" | grep ".dart$" | tr '\n' ' '))
+</code></pre>
+<p><em>利用 LCOV 数据</em></p>
+<p>mutation_test 支持读取覆盖率文件。如果某行代码根本没被覆盖，工具会直接跳过变异，从而节省大量无效的测试运行。</p>
+<pre><code class="language-bash">dart test --coverage=coverage
+
+dart pub global run mutation_test \
+  --rules mutation-rules.xml \
+  --coverage coverage/lcov.info
+</code></pre>
+<h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
+<ul>
+<li><a href="https://martinfowler.com/bliki/TestCoverage.html">Test Coverage (by Martin Fowler)</a></li>
+<li><a href="https://www.etsy.com/codeascraft/mutation-testing-a-tale-of-two-suites">Mutation Testing: A Tale of Two Suites</a></li>
+<li><a href="https://testing.googleblog.com/2020/08/code-coverage-best-practices.html">Code Coverage Best Practices</a></li>
+<li><a href="https://iso25000.com/index.php/en/iso-25000-standards/iso-25010">ISO 25010 Software and Data Quality</a></li>
+<li><a href="https://pub.dev/packages/coverage">https://pub.dev/packages/coverage</a></li>
+<li><a href="https://pub.dev/packages/mutation_test">https://pub.dev/packages/mutation_test</a></li>
+</ul>
 
                     </main>
 
@@ -174,7 +371,7 @@
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../ch09/dartpl0901.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ch08/dartpl0807.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -188,7 +385,7 @@
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../ch09/dartpl0901.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ch08/dartpl0807.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

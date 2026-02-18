@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>依赖模拟与 Mock 实践 - 从0开始学Dart</title>
+        <title>依赖模拟 (Mock) - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -164,7 +164,215 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="依赖模拟与-mock-实践"><a class="header" href="#依赖模拟与-mock-实践">依赖模拟与 Mock 实践</a></h1>
+                        <h1 id="依赖模拟-mock"><a class="header" href="#依赖模拟-mock">依赖模拟 (Mock)</a></h1>
+<p>真实的系统充满了各种“麻烦”的依赖（如数据库、网络请求、文件系统、传感器等）。为了保证单元测试的速度、稳定（不因断言时没网而失败）和纯粹（只测当前函数逻辑），我们需要使用 Mock（模拟对象）。</p>
+<h2 id="什么是-mock"><a class="header" href="#什么是-mock">什么是 Mock</a></h2>
+<p>Mock 对象就像是真实依赖的一个“替身”。我们可以通过它：</p>
+<ul>
+<li>Stubbing（存根）：预设它的行为（例如：当调用 <code>getData()</code> 时，返回 <code>OK</code>）。</li>
+<li>Verification（验证）：检查它是否被调用（例如：确认 <code>save()</code> 函数确实被执行了一次）。</li>
+</ul>
+<h2 id="引入-mocktail"><a class="header" href="#引入-mocktail">引入 Mocktail</a></h2>
+<p>本文将使用 <code>mocktail</code> 包来模拟外部依赖。
+首先向Dart Project添加 <code>dev:mocktail</code> 依赖:</p>
+<pre><code class="language-bash">dart pub add dev:mocktail
+</code></pre>
+<p><em>常用函数</em></p>
+<div class="table-wrapper"><table><thead><tr><th>语法</th><th>说明</th></tr></thead><tbody>
+<tr><td>when(...).thenReturn(val)</td><td>针对同步方法，设定返回固定值</td></tr>
+<tr><td>when(...).thenAnswer((_) async =&gt; val)</td><td>针对异步方法，设定返回 Future 或 Stream</td></tr>
+<tr><td>when(...).thenThrow(error)</td><td>模拟抛出异常（测试错误处理逻辑）</td></tr>
+<tr><td>any()</td><td>匹配器，表示接收任何参数</td></tr>
+<tr><td>verify(...).called(n)</td><td>检查该方法是否被调用了 n 次</td></tr>
+<tr><td>verifyNever(...)</td><td>确保该方法在测试中从未被调用</td></tr>
+</tbody></table>
+</div>
+<h2 id="mock-实战1-模拟数据库服务"><a class="header" href="#mock-实战1-模拟数据库服务">Mock 实战1： 模拟数据库服务</a></h2>
+<p>假设我们有一个 <code>User</code> 模型和一个负责逻辑处理的 <code>UserService</code>。</p>
+<pre><code class="language-dart">// &gt;&gt;&gt;&gt;&gt;&gt; 业务代码 &gt;&gt;&gt;&gt;&gt;&gt;
+
+class User {
+  final int id;
+  final String name;
+  User(this.id, this.name);
+}
+
+// 数据库接口层
+abstract class UserRepository {
+  Future&lt;User?&gt; getUserById(int id);
+  Future&lt;void&gt; saveUser(User user);
+}
+
+// 业务逻辑层 (我们要测试的对象)
+class UserService {
+  final UserRepository repository;
+  UserService(this.repository);
+
+  Future&lt;String&gt; fetchUserName(int id) async {
+    final user = await repository.getUserById(id);
+    return user == null ? 'Unknown User' : user.name;
+  }
+}
+</code></pre>
+<p>下面我们模拟 <code>UserRepository</code> 的行为，以测试 UserService 在不同数据库返回情况下的表现。</p>
+<pre><code class="language-dart">// mock_db_test.dart
+import 'package:test/test.dart';
+import 'package:mocktail/mocktail.dart';
+
+// 第一步：创建 Mock 类
+class MockUserRepository extends Mock implements UserRepository {}
+
+void main() {
+  late MockUserRepository mockRepo;
+  late UserService userService;
+
+  setUp(() {
+    mockRepo = MockUserRepository();
+    userService = UserService(mockRepo);
+  });
+
+  group('UserService.fetchUserName 数据库模拟测试', () {
+    test('当数据库能找到用户时，返回用户名', () async {
+      // 第二步：Stubbing (存根) - 模拟数据库返回一个真实对象
+      when(
+        () =&gt; mockRepo.getUserById(1),
+      ).thenAnswer((_) async =&gt; User(1, 'Mocktail'));
+
+      final result = await userService.fetchUserName(1);
+
+      expect(result, equals('Mocktail'));
+      // 第三步：验证 - 确认业务逻辑确实去查了 ID 为 1 的用户
+      verify(() =&gt; mockRepo.getUserById(1)).called(1);
+    });
+
+    test('当数据库找不到用户时 (返回 null)，返回 Unknown User', () async {
+      // 模拟数据库返回 null
+      when(() =&gt; mockRepo.getUserById(any())).thenAnswer((_) async =&gt; null);
+
+      final result = await userService.fetchUserName(999);
+
+      expect(result, 'Unknown User');
+      verify(() =&gt; mockRepo.getUserById(999)).called(1);
+    });
+
+    test('当数据库连接超时抛出异常时，业务层应该感知错误', () async {
+      // 模拟数据库崩溃
+      when(
+        () =&gt; mockRepo.getUserById(any()),
+      ).thenThrow(Exception('Database connection failed'));
+
+      // 验证业务层是否处理或直接抛出了异常
+      expect(() =&gt; userService.fetchUserName(10), throwsException);
+      verify(() =&gt; mockRepo.getUserById(10)).called(1);
+    });
+  });
+}
+</code></pre>
+<h2 id="mock-实战2-模拟-stream"><a class="header" href="#mock-实战2-模拟-stream">Mock 实战2: 模拟 Stream</a></h2>
+<p>在测试使用了响应式编程技术或WebSocket的程序时，时常免不了要模拟 Stream。</p>
+<h3 id="模拟一个简单的-stream"><a class="header" href="#模拟一个简单的-stream">模拟一个简单的 Stream</a></h3>
+<p>假设你有一个监控系统，它通过 Stream 实时推送传感器数据。</p>
+<pre><code class="language-dart">// &gt;&gt;&gt;&gt;&gt;&gt; 业务代码 &gt;&gt;&gt;&gt;&gt;&gt;
+
+abstract class SensorRepository {
+  Stream&lt;int&gt; get temperatureStream;
+}
+</code></pre>
+<p>下面的示例演示了如何模拟 Stream。</p>
+<pre><code class="language-dart">// mock_stream_test.dart
+import 'package:mocktail/mocktail.dart';
+import 'package:test/test.dart';
+
+class MockSensorRepository extends Mock implements SensorRepository {}
+
+void main() {
+  final mockRepo = MockSensorRepository();
+
+  test('模拟Stream A', () {
+    // 方式 A：直接返回一个预定义好的流
+    when(
+      () =&gt; mockRepo.temperatureStream,
+    ).thenAnswer((_) =&gt; Stream.fromIterable([20, 21, 22]));
+
+    // 断言校验
+    expect(mockRepo.temperatureStream, emitsInOrder([20, 21, 22]));
+  });
+
+  test('模拟Stream B', () {
+    // 方式 B：返回一个带延迟的流（更真实）
+    when(() =&gt; mockRepo.temperatureStream).thenAnswer(
+      (_) =&gt; Stream.periodic(
+        const Duration(milliseconds: 10),
+        (i) =&gt; 20 + i,
+      ).take(3),
+    );
+
+    // 断言校验
+    expect(mockRepo.temperatureStream, emitsInOrder([20, 21, 22]));
+  });
+}
+</code></pre>
+<h3 id="使用-streamcontroller-动态控制-stream"><a class="header" href="#使用-streamcontroller-动态控制-stream">使用 <code>StreamController</code> 动态控制 Stream</a></h3>
+<p>有时需要在测试运行过程中，手动触发流的发送。这时可以使用 <code>StreamController</code>。</p>
+<pre><code class="language-dart">// mock_streamc_test.dart
+import 'dart:async';
+
+import 'package:mocktail/mocktail.dart';
+import 'package:test/test.dart';
+
+class MockSensorRepository extends Mock implements SensorRepository {}
+
+void main() {
+  test('通过 StreamController 控制 Stream', () async {
+    final mockRepo = MockSensorRepository();
+    final controller = StreamController&lt;int&gt;();
+
+    // 将 Mock 的返回指向 Controller 的流
+    when(() =&gt; mockRepo.temperatureStream).thenAnswer((_) =&gt; controller.stream);
+
+    // 此时测试会监听流，但流里还没东西
+    final expectation = expectLater(
+      mockRepo.temperatureStream,
+      emitsInOrder([20, 30]),
+    );
+
+    // 手动推送数据
+    controller.add(20);
+    controller.add(30);
+
+    // 别忘了关闭流
+    await controller.close();
+    await expectation;
+  });
+}
+</code></pre>
+<h3 id="模拟流中的错误-stream-errors"><a class="header" href="#模拟流中的错误-stream-errors">模拟流中的错误 (Stream Errors)</a></h3>
+<p>下面的例子演示了“测试业务代码如何处理异常流”。</p>
+<pre><code class="language-dart">// mock_streame_test.dart
+import 'package:mocktail/mocktail.dart';
+import 'package:test/test.dart';
+
+class MockSensorRepository extends Mock implements SensorRepository {}
+
+void main() {
+  test('模拟流抛出错误', () {
+    final mockRepo = MockSensorRepository();
+
+    when(
+      () =&gt; mockRepo.temperatureStream,
+    ).thenAnswer((_) =&gt; Stream&lt;int&gt;.error(Exception('Sensor Malfunction')));
+
+    expect(mockRepo.temperatureStream, emitsError(isA&lt;Exception&gt;()));
+  });
+}
+</code></pre>
+<h1 id="reference"><a class="header" href="#reference">Reference</a></h1>
+<ul>
+<li><a href="https://pub.dev/packages/mocktail">https://pub.dev/packages/mocktail</a></li>
+<li><a href="https://pub.dev/documentation/mocktail/latest/mocktail/">https://pub.dev/documentation/mocktail/latest/mocktail/</a></li>
+<li><a href="https://pub.dev/documentation/mocktail/latest/mocktail/registerFallbackValue.html">registerFallbackValue function</a></li>
+<li><a href="https://martinfowler.com/bliki/TestDouble.html">Test Double (by Martin Fowler)</a></li>
+</ul>
 
                     </main>
 
