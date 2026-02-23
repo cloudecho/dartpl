@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>为什么需要元编程？ - 从0开始学Dart</title>
+        <title>build_runner - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -164,7 +164,221 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="为什么需要元编程"><a class="header" href="#为什么需要元编程">为什么需要元编程？</a></h1>
+                        <h1 id="build_runner"><a class="header" href="#build_runner"><code>build_runner</code></a></h1>
+<p><code>build_runner</code> 是Dart 生态中处理代码生成任务的标准执行引擎。</p>
+<h2 id="引子"><a class="header" href="#引子">引子</a></h2>
+<p>设想我们正在使用 OMDb API的 "Search By Title" （通过标题查找电影），访问 <code>https://www.omdbapi.com/?apikey=&lt;APIKEY&gt;&amp;t=tiger</code> 得到一个JSON字符串：</p>
+<pre><code class="language-json">{
+  "Title": "Tiger",
+  "Year": "2021",
+  "Rated": "TV-MA",
+  "Released": "10 Jan 2021",
+  "Runtime": "192 min",
+  "Genre": "Documentary, Biography, Sport",
+  "Director": "Matthew Hamachek, Matthew Heineman",
+  "Writer": "N/A",
+  "Actors": "Tiger Woods, Pete McDaniel, Steve Williams",
+  "Plot": "A look at the life, success and scandals of golf legend Tiger Woods.",
+  "Language": "English",
+  "Country": "United States",
+  "Awards": "1 win &amp; 2 nominations total",
+  "Poster": "https://m.media-amazon.com/images/M/MV5BNDRiN2I0NTktOGZkNy00ZTBhLWFjMzYtZjM5M2QxMzA2YjkzXkEyXkFqcGc@._V1_SX300.jpg",
+  "Ratings": [
+    {
+      "Source": "Internet Movie Database",
+      "Value": "7.8/10"
+    }
+  ],
+  "Metascore": "N/A",
+  "imdbRating": "7.8",
+  "imdbVotes": "5,132",
+  "imdbID": "tt12688688",
+  "Type": "series",
+  "totalSeasons": "N/A",
+  "Response": "True"
+}
+</code></pre>
+<p>我们的目标是实现 JSON与Dart类间的双向转换。</p>
+<h2 id="json与dart类间的双向转换"><a class="header" href="#json与dart类间的双向转换">JSON与Dart类间的双向转换</a></h2>
+<h3 id="手工转换"><a class="header" href="#手工转换">手工转换</a></h3>
+<p>我们可以手工实现转换操作，像下面这样：</p>
+<pre><code class="language-dart">// movie1.dart
+class Movie {
+  String? title;
+  String? year;
+  String? rated;
+  // ... (omited for brevity)
+  List&lt;Ratings&gt;? ratings;
+
+  Movie({
+    title,
+    year,
+    rated,
+    // ... (omited for brevity)
+    ratings,
+  });
+
+  Movie.fromJson(Map&lt;String, dynamic&gt; json) {
+    title = json['Title'];
+    year = json['Year'];
+    rated = json['Rated'];
+     // ... (omited for brevity)
+    if (json['Ratings'] != null) {
+      ratings = &lt;Ratings&gt;[];
+      json['Ratings'].forEach((v) {
+        ratings!.add(Ratings.fromJson(v));
+      });
+    }
+  }
+
+  Map&lt;String, dynamic&gt; toJson() {
+    final data = &lt;String, dynamic&gt;{};
+    data['Title'] = title;
+    data['Year'] = year;
+    data['Rated'] = rated;
+    // ... (omited for brevity)
+    if (ratings != null) {
+      data['Ratings'] = ratings!.map((v) =&gt; v.toJson()).toList();
+    }
+
+    return data;
+  }
+}
+
+class Ratings {
+  // ... (omited for brevity)
+}
+</code></pre>
+<p>但是写这样的代码实在枯燥乏味，又容易出错——比如一不小心弄错了字母的大小写或拼错了某个单词，将来更新或新增<code>Movie</code>的字段时，又必须小心翼翼地去更新 <code>fromJson/toJson</code> 方法。</p>
+<h3 id="在线工具"><a class="header" href="#在线工具">在线工具</a></h3>
+<p>幸好已经有现成的工具去处理像 Movie 类这样的样板代码。比如</p>
+<ul>
+<li><a href="https://javiercbk.github.io/json_to_dart/">json_to_dart (https://javiercbk.github.io/json_to_dart/)</a>: 这个工具比较纯粹，我们将 OMDb 的 Responese 扔给它就好，它会递归地处理 <code>Ratings</code> 这种嵌套对象。</li>
+<li><a href="https://app.quicktype.io/">quicktype (https://app.quicktype.io/)</a>: 该工具提供了很多选项，例如后面我们会用到的 <code>Generate annotations for json_serializable</code>。</li>
+</ul>
+<h3 id="json_serializable"><a class="header" href="#json_serializable"><code>json_serializable</code></a></h3>
+<p>目前Dart官方推荐的做法是使用 <code>json_serializable</code> 实现 JSON 与 Dart类的双向转换。<code>json_serializable</code> 是一个被广泛使用的 Builder。在 Flutter 和 Dart 生态中，<code>json_serializable</code> 几乎是处理结构化数据的事实标准。</p>
+<p>下面演示其用法。</p>
+<p>a. 添加下面依赖.</p>
+<pre><code class="language-bash">dart pub add json_annotation
+
+dart pub add dev:build_runner
+dart pub add dev:json_serializable
+</code></pre>
+<p>b. 利用 <code>quicktype</code> 在线工具（或IDE插件）生成 <code>Movie</code> 类（注意开启<code>Generate annotations for json_serializable</code>）.</p>
+<pre><code class="language-dart">// movie.dart
+import 'package:json_annotation/json_annotation.dart';
+
+part 'movie.g.dart';
+
+@JsonSerializable()
+class Movie {
+  // ... (omited for brevity)
+}
+</code></pre>
+<p>注意 <code>movie.dart</code> 中的这两行:</p>
+<pre><code class="language-dart">part 'movie.g.dart';
+
+@JsonSerializable()
+</code></pre>
+<p><code>build_runner</code> 将根据注解 <code>@JsonSerializable</code> 来生成 <code>movie.g.dart</code> 文件。</p>
+<p><em>注: <code>part</code> 指令就像是一条脐带。它让你的主业务文件保持整洁，同时源源不断地从生成的附属文件中吸取复杂的 JSON 解析能力。</em></p>
+<p>c. 生成 <code>movie.g.dart</code> 文件.</p>
+<pre><code class="language-bash">dart run build_runner build
+</code></pre>
+<p>d. 如果要持续监听 <code>movie.dart</code>文件的变化，使用 <code>watch</code> 指令:</p>
+<pre><code class="language-bash">dart run build_runner watch
+</code></pre>
+<p>这样每当我们向 <code>movie.dart</code> 里增加/修改一个 OMDb 字段，对应的 <code>.g.dart</code> 就会在后台自动更新，<code>fromJson/toJson</code> 逻辑始终保持正确。</p>
+<h2 id="build_runner-的高级用法"><a class="header" href="#build_runner-的高级用法"><code>build_runner</code> 的高级用法</a></h2>
+<p>想必读者已经对 <code>build_runner</code> 有了初步印象。它功能强大且上手简单，确实是处理代码生成的利器。然而，在面对复杂的企业级项目时，仅仅‘简单会用’是不够的。接下来我们将探讨 <code>build_runner</code> 的一些高级用法。</p>
+<h3 id="定制-buildyaml"><a class="header" href="#定制-buildyaml">定制 <code>build.yaml</code></a></h3>
+<p><em>精细化扫描范围</em></p>
+<p>默认情况下，<code>build_runner</code> 会检查项目里所有的 <code>.dart</code> 文件。通过配置 <code>targets</code>，我们可以强制它只看特定的目录。例如下面的 <code>build.yaml</code>：</p>
+<pre><code class="language-yaml">targets:
+  $default:
+    builders:
+      # 针对 json_serializable 的配置
+      json_serializable:
+        generate_for:
+          - bin/ch09/*.dart # 只扫描ch09文件夹
+          - bin/ch09/**.dart # 支持递归扫描
+</code></pre>
+<p><em>排除不必要的文件</em></p>
+<p>中大型项目通常会有大量的生成文件或测试文件，排除它们可以极大减轻 <code>build_runner</code> 的负担。</p>
+<pre><code class="language-yaml">targets:
+  $default:
+    sources:
+      include:
+        - lib/**
+        - pubspec.yaml
+      exclude:
+        - lib/generated/** # 排除已生成的冗余文件
+        - test/** # 排除测试代码，除非你需要为测试生成 Mock
+</code></pre>
+<p><em>全局控制</em></p>
+<p>有些时候，你希望所有的模型都具备某些特性（比如 <code>explicit_to_json</code>），而不想在每个类上都手动输入 <code>@JsonSerializable(explicitToJson: true)</code>。</p>
+<pre><code class="language-yaml">builders:
+  json_serializable:
+    options:
+      any_map: true # 允许解析非 String 键的 Map
+      explicit_to_json: true # 嵌套对象自动调用 toJson()
+      create_factory: true # 自动创建 fromJson 工厂方法
+</code></pre>
+<h3 id="条件化构建"><a class="header" href="#条件化构建">条件化构建</a></h3>
+<p>对于中大型项目，一个常见的需求是：在开发环境生成带有调试信息的代码，在生产环境生成极简、高性能的代码。可以通过 <code>build.yaml</code> 变体（如 <code>build.debug.yaml</code>）来实现条件构建。</p>
+<pre><code class="language-bash"># 使用特定的配置文件进行构建
+dart run build_runner build --config debug
+</code></pre>
+<p>此时 <code>build_runner</code> 会自动寻找项目根目录下的 <code>build.debug.yaml</code>。</p>
+<h3 id="缓存与冲突"><a class="header" href="#缓存与冲突">缓存与冲突</a></h3>
+<p><code>build_runner</code> 并不是每次都从零开始。为了提速，它将所有的中间产物、文件快照和构建图（Build Graph）都存储在项目根目录下的 <code>.dart_tool/build</code> 文件夹中。当我们再次构建时，它只处理发生变化的文件，实现“秒级更新”。当我们运行构建时，如果 <code>build_runner</code> 发现它要生成的文件（如 <code>movie.g.dart</code>）已经存在，并且不是由当前的构建流程生成的，它会报 Conflicting outputs 错误。</p>
+<p>使用以下命令它告诉 <code>build_runner</code>：如果是旧的生成文件，直接删了重写。</p>
+<pre><code class="language-bash">dart run build_runner build --delete-conflicting-outputs
+</code></pre>
+<p>如果 <code>--delete-conflicting-outputs</code> 依然无法解决问题（例如报错信息莫名其妙），那就需要执行 clean：</p>
+<pre><code class="language-bash">dart run build_runner clean
+</code></pre>
+<p>该指令会清空整个 <code>.dart_tool/build</code> 缓存。这意味着下一次构建将是全量构建。清理后的第一次构建可能会耗时较久，但它能百分百保证生成代码的正确性。</p>
+<p><em>注：为了避免团队成员之间的缓存冲突，绝对不要把 <code>.dart_tool/</code> 提交到 Git。</em></p>
+<pre><code class="language-bash"># .gitignore
+.dart_tool/
+</code></pre>
+<h3 id="结束语"><a class="header" href="#结束语">结束语</a></h3>
+<p><a href="https://pub.dev/packages/build_runner"><code>build_runner</code> 官网</a>上列出了许多开箱即用的常用 Builder，足以应对绝大多数的代码生成场景。我们应该优先从这些成熟的 Builder 中选用。</p>
+<div class="table-wrapper"><table><thead><tr><th>Builder</th><th>Adds capabilities</th><th>Notes</th></tr></thead><tbody>
+<tr><td><a href="https://pub.dev/packages/auto_route">auto_route_generator</a></td><td>Flutter navigation</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/built_value">built_value_generator</a></td><td>data classes with JSON serialization</td><td><a href="https://docs.flutter.dev/packages-and-plugins/favorites">Flutter Favourite</a> by Google</td></tr>
+<tr><td><a href="https://pub.dev/packages/chopper">chopper_generator</a></td><td>REST HTTP client</td><td><a href="https://docs.flutter.dev/packages-and-plugins/favorites">Flutter Favourite</a></td></tr>
+<tr><td><a href="https://pub.dev/packages/copy_with_extension_gen">copy_with_extension_gen</a></td><td><code>copyWith</code> extension methods</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/dart_mappable">dart_mappable_builder</a></td><td>data classes with JSON serialization</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/drift_dev">drift_dev</a></td><td>reactive data binding and SQL</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/envied">envied_generator</a></td><td>environment variable bindings</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/flutter_gen_runner">flutter_gen_runner</a></td><td>Flutter asset bindings</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/freezed">freezed</a></td><td>data classes, tagged unions, nested classes, cloning</td><td><a href="https://docs.flutter.dev/packages-and-plugins/favorites">Flutter Favourite</a></td></tr>
+<tr><td><a href="https://pub.dev/packages/go_router_builder">go_router_builder</a></td><td>Flutter navigation</td><td>by Google</td></tr>
+<tr><td><a href="https://pub.dev/packages/hive_ce">hive_ce_generator</a></td><td>key-value database</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/injectable_generator">injectable_generator</a></td><td>dependency injecton</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/json_serializable">json_serializable</a></td><td>JSON serialization</td><td><a href="https://docs.flutter.dev/packages-and-plugins/favorites">Flutter Favourite</a> by Google</td></tr>
+<tr><td><a href="https://pub.dev/packages/mockito">mockito</a></td><td>mocks and fakes for testing</td><td>by Google</td></tr>
+<tr><td><a href="https://pub.dev/packages/retrofit_generator">retrofit_generator</a></td><td>REST HTTP client</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/riverpod">riverpod_generator</a></td><td>reactive caching and data binding</td><td><a href="https://docs.flutter.dev/packages-and-plugins/favorites">Flutter Favourite</a></td></tr>
+<tr><td><a href="https://pub.dev/packages/slang">slang_build_runner</a></td><td>type-safe i18n</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/swagger_dart_code_generator">swagger_dart_code_generator</a></td><td>dart types from Swagger/OpenAPI schemas</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/theme_tailor">theme_tailor</a></td><td>Flutter themes and extensions</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/webdev">webdev</a></td><td>compilation to javascript</td><td>by Google</td></tr>
+</tbody></table>
+</div>
+<p>但当我们面对一些极其特殊、甚至需要改变代码结构的生成逻辑时，现成的工具或许难以应对。此时我们可以自定义 Builder 或 Generator —— 这正是下一节将要讨论的内容。</p>
+<h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
+<ul>
+<li><a href="https://www.omdbapi.com/">https://www.omdbapi.com/</a></li>
+<li><a href="https://pub.dev/packages/build_runner">https://pub.dev/packages/build_runner</a></li>
+<li><a href="https://github.com/dart-lang/build/blob/master/docs/build_yaml_format.md">https://github.com/dart-lang/build/blob/master/docs/build_yaml_format.md</a></li>
+<li><a href="https://github.com/dart-lang/build/blob/master/build_config/README.md">https://github.com/dart-lang/build/blob/master/build_config/README.md</a></li>
+<li><a href="https://pub.dev/packages/json_serializable">https://pub.dev/packages/json_serializable</a></li>
+<li><a href="https://pub.dev/packages/freezed">https://pub.dev/packages/freezed</a></li>
+</ul>
 
                     </main>
 

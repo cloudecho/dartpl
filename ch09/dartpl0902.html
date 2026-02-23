@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>build_runner - 从0开始学Dart</title>
+        <title>自定义生成器 - 从0开始学Dart</title>
 
 
         <!-- Custom HTML head -->
@@ -164,7 +164,240 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="build_runner"><a class="header" href="#build_runner">build_runner</a></h1>
+                        <h1 id="自定义生成器-generator"><a class="header" href="#自定义生成器-generator">自定义生成器 (Generator)</a></h1>
+<p>Builder 负责文件系统的操作（读取 <code>.dart</code> 文件，创建 <code>.g.dart</code> 文件），其逻辑比较底层，写起来稍显繁琐。Generator 封装了 Builder，让我们只需关注“输入一个类，输出一段字符串”的逻辑。绝大多数场景下，我们只需自定义 Generator。</p>
+<h2 id="示例"><a class="header" href="#示例">示例</a></h2>
+<p>假设我们要为 OMDb 模型类（如 <code>Movie </code>类）自动生成一个字段清单字符串。</p>
+<p>a. Generator 由 <code>source_gen</code> 包提供。首先添加如下依赖包：</p>
+<pre><code class="language-bash">dart pub add source_gen analyzer build
+</code></pre>
+<p>b. 定义注解（<code>OMDbModelInfo</code>).</p>
+<pre><code class="language-dart">// lib/codegen/annotations.dart
+class OMDbModelInfo {
+  const OMDbModelInfo();
+}
+</code></pre>
+<p>c. 定义基于注解（<code>OMDbModelInfo</code>）的Generator（<code>ModelInfoGenerator</code>）。</p>
+<pre><code class="language-dart">// lib/codegen/model_info_generator.dart
+import 'package:analyzer/dart/element/element.dart';
+import 'package:build/build.dart';
+import 'package:source_gen/source_gen.dart';
+import 'annotations.dart';
+
+class ModelInfoGenerator extends GeneratorForAnnotation&lt;OMDbModelInfo&gt; {
+  @override
+  String generateForAnnotatedElement(
+    Element element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) {
+    log.info('&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 正在处理类: ${element.name} &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;');
+
+    // 确保注解是在类上
+    if (element is! ClassElement) throw 'Only classes!';
+
+    final className = element.name;
+    // 获取所有字段名
+    final fields = element.fields.map((f) =&gt; f.name).join(', ');
+
+    // 返回的字符串会直接写入到 .g.dart 中
+    return '''
+// ignore: unused_element
+const _\$${className}Fields = "$fields";
+''';
+  }
+}
+</code></pre>
+<p>d. 创建一个全局函数（<code>omdbModelBuilder</code>），该函数返回一个 <code>Builder</code>。</p>
+<pre><code class="language-dart">// lib/codegen/builder.dart
+import 'package:build/build.dart';
+import 'package:hellodart/codegen/model_info_generator.dart';
+import 'package:source_gen/source_gen.dart';
+
+Builder omdbModelBuilder(BuilderOptions options) =&gt;
+    PartBuilder([ModelInfoGenerator()], '.info.g.dart');
+</code></pre>
+<p>这里指定生成文件的后缀：<code>.info.g.dart</code> 。</p>
+<p>e. 配置 <code>build.yaml</code>。</p>
+<pre><code class="language-yaml">builders:
+  omdb_model_builder:
+    import: "package:hellodart/codegen/builder.dart"
+    # 指向一个返回 Builder 的顶层函数
+    builder_factories: ["omdbModelBuilder"]
+    # 规定：输入 .dart 文件，输出 .info.g.dart 文件
+    build_extensions: {".dart": [".info.g.dart"]}
+    auto_apply: dependents
+    build_to: source
+
+# targets 用于定义构建范围和具体插件的行为
+targets:
+  $default: 
+    builders:
+      hellodart|omdb_model_builder:
+        generate_for:
+          - bin/ch09/*.dart
+</code></pre>
+<ul>
+<li>根部的 builders 是声明（Declaration），targets 里的 builders 是引用（Reference）。</li>
+<li><code>hellodart|omdb_model_builder</code>: 这里的语法是 <code>packageName|builderName</code>。如果 <code>packageName</code> 与 <code>builderName</code> 相同，可以只写 <code>builderName</code>。上一节中的 <code>json_serializable</code> 的全名是 <code>json_serializable|json_serializable</code>。这种设计体现了 Dart 构建系统的模块化哲学。</li>
+</ul>
+<p>f. 生成代码.</p>
+<p>修改 <code>movie.dart</code>：</p>
+<pre><code class="language-dart">part 'movie.g.dart';
+part 'movie.info.g.dart';
+
+@OMDbModelInfo()
+@JsonSerializable()
+class Movie {
+// ... (omited for brevity)
+}
+</code></pre>
+<p>然后运行 <code>build</code> 命令：</p>
+<pre><code class="language-bash">dart run build_runner build
+</code></pre>
+<h2 id="builder-类层次"><a class="header" href="#builder-类层次">Builder 类层次</a></h2>
+<p>从 Builder的类图可以看出 Builder 与 Generator 的关系。</p>
+<pre class="mermaid">classDiagram
+    class Builder {
+        &lt;&lt;abstract&gt;&gt;
+        +Map buildExtensions
+        +build(BuildStep buildStep)*
+    }
+
+    class PartBuilder {
+        +List generators
+        +String formatOutput
+        +build(BuildStep buildStep)
+    }
+
+    class SharedPartBuilder {
+        +List generators
+        +String partId
+        +build(BuildStep buildStep)
+    }
+
+    class LibraryBuilder {
+        +Generator generator
+        +build(BuildStep buildStep)
+    }
+
+    class Generator {
+        &lt;&lt;abstract&gt;&gt;
+        +generate(LibraryReader library, BuildStep buildStep)*
+    }
+
+    class GeneratorForAnnotation~T~ {
+        &lt;&lt;abstract&gt;&gt;
+        +generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep)*    
+    }
+
+    %% 关系
+    Builder &lt;|-- PartBuilder : 继承 (独立生成文件)
+    Builder &lt;|-- SharedPartBuilder : 继承 (生成到 .g.dart)
+    Builder &lt;|-- LibraryBuilder : 继承 (生成整个库)
+
+    PartBuilder o-- Generator : 持有 (1..*)
+    SharedPartBuilder o-- Generator : 持有 (1..*)
+    LibraryBuilder o-- Generator : 持有 (1)
+
+    Generator &lt;|-- GeneratorForAnnotation : 继承 (基于注解触发)
+</pre>
+<h2 id="constantreader"><a class="header" href="#constantreader">ConstantReader</a></h2>
+<p>当我们写下 <code>@JsonSerializable(explicitToJson: true)</code> 时，<code>explicitToJson</code> 这个布尔值是如何传递给Generator的？这就是 <code>ConstantReader</code> 的工作，它负责将源码中的“静态常量”转换为 Generator 可以直接操作的 Dart 对象。</p>
+<p>继续之前的示例，设想我们要为 OMDb模型类自动生成一个扩展方法 <code>printFields</code>，该方法打印模型类的所有字段。我们向 <code>OMDbModelInfo</code> 注解添加一个布尔开关 <code>ext</code>，只有当开发者明确声明 <code>ext: true</code> 时，Generator 才生成 <code>printFields</code>。</p>
+<p>首先修改 <code>OMDbModelInfo</code>，添加 <code>ext</code> 属性.</p>
+<pre><code class="language-dart">// lib/codegen/annotations.dart
+class OMDbModelInfo {
+  final bool ext;
+  const OMDbModelInfo({this.ext = false});
+}
+</code></pre>
+<p>然后我们来看看如何读区 <code>ext</code> 属性。创建一个新的 Generator (<code>ModelExtGenerator</code>)。</p>
+<pre><code class="language-dart">// lib/codegen/model_ext_generator.dart
+// import ... (omited for brevity)
+class ModelExtGenerator extends GeneratorForAnnotation&lt;OMDbModelInfo&gt; {
+  @override
+  String generateForAnnotatedElement(
+    Element element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) {
+    if (element is! ClassElement) throw 'Only classes!';
+
+    final ext = annotation.read('ext').boolValue;
+    if (!ext) return "";
+
+    return "// TODO";
+  }
+}
+</code></pre>
+<p><code>annotation.read('ext')</code> 读取 <code>ext</code>属性，如果该属性不存在将报错。还可以使用 <code>peek('prop')</code>读取属性，这种方式具有更高的容错性 — 如果属性不存在，它将返回 <code>null</code>，适用于可选属性（配置）。</p>
+<pre><code class="language-dart">    final ext = annotation.peek('ext')?.boolValue ?? false;
+</code></pre>
+<h2 id="code_builder"><a class="header" href="#code_builder"><code>code_builder</code></a></h2>
+<p>在之前的 <code>ModelInfoGenerator</code> 实战中，我们使用了简单的字符串拼接（<code>return 'const ...'</code>）。但在面对复杂的类结构、导入管理、私有字段时，这简直是开发者的噩梦。而 <code>code_builder</code> 具有如下 自动导入、代码格式化、语义化编程等特性，极大地简化了 复杂Generator 的编写。字符串拼接如同剪纸拼图，琐碎且易错；而 <code>code_builder</code> 则是语义化的乐高，它用对象化的组件替代了原始的文本堆砌，让代码生成变得严谨且优雅</p>
+<p>接下来使用 <code>code_builder</code> 来实现 <code>ModelExtGenerator</code>的具体逻辑，以演示其用法。</p>
+<pre><code class="language-dart">// lib/codegen/model_ext_generator.dart
+// import ... (omited for brevity)
+class ModelExtGenerator extends GeneratorForAnnotation&lt;OMDbModelInfo&gt; {
+  @override
+  String generateForAnnotatedElement(
+    Element element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) {
+    if (element is! ClassElement) throw 'Only classes!';
+
+    final ext = annotation.read('ext').boolValue;
+    if (!ext) return "";
+
+    final className = element.name!;
+
+    // 使用 code_builder 构建代码对象
+    final extension = Extension(
+      (e) =&gt; e
+        ..name = '${className}Ext'
+        // 绑定到原类
+        ..on = refer(className)
+        ..methods.add(
+          Method(
+            (m) =&gt; m
+              ..name = 'printFields'
+              ..returns = refer('void')
+              ..body = Block.of([
+                // 自动生成打印逻辑
+                refer(
+                  'print',
+                ).call([refer('_\$${className}Fields')]).statement,
+              ]),
+          ),
+        ),
+    );
+
+    // 使用 DartEmitter 将对象发射(Emit)为字符串
+    final emitter = DartEmitter();
+    return '${extension.accept(emitter)}';
+  }
+}
+</code></pre>
+<p>修改 <code>omdbModelBuilder</code> 全局函数：</p>
+<pre><code class="language-dart">Builder omdbModelBuilder(BuilderOptions options) =&gt;
+    PartBuilder([ModelInfoGenerator(), ModelExtGenerator()], '.info.g.dart');
+</code></pre>
+<p>最后，在 <code>Movie</code> 类上使用 <code>@OMDbModelInfo(ext: true)</code> ，它会自动生成：</p>
+<pre><code class="language-dart">extension MovieExt on Movie {
+  void printFields() {
+    print(_$MovieFields);
+  }
+}
+</code></pre>
+<h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
+<ul>
+<li><a href="https://pub.dev/packages/build">https://pub.dev/packages/build</a></li>
+<li><a href="https://pub.dev/packages/source_gen">https://pub.dev/packages/source_gen</a></li>
+<li><a href="https://pub.dev/packages/code_builder">https://pub.dev/packages/code_builder</a></li>
+<li><a href="https://pub.dev/packages/analyzer">https://pub.dev/packages/analyzer</a></li>
+</ul>
 
                     </main>
 

@@ -9005,7 +9005,7 @@ void main() {
 </div>
 <h2 id="mock-实战1-模拟数据库服务"><a class="header" href="#mock-实战1-模拟数据库服务">Mock 实战1： 模拟数据库服务</a></h2>
 <p>假设我们有一个 <code>User</code> 模型和一个负责逻辑处理的 <code>UserService</code>。</p>
-<pre><code class="language-dart">// &gt;&gt;&gt;&gt;&gt;&gt; 业务代码 &gt;&gt;&gt;&gt;&gt;&gt;
+<pre><code class="language-dart">// &gt;&gt;&gt;&gt;&gt;&gt; 业务代码 &lt;&lt;&lt;&lt;&lt;&lt;
 
 class User {
   final int id;
@@ -9088,7 +9088,7 @@ void main() {
 <p>在测试使用了响应式编程技术或WebSocket的程序时，时常免不了要模拟 Stream。</p>
 <h3 id="模拟一个简单的-stream"><a class="header" href="#模拟一个简单的-stream">模拟一个简单的 Stream</a></h3>
 <p>假设你有一个监控系统，它通过 Stream 实时推送传感器数据。</p>
-<pre><code class="language-dart">// &gt;&gt;&gt;&gt;&gt;&gt; 业务代码 &gt;&gt;&gt;&gt;&gt;&gt;
+<pre><code class="language-dart">// &gt;&gt;&gt;&gt;&gt;&gt; 业务代码 &lt;&lt;&lt;&lt;&lt;&lt;
 
 abstract class SensorRepository {
   Stream&lt;int&gt; get temperatureStream;
@@ -9439,8 +9439,7 @@ linter:
         types: [dart]
       - id: dart-analyze
         name: Dart Analyze
-        # 强制要求无 warning 和 info 才能提交
-        entry: dart analyze --fatal-infos --fatal-warnings
+        entry: dart analyze
         language: system
         types: [dart]
 </code></pre>
@@ -9460,12 +9459,457 @@ Dart Analyze.........................................(no files to check)Skipped
 <li><a href="https://pre-commit.com/">https://pre-commit.com/</a></li>
 <li><a href="https://typicode.github.io/husky/get-started.html">https://typicode.github.io/husky/get-started.html</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="为什么需要元编程"><a class="header" href="#为什么需要元编程">为什么需要元编程？</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="build_runner"><a class="header" href="#build_runner">build_runner</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="build_runner"><a class="header" href="#build_runner"><code>build_runner</code></a></h1>
+<p><code>build_runner</code> 是Dart 生态中处理代码生成任务的标准执行引擎。</p>
+<h2 id="引子"><a class="header" href="#引子">引子</a></h2>
+<p>设想我们正在使用 OMDb API的 "Search By Title" （通过标题查找电影），访问 <code>https://www.omdbapi.com/?apikey=&lt;APIKEY&gt;&amp;t=tiger</code> 得到一个JSON字符串：</p>
+<pre><code class="language-json">{
+  "Title": "Tiger",
+  "Year": "2021",
+  "Rated": "TV-MA",
+  "Released": "10 Jan 2021",
+  "Runtime": "192 min",
+  "Genre": "Documentary, Biography, Sport",
+  "Director": "Matthew Hamachek, Matthew Heineman",
+  "Writer": "N/A",
+  "Actors": "Tiger Woods, Pete McDaniel, Steve Williams",
+  "Plot": "A look at the life, success and scandals of golf legend Tiger Woods.",
+  "Language": "English",
+  "Country": "United States",
+  "Awards": "1 win &amp; 2 nominations total",
+  "Poster": "https://m.media-amazon.com/images/M/MV5BNDRiN2I0NTktOGZkNy00ZTBhLWFjMzYtZjM5M2QxMzA2YjkzXkEyXkFqcGc@._V1_SX300.jpg",
+  "Ratings": [
+    {
+      "Source": "Internet Movie Database",
+      "Value": "7.8/10"
+    }
+  ],
+  "Metascore": "N/A",
+  "imdbRating": "7.8",
+  "imdbVotes": "5,132",
+  "imdbID": "tt12688688",
+  "Type": "series",
+  "totalSeasons": "N/A",
+  "Response": "True"
+}
+</code></pre>
+<p>我们的目标是实现 JSON与Dart类间的双向转换。</p>
+<h2 id="json与dart类间的双向转换"><a class="header" href="#json与dart类间的双向转换">JSON与Dart类间的双向转换</a></h2>
+<h3 id="手工转换"><a class="header" href="#手工转换">手工转换</a></h3>
+<p>我们可以手工实现转换操作，像下面这样：</p>
+<pre><code class="language-dart">// movie1.dart
+class Movie {
+  String? title;
+  String? year;
+  String? rated;
+  // ... (omited for brevity)
+  List&lt;Ratings&gt;? ratings;
+
+  Movie({
+    title,
+    year,
+    rated,
+    // ... (omited for brevity)
+    ratings,
+  });
+
+  Movie.fromJson(Map&lt;String, dynamic&gt; json) {
+    title = json['Title'];
+    year = json['Year'];
+    rated = json['Rated'];
+     // ... (omited for brevity)
+    if (json['Ratings'] != null) {
+      ratings = &lt;Ratings&gt;[];
+      json['Ratings'].forEach((v) {
+        ratings!.add(Ratings.fromJson(v));
+      });
+    }
+  }
+
+  Map&lt;String, dynamic&gt; toJson() {
+    final data = &lt;String, dynamic&gt;{};
+    data['Title'] = title;
+    data['Year'] = year;
+    data['Rated'] = rated;
+    // ... (omited for brevity)
+    if (ratings != null) {
+      data['Ratings'] = ratings!.map((v) =&gt; v.toJson()).toList();
+    }
+
+    return data;
+  }
+}
+
+class Ratings {
+  // ... (omited for brevity)
+}
+</code></pre>
+<p>但是写这样的代码实在枯燥乏味，又容易出错——比如一不小心弄错了字母的大小写或拼错了某个单词，将来更新或新增<code>Movie</code>的字段时，又必须小心翼翼地去更新 <code>fromJson/toJson</code> 方法。</p>
+<h3 id="在线工具"><a class="header" href="#在线工具">在线工具</a></h3>
+<p>幸好已经有现成的工具去处理像 Movie 类这样的样板代码。比如</p>
+<ul>
+<li><a href="https://javiercbk.github.io/json_to_dart/">json_to_dart (https://javiercbk.github.io/json_to_dart/)</a>: 这个工具比较纯粹，我们将 OMDb 的 Responese 扔给它就好，它会递归地处理 <code>Ratings</code> 这种嵌套对象。</li>
+<li><a href="https://app.quicktype.io/">quicktype (https://app.quicktype.io/)</a>: 该工具提供了很多选项，例如后面我们会用到的 <code>Generate annotations for json_serializable</code>。</li>
+</ul>
+<h3 id="json_serializable"><a class="header" href="#json_serializable"><code>json_serializable</code></a></h3>
+<p>目前Dart官方推荐的做法是使用 <code>json_serializable</code> 实现 JSON 与 Dart类的双向转换。<code>json_serializable</code> 是一个被广泛使用的 Builder。在 Flutter 和 Dart 生态中，<code>json_serializable</code> 几乎是处理结构化数据的事实标准。</p>
+<p>下面演示其用法。</p>
+<p>a. 添加下面依赖.</p>
+<pre><code class="language-bash">dart pub add json_annotation
+
+dart pub add dev:build_runner
+dart pub add dev:json_serializable
+</code></pre>
+<p>b. 利用 <code>quicktype</code> 在线工具（或IDE插件）生成 <code>Movie</code> 类（注意开启<code>Generate annotations for json_serializable</code>）.</p>
+<pre><code class="language-dart">// movie.dart
+import 'package:json_annotation/json_annotation.dart';
+
+part 'movie.g.dart';
+
+@JsonSerializable()
+class Movie {
+  // ... (omited for brevity)
+}
+</code></pre>
+<p>注意 <code>movie.dart</code> 中的这两行:</p>
+<pre><code class="language-dart">part 'movie.g.dart';
+
+@JsonSerializable()
+</code></pre>
+<p><code>build_runner</code> 将根据注解 <code>@JsonSerializable</code> 来生成 <code>movie.g.dart</code> 文件。</p>
+<p><em>注: <code>part</code> 指令就像是一条脐带。它让你的主业务文件保持整洁，同时源源不断地从生成的附属文件中吸取复杂的 JSON 解析能力。</em></p>
+<p>c. 生成 <code>movie.g.dart</code> 文件.</p>
+<pre><code class="language-bash">dart run build_runner build
+</code></pre>
+<p>d. 如果要持续监听 <code>movie.dart</code>文件的变化，使用 <code>watch</code> 指令:</p>
+<pre><code class="language-bash">dart run build_runner watch
+</code></pre>
+<p>这样每当我们向 <code>movie.dart</code> 里增加/修改一个 OMDb 字段，对应的 <code>.g.dart</code> 就会在后台自动更新，<code>fromJson/toJson</code> 逻辑始终保持正确。</p>
+<h2 id="build_runner-的高级用法"><a class="header" href="#build_runner-的高级用法"><code>build_runner</code> 的高级用法</a></h2>
+<p>想必读者已经对 <code>build_runner</code> 有了初步印象。它功能强大且上手简单，确实是处理代码生成的利器。然而，在面对复杂的企业级项目时，仅仅‘简单会用’是不够的。接下来我们将探讨 <code>build_runner</code> 的一些高级用法。</p>
+<h3 id="定制-buildyaml"><a class="header" href="#定制-buildyaml">定制 <code>build.yaml</code></a></h3>
+<p><em>精细化扫描范围</em></p>
+<p>默认情况下，<code>build_runner</code> 会检查项目里所有的 <code>.dart</code> 文件。通过配置 <code>targets</code>，我们可以强制它只看特定的目录。例如下面的 <code>build.yaml</code>：</p>
+<pre><code class="language-yaml">targets:
+  $default:
+    builders:
+      # 针对 json_serializable 的配置
+      json_serializable:
+        generate_for:
+          - bin/ch09/*.dart # 只扫描ch09文件夹
+          - bin/ch09/**.dart # 支持递归扫描
+</code></pre>
+<p><em>排除不必要的文件</em></p>
+<p>中大型项目通常会有大量的生成文件或测试文件，排除它们可以极大减轻 <code>build_runner</code> 的负担。</p>
+<pre><code class="language-yaml">targets:
+  $default:
+    sources:
+      include:
+        - lib/**
+        - pubspec.yaml
+      exclude:
+        - lib/generated/** # 排除已生成的冗余文件
+        - test/** # 排除测试代码，除非你需要为测试生成 Mock
+</code></pre>
+<p><em>全局控制</em></p>
+<p>有些时候，你希望所有的模型都具备某些特性（比如 <code>explicit_to_json</code>），而不想在每个类上都手动输入 <code>@JsonSerializable(explicitToJson: true)</code>。</p>
+<pre><code class="language-yaml">builders:
+  json_serializable:
+    options:
+      any_map: true # 允许解析非 String 键的 Map
+      explicit_to_json: true # 嵌套对象自动调用 toJson()
+      create_factory: true # 自动创建 fromJson 工厂方法
+</code></pre>
+<h3 id="条件化构建"><a class="header" href="#条件化构建">条件化构建</a></h3>
+<p>对于中大型项目，一个常见的需求是：在开发环境生成带有调试信息的代码，在生产环境生成极简、高性能的代码。可以通过 <code>build.yaml</code> 变体（如 <code>build.debug.yaml</code>）来实现条件构建。</p>
+<pre><code class="language-bash"># 使用特定的配置文件进行构建
+dart run build_runner build --config debug
+</code></pre>
+<p>此时 <code>build_runner</code> 会自动寻找项目根目录下的 <code>build.debug.yaml</code>。</p>
+<h3 id="缓存与冲突"><a class="header" href="#缓存与冲突">缓存与冲突</a></h3>
+<p><code>build_runner</code> 并不是每次都从零开始。为了提速，它将所有的中间产物、文件快照和构建图（Build Graph）都存储在项目根目录下的 <code>.dart_tool/build</code> 文件夹中。当我们再次构建时，它只处理发生变化的文件，实现“秒级更新”。当我们运行构建时，如果 <code>build_runner</code> 发现它要生成的文件（如 <code>movie.g.dart</code>）已经存在，并且不是由当前的构建流程生成的，它会报 Conflicting outputs 错误。</p>
+<p>使用以下命令它告诉 <code>build_runner</code>：如果是旧的生成文件，直接删了重写。</p>
+<pre><code class="language-bash">dart run build_runner build --delete-conflicting-outputs
+</code></pre>
+<p>如果 <code>--delete-conflicting-outputs</code> 依然无法解决问题（例如报错信息莫名其妙），那就需要执行 clean：</p>
+<pre><code class="language-bash">dart run build_runner clean
+</code></pre>
+<p>该指令会清空整个 <code>.dart_tool/build</code> 缓存。这意味着下一次构建将是全量构建。清理后的第一次构建可能会耗时较久，但它能百分百保证生成代码的正确性。</p>
+<p><em>注：为了避免团队成员之间的缓存冲突，绝对不要把 <code>.dart_tool/</code> 提交到 Git。</em></p>
+<pre><code class="language-bash"># .gitignore
+.dart_tool/
+</code></pre>
+<h3 id="结束语-3"><a class="header" href="#结束语-3">结束语</a></h3>
+<p><a href="https://pub.dev/packages/build_runner"><code>build_runner</code> 官网</a>上列出了许多开箱即用的常用 Builder，足以应对绝大多数的代码生成场景。我们应该优先从这些成熟的 Builder 中选用。</p>
+<div class="table-wrapper"><table><thead><tr><th>Builder</th><th>Adds capabilities</th><th>Notes</th></tr></thead><tbody>
+<tr><td><a href="https://pub.dev/packages/auto_route">auto_route_generator</a></td><td>Flutter navigation</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/built_value">built_value_generator</a></td><td>data classes with JSON serialization</td><td><a href="https://docs.flutter.dev/packages-and-plugins/favorites">Flutter Favourite</a> by Google</td></tr>
+<tr><td><a href="https://pub.dev/packages/chopper">chopper_generator</a></td><td>REST HTTP client</td><td><a href="https://docs.flutter.dev/packages-and-plugins/favorites">Flutter Favourite</a></td></tr>
+<tr><td><a href="https://pub.dev/packages/copy_with_extension_gen">copy_with_extension_gen</a></td><td><code>copyWith</code> extension methods</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/dart_mappable">dart_mappable_builder</a></td><td>data classes with JSON serialization</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/drift_dev">drift_dev</a></td><td>reactive data binding and SQL</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/envied">envied_generator</a></td><td>environment variable bindings</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/flutter_gen_runner">flutter_gen_runner</a></td><td>Flutter asset bindings</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/freezed">freezed</a></td><td>data classes, tagged unions, nested classes, cloning</td><td><a href="https://docs.flutter.dev/packages-and-plugins/favorites">Flutter Favourite</a></td></tr>
+<tr><td><a href="https://pub.dev/packages/go_router_builder">go_router_builder</a></td><td>Flutter navigation</td><td>by Google</td></tr>
+<tr><td><a href="https://pub.dev/packages/hive_ce">hive_ce_generator</a></td><td>key-value database</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/injectable_generator">injectable_generator</a></td><td>dependency injecton</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/json_serializable">json_serializable</a></td><td>JSON serialization</td><td><a href="https://docs.flutter.dev/packages-and-plugins/favorites">Flutter Favourite</a> by Google</td></tr>
+<tr><td><a href="https://pub.dev/packages/mockito">mockito</a></td><td>mocks and fakes for testing</td><td>by Google</td></tr>
+<tr><td><a href="https://pub.dev/packages/retrofit_generator">retrofit_generator</a></td><td>REST HTTP client</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/riverpod">riverpod_generator</a></td><td>reactive caching and data binding</td><td><a href="https://docs.flutter.dev/packages-and-plugins/favorites">Flutter Favourite</a></td></tr>
+<tr><td><a href="https://pub.dev/packages/slang">slang_build_runner</a></td><td>type-safe i18n</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/swagger_dart_code_generator">swagger_dart_code_generator</a></td><td>dart types from Swagger/OpenAPI schemas</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/theme_tailor">theme_tailor</a></td><td>Flutter themes and extensions</td><td></td></tr>
+<tr><td><a href="https://pub.dev/packages/webdev">webdev</a></td><td>compilation to javascript</td><td>by Google</td></tr>
+</tbody></table>
+</div>
+<p>但当我们面对一些极其特殊、甚至需要改变代码结构的生成逻辑时，现成的工具或许难以应对。此时我们可以自定义 Builder 或 Generator —— 这正是下一节将要讨论的内容。</p>
+<h2 id="reference-14"><a class="header" href="#reference-14">Reference</a></h2>
+<ul>
+<li><a href="https://www.omdbapi.com/">https://www.omdbapi.com/</a></li>
+<li><a href="https://pub.dev/packages/build_runner">https://pub.dev/packages/build_runner</a></li>
+<li><a href="https://github.com/dart-lang/build/blob/master/docs/build_yaml_format.md">https://github.com/dart-lang/build/blob/master/docs/build_yaml_format.md</a></li>
+<li><a href="https://github.com/dart-lang/build/blob/master/build_config/README.md">https://github.com/dart-lang/build/blob/master/build_config/README.md</a></li>
+<li><a href="https://pub.dev/packages/json_serializable">https://pub.dev/packages/json_serializable</a></li>
+<li><a href="https://pub.dev/packages/freezed">https://pub.dev/packages/freezed</a></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="自定义生成器-generator"><a class="header" href="#自定义生成器-generator">自定义生成器 (Generator)</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="理解-macros元编程的未来"><a class="header" href="#理解-macros元编程的未来">理解 Macros（元编程的未来）</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="模版编程与代码脚手架scaffolding"><a class="header" href="#模版编程与代码脚手架scaffolding">模版编程与代码脚手架(Scaffolding)</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="最佳实践与陷阱"><a class="header" href="#最佳实践与陷阱">最佳实践与陷阱</a></h1>
+<p>Builder 负责文件系统的操作（读取 <code>.dart</code> 文件，创建 <code>.g.dart</code> 文件），其逻辑比较底层，写起来稍显繁琐。Generator 封装了 Builder，让我们只需关注“输入一个类，输出一段字符串”的逻辑。绝大多数场景下，我们只需自定义 Generator。</p>
+<h2 id="示例-4"><a class="header" href="#示例-4">示例</a></h2>
+<p>假设我们要为 OMDb 模型类（如 <code>Movie </code>类）自动生成一个字段清单字符串。</p>
+<p>a. Generator 由 <code>source_gen</code> 包提供。首先添加如下依赖包：</p>
+<pre><code class="language-bash">dart pub add source_gen analyzer build
+</code></pre>
+<p>b. 定义注解（<code>OMDbModelInfo</code>).</p>
+<pre><code class="language-dart">// lib/codegen/annotations.dart
+class OMDbModelInfo {
+  const OMDbModelInfo();
+}
+</code></pre>
+<p>c. 定义基于注解（<code>OMDbModelInfo</code>）的Generator（<code>ModelInfoGenerator</code>）。</p>
+<pre><code class="language-dart">// lib/codegen/model_info_generator.dart
+import 'package:analyzer/dart/element/element.dart';
+import 'package:build/build.dart';
+import 'package:source_gen/source_gen.dart';
+import 'annotations.dart';
+
+class ModelInfoGenerator extends GeneratorForAnnotation&lt;OMDbModelInfo&gt; {
+  @override
+  String generateForAnnotatedElement(
+    Element element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) {
+    log.info('&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 正在处理类: ${element.name} &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;');
+
+    // 确保注解是在类上
+    if (element is! ClassElement) throw 'Only classes!';
+
+    final className = element.name;
+    // 获取所有字段名
+    final fields = element.fields.map((f) =&gt; f.name).join(', ');
+
+    // 返回的字符串会直接写入到 .g.dart 中
+    return '''
+// ignore: unused_element
+const _\$${className}Fields = "$fields";
+''';
+  }
+}
+</code></pre>
+<p>d. 创建一个全局函数（<code>omdbModelBuilder</code>），该函数返回一个 <code>Builder</code>。</p>
+<pre><code class="language-dart">// lib/codegen/builder.dart
+import 'package:build/build.dart';
+import 'package:hellodart/codegen/model_info_generator.dart';
+import 'package:source_gen/source_gen.dart';
+
+Builder omdbModelBuilder(BuilderOptions options) =&gt;
+    PartBuilder([ModelInfoGenerator()], '.info.g.dart');
+</code></pre>
+<p>这里指定生成文件的后缀：<code>.info.g.dart</code> 。</p>
+<p>e. 配置 <code>build.yaml</code>。</p>
+<pre><code class="language-yaml">builders:
+  omdb_model_builder:
+    import: "package:hellodart/codegen/builder.dart"
+    # 指向一个返回 Builder 的顶层函数
+    builder_factories: ["omdbModelBuilder"]
+    # 规定：输入 .dart 文件，输出 .info.g.dart 文件
+    build_extensions: {".dart": [".info.g.dart"]}
+    auto_apply: dependents
+    build_to: source
+
+# targets 用于定义构建范围和具体插件的行为
+targets:
+  $default: 
+    builders:
+      hellodart|omdb_model_builder:
+        generate_for:
+          - bin/ch09/*.dart
+</code></pre>
+<ul>
+<li>根部的 builders 是声明（Declaration），targets 里的 builders 是引用（Reference）。</li>
+<li><code>hellodart|omdb_model_builder</code>: 这里的语法是 <code>packageName|builderName</code>。如果 <code>packageName</code> 与 <code>builderName</code> 相同，可以只写 <code>builderName</code>。上一节中的 <code>json_serializable</code> 的全名是 <code>json_serializable|json_serializable</code>。这种设计体现了 Dart 构建系统的模块化哲学。</li>
+</ul>
+<p>f. 生成代码.</p>
+<p>修改 <code>movie.dart</code>：</p>
+<pre><code class="language-dart">part 'movie.g.dart';
+part 'movie.info.g.dart';
+
+@OMDbModelInfo()
+@JsonSerializable()
+class Movie {
+// ... (omited for brevity)
+}
+</code></pre>
+<p>然后运行 <code>build</code> 命令：</p>
+<pre><code class="language-bash">dart run build_runner build
+</code></pre>
+<h2 id="builder-类层次"><a class="header" href="#builder-类层次">Builder 类层次</a></h2>
+<p>从 Builder的类图可以看出 Builder 与 Generator 的关系。</p>
+<pre class="mermaid">classDiagram
+    class Builder {
+        &lt;&lt;abstract&gt;&gt;
+        +Map buildExtensions
+        +build(BuildStep buildStep)*
+    }
+
+    class PartBuilder {
+        +List generators
+        +String formatOutput
+        +build(BuildStep buildStep)
+    }
+
+    class SharedPartBuilder {
+        +List generators
+        +String partId
+        +build(BuildStep buildStep)
+    }
+
+    class LibraryBuilder {
+        +Generator generator
+        +build(BuildStep buildStep)
+    }
+
+    class Generator {
+        &lt;&lt;abstract&gt;&gt;
+        +generate(LibraryReader library, BuildStep buildStep)*
+    }
+
+    class GeneratorForAnnotation~T~ {
+        &lt;&lt;abstract&gt;&gt;
+        +generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep)*    
+    }
+
+    %% 关系
+    Builder &lt;|-- PartBuilder : 继承 (独立生成文件)
+    Builder &lt;|-- SharedPartBuilder : 继承 (生成到 .g.dart)
+    Builder &lt;|-- LibraryBuilder : 继承 (生成整个库)
+
+    PartBuilder o-- Generator : 持有 (1..*)
+    SharedPartBuilder o-- Generator : 持有 (1..*)
+    LibraryBuilder o-- Generator : 持有 (1)
+
+    Generator &lt;|-- GeneratorForAnnotation : 继承 (基于注解触发)
+</pre>
+<h2 id="constantreader"><a class="header" href="#constantreader">ConstantReader</a></h2>
+<p>当我们写下 <code>@JsonSerializable(explicitToJson: true)</code> 时，<code>explicitToJson</code> 这个布尔值是如何传递给Generator的？这就是 <code>ConstantReader</code> 的工作，它负责将源码中的“静态常量”转换为 Generator 可以直接操作的 Dart 对象。</p>
+<p>继续之前的示例，设想我们要为 OMDb模型类自动生成一个扩展方法 <code>printFields</code>，该方法打印模型类的所有字段。我们向 <code>OMDbModelInfo</code> 注解添加一个布尔开关 <code>ext</code>，只有当开发者明确声明 <code>ext: true</code> 时，Generator 才生成 <code>printFields</code>。</p>
+<p>首先修改 <code>OMDbModelInfo</code>，添加 <code>ext</code> 属性.</p>
+<pre><code class="language-dart">// lib/codegen/annotations.dart
+class OMDbModelInfo {
+  final bool ext;
+  const OMDbModelInfo({this.ext = false});
+}
+</code></pre>
+<p>然后我们来看看如何读区 <code>ext</code> 属性。创建一个新的 Generator (<code>ModelExtGenerator</code>)。</p>
+<pre><code class="language-dart">// lib/codegen/model_ext_generator.dart
+// import ... (omited for brevity)
+class ModelExtGenerator extends GeneratorForAnnotation&lt;OMDbModelInfo&gt; {
+  @override
+  String generateForAnnotatedElement(
+    Element element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) {
+    if (element is! ClassElement) throw 'Only classes!';
+
+    final ext = annotation.read('ext').boolValue;
+    if (!ext) return "";
+
+    return "// TODO";
+  }
+}
+</code></pre>
+<p><code>annotation.read('ext')</code> 读取 <code>ext</code>属性，如果该属性不存在将报错。还可以使用 <code>peek('prop')</code>读取属性，这种方式具有更高的容错性 — 如果属性不存在，它将返回 <code>null</code>，适用于可选属性（配置）。</p>
+<pre><code class="language-dart">    final ext = annotation.peek('ext')?.boolValue ?? false;
+</code></pre>
+<h2 id="code_builder"><a class="header" href="#code_builder"><code>code_builder</code></a></h2>
+<p>在之前的 <code>ModelInfoGenerator</code> 实战中，我们使用了简单的字符串拼接（<code>return 'const ...'</code>）。但在面对复杂的类结构、导入管理、私有字段时，这简直是开发者的噩梦。而 <code>code_builder</code> 具有如下 自动导入、代码格式化、语义化编程等特性，极大地简化了 复杂Generator 的编写。字符串拼接如同剪纸拼图，琐碎且易错；而 <code>code_builder</code> 则是语义化的乐高，它用对象化的组件替代了原始的文本堆砌，让代码生成变得严谨且优雅</p>
+<p>接下来使用 <code>code_builder</code> 来实现 <code>ModelExtGenerator</code>的具体逻辑，以演示其用法。</p>
+<pre><code class="language-dart">// lib/codegen/model_ext_generator.dart
+// import ... (omited for brevity)
+class ModelExtGenerator extends GeneratorForAnnotation&lt;OMDbModelInfo&gt; {
+  @override
+  String generateForAnnotatedElement(
+    Element element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) {
+    if (element is! ClassElement) throw 'Only classes!';
+
+    final ext = annotation.read('ext').boolValue;
+    if (!ext) return "";
+
+    final className = element.name!;
+
+    // 使用 code_builder 构建代码对象
+    final extension = Extension(
+      (e) =&gt; e
+        ..name = '${className}Ext'
+        // 绑定到原类
+        ..on = refer(className)
+        ..methods.add(
+          Method(
+            (m) =&gt; m
+              ..name = 'printFields'
+              ..returns = refer('void')
+              ..body = Block.of([
+                // 自动生成打印逻辑
+                refer(
+                  'print',
+                ).call([refer('_\$${className}Fields')]).statement,
+              ]),
+          ),
+        ),
+    );
+
+    // 使用 DartEmitter 将对象发射(Emit)为字符串
+    final emitter = DartEmitter();
+    return '${extension.accept(emitter)}';
+  }
+}
+</code></pre>
+<p>修改 <code>omdbModelBuilder</code> 全局函数：</p>
+<pre><code class="language-dart">Builder omdbModelBuilder(BuilderOptions options) =&gt;
+    PartBuilder([ModelInfoGenerator(), ModelExtGenerator()], '.info.g.dart');
+</code></pre>
+<p>最后，在 <code>Movie</code> 类上使用 <code>@OMDbModelInfo(ext: true)</code> ，它会自动生成：</p>
+<pre><code class="language-dart">extension MovieExt on Movie {
+  void printFields() {
+    print(_$MovieFields);
+  }
+}
+</code></pre>
+<h2 id="reference-15"><a class="header" href="#reference-15">Reference</a></h2>
+<ul>
+<li><a href="https://pub.dev/packages/build">https://pub.dev/packages/build</a></li>
+<li><a href="https://pub.dev/packages/source_gen">https://pub.dev/packages/source_gen</a></li>
+<li><a href="https://pub.dev/packages/code_builder">https://pub.dev/packages/code_builder</a></li>
+<li><a href="https://pub.dev/packages/analyzer">https://pub.dev/packages/analyzer</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="模版编程"><a class="header" href="#模版编程">模版编程</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="代码脚手架"><a class="header" href="#代码脚手架">代码脚手架</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="dart命令行工具"><a class="header" href="#dart命令行工具">dart命令行工具</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="solid编码准则"><a class="header" href="#solid编码准则">SOLID编码准则</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="编写dart命令行程序"><a class="header" href="#编写dart命令行程序">编写Dart命令行程序</a></h1>

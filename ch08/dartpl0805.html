@@ -189,7 +189,7 @@
 </div>
 <h2 id="mock-实战1-模拟数据库服务"><a class="header" href="#mock-实战1-模拟数据库服务">Mock 实战1： 模拟数据库服务</a></h2>
 <p>假设我们有一个 <code>User</code> 模型和一个负责逻辑处理的 <code>UserService</code>。</p>
-<pre><code class="language-dart">// &gt;&gt;&gt;&gt;&gt;&gt; 业务代码 &gt;&gt;&gt;&gt;&gt;&gt;
+<pre><code class="language-dart">// &gt;&gt;&gt;&gt;&gt;&gt; 业务代码 &lt;&lt;&lt;&lt;&lt;&lt;
 
 class User {
   final int id;
@@ -272,7 +272,7 @@ void main() {
 <p>在测试使用了响应式编程技术或WebSocket的程序时，时常免不了要模拟 Stream。</p>
 <h3 id="模拟一个简单的-stream"><a class="header" href="#模拟一个简单的-stream">模拟一个简单的 Stream</a></h3>
 <p>假设你有一个监控系统，它通过 Stream 实时推送传感器数据。</p>
-<pre><code class="language-dart">// &gt;&gt;&gt;&gt;&gt;&gt; 业务代码 &gt;&gt;&gt;&gt;&gt;&gt;
+<pre><code class="language-dart">// &gt;&gt;&gt;&gt;&gt;&gt; 业务代码 &lt;&lt;&lt;&lt;&lt;&lt;
 
 abstract class SensorRepository {
   Stream&lt;int&gt; get temperatureStream;
