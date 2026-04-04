@@ -33,20 +33,19 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
 
-        <!-- MathJax -->
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+            const path_to_root = "../";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -56,8 +55,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -71,7 +70,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -84,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -111,7 +111,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -121,6 +121,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -186,14 +187,14 @@ void main() {
     循环体
   }
 </code></pre>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     A([初始化列表]) --&gt; B{循环条件}
     B --&gt;|true| C(循环体)
     C --&gt;|continue| D(后置操作)
     D --&gt; B
     B ----&gt;|false| E([End])
     C ----&gt;|break| E
-</pre>
+</code></pre>
 <p>后置操作即执行完循环体之后的操作。初始化列表、 循环条件、后置操作，这三部分用分号（<code>;</code>）分割，且每一部分都可以省略（但必须保留分号）。如果循环体只有一条语句，包围循环体的那对花括号（<code>{}</code>） 可以省略，但不建议这么做。</p>
 <p>下面这段代码将打印九九乘法表：</p>
 <pre><code class="language-dart">// ex222.dart
@@ -260,20 +261,20 @@ void main() {
 <h2 id="while-和-do-while"><a class="header" href="#while-和-do-while"><code>while</code> 和 <code>do-while</code></a></h2>
 <p><code>while</code> 循环在循环体之前检查循环条件，而<code>do-while</code>则是在循环提之后检查。</p>
 <p><strong><em>while</em></strong> 循环：</p>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     B{循环条件}--&gt;|true| C(循环体)
     C --&gt;|continue| B
     C --&gt;|break|E
     B ----&gt;|false| E([End])
-</pre>
+</code></pre>
 <p><strong><em>do-while</em></strong> 循环：</p>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     C(循环体) --&gt;|continue| B{循环条件}
     B --&gt;|true| C
     C --&gt;|break|E
     B ----&gt;|false| E([End])
 
-</pre>
+</code></pre>
 <p>下面这段代码先打印数字0到9，再打印数字10到1（递减）。</p>
 <pre><code class="language-dart">//ex127.dart
 void main() {

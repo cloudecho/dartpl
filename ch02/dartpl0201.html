@@ -33,20 +33,19 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
 
-        <!-- MathJax -->
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+            const path_to_root = "../";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -56,8 +55,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -71,7 +70,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -84,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -111,7 +111,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -121,6 +121,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -185,11 +186,11 @@ void main() {
   }
 }  
 </code></pre>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     B{条件}--&gt;|true| C(代码块)
     C --&gt; E([End])
     B --&gt;|false| E
-</pre>
+</code></pre>
 <p><code>if</code> 有一个可选的<code>else</code>分支。</p>
 <pre><code class="language-dart">  if (isSunny) {
     print("Let's go to the park");
@@ -197,12 +198,12 @@ void main() {
     print("It's not sunny");
   }
 </code></pre>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     B{条件}--&gt;|true| C(主分支)
     C --&gt; E([End])
     B --&gt;|false| D(else分支)
     D --&gt; E
-</pre>
+</code></pre>
 <p>还可以使用 <code>else if</code>，像下面这样。</p>
 <pre><code class="language-dart">  if (isSunny) {
     print("Let's go to the park");
@@ -237,7 +238,7 @@ void main() {
 </ol>
 <h2 id="switch"><a class="header" href="#switch"><code>switch</code></a></h2>
 <p>如果需要匹配多个case，应使用<code>switch</code> 语句，而非一个又一个的<code>else if</code>。</p>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     A{switch}--&gt;|case1| B(case1)
     A --&gt; |case2| C(case2)
     A --&gt; |case...| D(case...)
@@ -246,7 +247,7 @@ void main() {
     C --&gt; Z
     D --&gt; Z
     E --&gt; Z
-</pre>
+</code></pre>
 <pre><code class="language-dart">// ex213.dart
 void main() {
   var status = 'done';

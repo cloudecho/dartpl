@@ -34,20 +34,19 @@
         <link rel="stylesheet" href="fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="theme/custom.css">
 
-        <!-- MathJax -->
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+            const path_to_root = "";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc.js"></script>
@@ -57,8 +56,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -72,7 +71,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -85,8 +85,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -112,7 +112,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -122,6 +122,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -170,12 +171,12 @@
 Dart 是 Flutter 应用的开发语言，它专为客户端优化，支持自动内存管理和面向对象编程。
 这里的跨平台指的是一套代码，可发布成 iOS、Android、macOS、Linux、Windows 及 Web 应用。
 原生应用是指代码最终被编译为平台相关的机器码；对 web 而言，对应的是 javascript+WebAssembly。</p>
-<pre class="mermaid">mindmap
+<pre><code class="language-mermaid">mindmap
   root((Dart))
     (自动内存管理)
     (面向对象编程)
     (客户端优化)
-</pre>
+</code></pre>
 <p>如何你初学编程，一下子听到这么多概念，也许还没开始写一行代码就已经开始糊涂了，没有关系。
 要知道，计算机编程就像英语一样，要掌握它，除了需要兴趣之外，还需要良好的思维模式以及坚持不懈的练习。
 希望你在学习本课程时，打开代码编辑器，跟着一起练习，为以后编程打下坚实的基础。在你掌握了一门编程语言之后，再去学其他编程语言就容易多了。</p>
@@ -1227,63 +1228,63 @@ class Student {
 <h2 id="dart-类型系统"><a class="header" href="#dart-类型系统">Dart 类型系统</a></h2>
 <p>Dart 的 Null Safety 并不是一个孤立的功能，它本质上是对类型系统的一次重构。 在探讨 Null Safety 机制之前，我们先对 Dart <strong>健全类型系统（Sound Type System）</strong> 做一个系统性的梳理。</p>
 <p><em>类型层级图</em></p>
-<pre class="mermaid">graph TD
-    %% 顶层类型
-    Object_Q[&quot;Object? (Top Type)&quot;]
-    
-    %% 中间层与可空分支
-    Null[&quot;Null&quot;]
-    Object[&quot;Object (Non-nullable)&quot;]
-    
-    %% 基础类型
-    num[&quot;num&quot;]
-    int[&quot;int&quot;]
-    double[&quot;double&quot;]
-    String[&quot;String&quot;]
-    bool[&quot;bool&quot;]
-    List[&quot;List&amp;lt;T&amp;gt;&quot;]
-    Function[&quot;Function&quot;]
-    Other[&quot;...&quot;]
-    
-    %% 特殊类型
-    dynamic[&quot;dynamic (Static Check Bypass)&quot;]
-    void[&quot;void (No return value)&quot;]
-    Never[&quot;Never (Bottom Type)&quot;]
+<pre><code class="language-mermaid">graph TD
+   %% 顶层类型
+   Object_Q["Object? (Top Type)"]
+   
+   %% 中间层与可空分支
+   Null["Null"]
+   Object["Object (Non-nullable)"]
+   
+   %% 基础类型
+   num["num"]
+   int["int"]
+   double["double"]
+   String["String"]
+   bool["bool"]
+   List["List&amp;lt;T&amp;gt;"]
+   Function["Function"]
+   Other["..."]
+   
+   %% 特殊类型
+   dynamic["dynamic (Static Check Bypass)"]
+   void["void (No return value)"]
+   Never["Never (Bottom Type)"]
 
-    %% 关系连接：从顶层向下
-    Object_Q --- Object
-    Object_Q --- dynamic
-    Object_Q --- void
-    Object_Q --- Null
-    
-    %% Object 的直接子类
-    Object --- num
-    Object --- String
-    Object --- bool
-    Object --- List
-    Object --- Function
-    Object --- Other
-    
-    %% num 的具体实现
-    num --- int
-    num --- double
-    
-    %% Never 的关系 (作为所有类型的最底层)
-    int --- Never
-    double --- Never
-    String --- Never
-    bool --- Never
-    List --- Never
-    Function --- Never
-    Other --- Never
-    Null --- Never
+   %% 关系连接：从顶层向下
+   Object_Q --- Object
+   Object_Q --- dynamic
+   Object_Q --- void
+   Object_Q --- Null
+   
+   %% Object 的直接子类
+   Object --- num
+   Object --- String
+   Object --- bool
+   Object --- List
+   Object --- Function
+   Object --- Other
+   
+   %% num 的具体实现
+   num --- int
+   num --- double
+   
+   %% Never 的关系 (作为所有类型的最底层)
+   int --- Never
+   double --- Never
+   String --- Never
+   bool --- Never
+   List --- Never
+   Function --- Never
+   Other --- Never
+   Null --- Never
 
-    %% 样式美化
-    style Object_Q fill:#f9f,stroke:#333,stroke-width:2px
-    style Never fill:#ff9,stroke:#333,stroke-width:2px
-    style dynamic fill:#eee,stroke:#333,stroke-dasharray: 5 5
-    style Object fill:#e1f5fe,stroke:#01579b
-</pre>
+   %% 样式美化
+   style Object_Q fill:#f9f,stroke:#333,stroke-width:2px
+   style Never fill:#ff9,stroke:#333,stroke-width:2px
+   style dynamic fill:#eee,stroke:#333,stroke-dasharray: 5 5
+   style Object fill:#e1f5fe,stroke:#01579b
+</code></pre>
 <p><code>Object?</code> 位于类型层级图的顶层，<code>Never</code>位于底层，第二层是 <code>Object</code>、<code>dynamic</code>、<code>void</code> 和 <code>Null</code>。在 Dart 类型规范中，<code>Object?</code>、<code>dynamic</code> 和 <code>void</code> 通常被并列视为顶层类型（Top Types），但由于 <code>Object?</code>是所有类型的超集（包含 <code>Null</code>），将其放在最顶层作为“根节点”是非常直观且正确的理解。</p>
 <p>在 Dart 的类型系统中，<code>Never</code> 是一个非常特殊且强大的存在。它被称为底层类型 (Bottom Type)，意味着它是所有其他类型的子类，而它本身没有任何实例。 <code>Never</code> 最常见的用途是标识“永不返回”的函数:</p>
 <pre><code class="language-dart">Never fail(String message) {
@@ -1292,24 +1293,24 @@ class Student {
 </code></pre>
 <h2 id="-可空类型的底层机制"><a class="header" href="#-可空类型的底层机制"><code>?</code>: 可空类型的底层机制</a></h2>
 <p>在 Dart 运行时，<code>int</code> 和 <code>int?</code> 实际上被视为两种不同的类型。那么<code>int?</code> 到底位于类型层级图的哪里？ 实际上 <code>int?</code> 则是 <code>int</code> 与 <code>Null</code> 类型的联合类型（Union Type），只能位于类型层级图的第二层。我们可以通过下表来展示这种“联合类型”的层级位置，你会发现，<code>int?</code> 实际上扮演了一个中转站的角色：</p>
-<pre class="mermaid">graph TD
+<pre><code class="language-mermaid">graph TD
     %% 顶层
-    Object_Q[&quot;Object?&quot;]
+    Object_Q["Object?"]
 
     %% 第二层：可空包装层 (Union Types)
     subgraph Nullable_Layer [第二层：可空联合类型]
         direction LR
-        int_Q[&quot;int? (int ∪ Null)&quot;]
-        String_Q[&quot;String? (String ∪ Null)&quot;]
-        bool_Q[&quot;bool? (bool ∪ Null)&quot;]
+        int_Q["int? (int ∪ Null)"]
+        String_Q["String? (String ∪ Null)"]
+        bool_Q["bool? (bool ∪ Null)"]
     end
 
     %% 第三层：基础不可空类型
-    Object[&quot;Object&quot;]
-    Null[&quot;Null&quot;]
-    int[&quot;int&quot;]
-    String[&quot;String&quot;]
-    bool[&quot;bool&quot;]
+    Object["Object"]
+    Null["Null"]
+    int["int"]
+    String["String"]
+    bool["bool"]
 
     %% 关系连接
     Object_Q --- int_Q
@@ -1333,7 +1334,7 @@ class Student {
     Object --- bool
 
     %% 底部
-    Never[&quot;Never&quot;]
+    Never["Never"]
     int --- Never
     String --- Never
     bool --- Never
@@ -1341,8 +1342,8 @@ class Student {
 
     style int_Q fill:#e1f5fe,stroke:#01579b,stroke-dasharray: 5 5
     style Nullable_Layer fill:#f9f9f9,stroke:#ccc
-</pre>
-<p>当你尝试将 <code>int?</code>类型的值 赋给 <code>int</code> 时，Dart 编译器会报错。这是因为在层级图中，你是在尝试向上转型（从联合类型转到更具体的子类型），这是不安全的。</p>
+</code></pre>
+<p>当你尝试将 <code>int?</code>类型的值 赋给 <code>int</code> 时，Dart 编译器会报错。这是因为在层级图中，你是在尝试向下转型（从联合类型转到更具体的子类型），这是不安全的。</p>
 <p>当我们声明一个非空类型变量 <code>int x</code>，我们就向编译器做出了永久性承诺。在 AOT 编译阶段，由于确定 <code>x</code> 永远不会是 <code>null</code>，编译器可以大胆地移除所有原本需要插入的 <code>if (x == null)</code> 检查指令。这种 <strong>“非空检查消减（Null Check Elimination）”</strong> 让生成的机器码更加紧凑、执行路径更加单一。这也是为什么 <em>Null Safety 能提升程序执行性能</em>。</p>
 <h2 id="-的运行时代价隐式分支检查"><a class="header" href="#-的运行时代价隐式分支检查"><code>!</code> 的运行时代价：隐式分支检查</a></h2>
 <p><code>!</code> 操作符（非空断言）实际上是静态检查的“逃生舱”，但它是有代价的。每当我们使用 <code>x!</code>，Dart 编译器会在该位置强制注入一段检查逻辑。在 CPU 执行层面，<code>!</code> 触发的是一次条件跳转（Conditional Branch），如果 <code>x</code> 恰好为 <code>null</code>，它会跳转到异常处理路径；虽然单次执行极快，但在高性能计算（如我们会学到的 WorkerPool）中频繁使用 <code>!</code> 会干扰 CPU 的分支预测。</p>
@@ -1372,7 +1373,7 @@ class Student {
 <p>原因在于内存竞争与 Getter 不确定性:</p>
 <ul>
 <li>
-<p><strong>Isolate 并发</strong>： Dart 虽然是单线程模型，多 Isolate 之间虽然不共享内存，但在某些底层交互或 FFI(Foreign function interface) 场景下，数据的状态可能改变。</p>
+<p><strong>Isolate 并发</strong>： 虽然 Dart 是单线程模型，多个 Isolate 之间不共享内存，但在某些底层交互或 FFI(Foreign function interface) 场景下，数据的状态可能改变。</p>
 </li>
 <li>
 <p><strong>Getter 覆盖</strong>：底层 VM 无法保证 <code>obj.field</code> 是一块静态内存。它可能是一个 <code>get</code> 函数，每次调用都返回不同的值。</p>
@@ -1414,11 +1415,11 @@ void main() {
   }
 }  
 </code></pre>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     B{条件}--&gt;|true| C(代码块)
     C --&gt; E([End])
     B --&gt;|false| E
-</pre>
+</code></pre>
 <p><code>if</code> 有一个可选的<code>else</code>分支。</p>
 <pre><code class="language-dart">  if (isSunny) {
     print("Let's go to the park");
@@ -1426,12 +1427,12 @@ void main() {
     print("It's not sunny");
   }
 </code></pre>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     B{条件}--&gt;|true| C(主分支)
     C --&gt; E([End])
     B --&gt;|false| D(else分支)
     D --&gt; E
-</pre>
+</code></pre>
 <p>还可以使用 <code>else if</code>，像下面这样。</p>
 <pre><code class="language-dart">  if (isSunny) {
     print("Let's go to the park");
@@ -1466,7 +1467,7 @@ void main() {
 </ol>
 <h2 id="switch"><a class="header" href="#switch"><code>switch</code></a></h2>
 <p>如果需要匹配多个case，应使用<code>switch</code> 语句，而非一个又一个的<code>else if</code>。</p>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     A{switch}--&gt;|case1| B(case1)
     A --&gt; |case2| C(case2)
     A --&gt; |case...| D(case...)
@@ -1475,7 +1476,7 @@ void main() {
     C --&gt; Z
     D --&gt; Z
     E --&gt; Z
-</pre>
+</code></pre>
 <pre><code class="language-dart">// ex213.dart
 void main() {
   var status = 'done';
@@ -1689,14 +1690,14 @@ void main() {
     循环体
   }
 </code></pre>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     A([初始化列表]) --&gt; B{循环条件}
     B --&gt;|true| C(循环体)
     C --&gt;|continue| D(后置操作)
     D --&gt; B
     B ----&gt;|false| E([End])
     C ----&gt;|break| E
-</pre>
+</code></pre>
 <p>后置操作即执行完循环体之后的操作。初始化列表、 循环条件、后置操作，这三部分用分号（<code>;</code>）分割，且每一部分都可以省略（但必须保留分号）。如果循环体只有一条语句，包围循环体的那对花括号（<code>{}</code>） 可以省略，但不建议这么做。</p>
 <p>下面这段代码将打印九九乘法表：</p>
 <pre><code class="language-dart">// ex222.dart
@@ -1763,20 +1764,20 @@ void main() {
 <h2 id="while-和-do-while"><a class="header" href="#while-和-do-while"><code>while</code> 和 <code>do-while</code></a></h2>
 <p><code>while</code> 循环在循环体之前检查循环条件，而<code>do-while</code>则是在循环提之后检查。</p>
 <p><strong><em>while</em></strong> 循环：</p>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     B{循环条件}--&gt;|true| C(循环体)
     C --&gt;|continue| B
     C --&gt;|break|E
     B ----&gt;|false| E([End])
-</pre>
+</code></pre>
 <p><strong><em>do-while</em></strong> 循环：</p>
-<pre class="mermaid">flowchart TD
+<pre><code class="language-mermaid">flowchart TD
     C(循环体) --&gt;|continue| B{循环条件}
     B --&gt;|true| C
     C --&gt;|break|E
     B ----&gt;|false| E([End])
 
-</pre>
+</code></pre>
 <p>下面这段代码先打印数字0到9，再打印数字10到1（递减）。</p>
 <pre><code class="language-dart">//ex127.dart
 void main() {
@@ -1841,10 +1842,10 @@ void main() {
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="函数-function"><a class="header" href="#函数-function">函数 （Function）</a></h1>
 <p>本章节将介绍函数的基本概念，位置参数、命名参数、函数类型、匿名函数等内容，将在后续章节陆续介绍。我们已经多次见过<code>main</code>函数，它是程序的入口。抽象地说，函数对输入数据（输入参数列表）进行处理，然后输出其处理结果（返回值）。</p>
-<pre class="mermaid">flowchart LR
+<pre><code class="language-mermaid">flowchart LR
    a(( )) --&gt;|输入参数| B(处理（函数体）)
    B --&gt; |返回值|c(( ))
-</pre>
+</code></pre>
 <p>先来看一个示例程序，计算平面上两点之间的欧式距离:</p>
 <p>\( \sqrt{(x_1-x_2)^2 + (y_1-y_2)^2} \)</p>
 <pre><code class="language-dart">//ex241.dart
@@ -3855,7 +3856,7 @@ void main() {
 <h2 id="策略模式"><a class="header" href="#策略模式">策略模式</a></h2>
 <p>callable类可用来实现设计模式里的<a href="https://refactoring.guru/design-patterns/strategy">策略模式</a>。</p>
 <p>比如商场对不同等级的客户有不同的折扣。</p>
-<pre class="mermaid">classDiagram
+<pre><code class="language-mermaid">classDiagram
   ShoppingCart o--&gt; DiscountStrategy 
 
   DiscountStrategy &lt;|-- VipDiscount
@@ -3872,7 +3873,7 @@ void main() {
     + double call(double originalPrice)
   }
 
-</pre>
+</code></pre>
 <pre><code class="language-dart">// ex465.dart
 abstract interface class DiscountStrategy {
   double call(double originalPrice); // 1
@@ -5074,7 +5075,7 @@ void main() {
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="集合概述"><a class="header" href="#集合概述">集合概述</a></h1>
 <p>Dart 中的集合数据类型（Collection）包括 List、Set、Map 和 Queue。</p>
-<pre class="mermaid">classDiagram
+<pre><code class="language-mermaid">classDiagram
   Iterable~E~ &lt;|.. List~E~
   Iterable~E~ &lt;|.. Set~E~
   Iterable~E~ &lt;|.. Queue~E~
@@ -5103,7 +5104,7 @@ void main() {
     + Iterable~V~ get values
   }
 
-</pre>
+</code></pre>
 <h2 id="iterable"><a class="header" href="#iterable">Iterable</a></h2>
 <p>Iterable（可迭代对象）是一个抽象类，它是所有集合类（如 List 和 Set）的基石。<a href="ch06//ch07/dartpl0703.html#iterable-%E7%94%9F%E6%88%90%E5%99%A8-sync-yield-">点击这里查看 Iterable生成器</a>。</p>
 <p>Iterable 的大多数方法（如 <code>map</code> 和 <code>where</code>）都是惰性的。这意味着当你调用这些方法时，它们并不会立即遍历集合。只有当你最终调用 <code>toList()</code>、<code>toSet()</code> 或在 <code>for-in</code> 循环中使用它时，计算才会真正发生。这种机制在处理大数据集时非常高效，因为它能避免不必要的中间计算。</p>
@@ -5484,7 +5485,7 @@ void main() {
 <li><code>LinkedHashSet</code> 按元素的写入顺序遍历</li>
 <li>有序 Set（如<code>SplayTreeSet</code>），按排序顺序进行遍历</li>
 </ul>
-<pre class="mermaid">classDiagram
+<pre><code class="language-mermaid">classDiagram
   Set~E~ &lt;|.. HashSet
   Set~E~ &lt;|.. LinkedHashSet
   Set~E~ &lt;|.. SetMixin~E~
@@ -5495,7 +5496,7 @@ void main() {
   &lt;&lt;final&gt;&gt; HashSet
   &lt;&lt;final&gt;&gt; SplayTreeSet
   &lt;&lt;mixin&gt;&gt; SetMixin
-</pre>
+</code></pre>
 <h2 id="set-示例"><a class="header" href="#set-示例">Set 示例</a></h2>
 <p>先看一个简单的例子。</p>
 <pre><code class="language-dart">// ex641.dart
@@ -5598,7 +5599,7 @@ void main() {
 <div style="break-before: page; page-break-before: always;"></div><h1 id="map映射"><a class="header" href="#map映射">Map（映射）</a></h1>
 <p>Map中的成员以“键值对”（key-value pair）的形式存在，Map也就是“键值对”的集合。同一个Map中
 中的key不会重复，但不同的key可以关联到同一个value；通过key可以快速找到对应的value。理论上，Map的读写操作（查找、插入、删除）的平均时间复杂度都是O(1)，即Map可以在一个常量时间内完成某个读或写操作，这个时间几乎不受Map内成员个数的影响。</p>
-<pre class="mermaid">flowchart TB
+<pre><code class="language-mermaid">flowchart TB
   subgraph abc [Map]
     subgraph ... 
     direction LR
@@ -5615,7 +5616,7 @@ void main() {
     A(key1) --&gt; B(value1) 
     end
   end
-</pre>
+</code></pre>
 <p>key与value的数据类型乃参数化类型（泛型）。</p>
 <pre><code class="language-dart">abstract interface class Map&lt;K, V&gt; { 
   // ...
@@ -5669,12 +5670,12 @@ void main() {
 <p>创建一个类型为<code>Map&lt;String,int&gt;</code>的Map，并准备100万（key-value pair）的测试数据，然后将测试数据逐个写入Map；在Map的长度由1万增长至100万的过程中，记录每插入100个pair的耗时；最后观察并分析这些耗时。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="hashcode-与-操作符"><a class="header" href="#hashcode-与-操作符">hashCode 与 <code>==</code>操作符</a></h1>
 <p>Set 和 Map 通常依托哈希表实现。 逻辑上，哈希表可以抽象为一个两列的表格：一列是由 <code>Object.hashCode</code>生成的哈希码（即散列码），另一列则是对应的 entry（key-value pair）。物理存储上，程序先将 key 映射为哈希码，再将哈希码转换为数组索引，该索引决定了 Entry 在哈希表中的物理位置。通过这种方式，Set 和 Map 实现了极其高效的元素存取。有趣的是，在很多底层实现中，Set 其实就是一个“值为空”的 Map；例如 Go 语言并未提供内置的 Set 类型，而是建议开发者直接使用 Map。</p>
-<pre class="mermaid">flowchart LR
+<pre><code class="language-mermaid">flowchart LR
    A(( entry )) --&gt;|key.hashCode| B(( 哈希码 ))
    B --&gt; C(( 索引 ))
    C --&gt;|构建| D[( 哈希表 )]
    D --&gt;|查找| A
-</pre>
+</code></pre>
 <p>Set或Map通常基于<code>Object.==</code> 进行相等性测试。<code>Object.hashCode</code> 与 <code>Object.==</code> （equals）的默认实现仅体现了对象的标识符。为了保持Set或Map语义正确：</p>
 <ul>
 <li>两个相等的对象，其哈希值也必须相等；</li>
@@ -5799,7 +5800,7 @@ Future 的生命周期可分为两个阶段：</p>
 </ul>
 </li>
 </ul>
-<pre class="mermaid">stateDiagram
+<pre><code class="language-mermaid">stateDiagram
     [*] --&gt; Uncompleted : Create Future
    
     Uncompleted --&gt; Success : Value
@@ -5807,7 +5808,7 @@ Future 的生命周期可分为两个阶段：</p>
 
     Success --&gt; [*] : .then / await
     Failure --&gt; [*] : .catchError / try-catch
-</pre>
+</code></pre>
 <h2 id="示例-2"><a class="header" href="#示例-2">示例</a></h2>
 <p>先通过一个例子来看同步函数与异步函数及其使用上的区别：</p>
 <pre><code class="language-dart">// ex721.dart
@@ -6061,13 +6062,13 @@ Future&lt;String&gt; fetchData() async {
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="stream流"><a class="header" href="#stream流">Stream（流）</a></h1>
 <p>如果说 Future 是“一次性买卖”，那么 Stream 就是“订阅服务”。Stream 是一系列异步事件的序列。它会随着时间的推移发出多个值，直到任务完成或发生错误。</p>
-<pre class="mermaid">graph LR
-    A((生成数据)) --&gt; B@{ shape: das, label: &quot;Stream&quot; }
+<pre><code class="language-mermaid">graph LR
+    A((生成数据)) --&gt; B@{ shape: das, label: "Stream" }
     B --&gt;|数据事件 Data| C([监听器 Listener])
     B --&gt;|错误事件 Error| C
     B --&gt;|完成事件 Done| C
     C --&gt; D{处理数据}
-</pre>
+</code></pre>
 <p>Stream 是异步版的Iterable，借助下表我们可以快速掌握其核心差异。</p>
 <div class="table-wrapper"><table><thead><tr><th></th><th>单个数据</th><th>多个数据</th></tr></thead><tbody>
 <tr><td>同步</td><td>T (普通变量)</td><td><a href="ch07/../ch06/dartpl0602.html#iterable">Iterable&lt;T&gt;</a></td></tr>
@@ -6369,8 +6370,8 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
 <p>本节将简单介绍 Isolate 与 Event Loop。下一节将详细介绍如何使用 Isolate。</p>
 <h2 id="并发模型"><a class="header" href="#并发模型">并发模型</a></h2>
 <p>不同于 Java 基于共享内存的多线程并发，Dart 采用了名为 Isolate 的隔离并发模型，其运行机制类似于轻量级进程。Isolate 之间采用“无共享”（Shared-Nothing）架构，通信完全依赖于异步消息传递。这种天然的隔离机制从根本上消除了数据竞争（Data Race），无需引入复杂的锁机制（Locks）即可确保运行时的内存安全。</p>
-<pre class="mermaid">graph TD
-    subgraph &quot;Process (Java, C++) - 共享内存模型&quot;
+<pre><code class="language-mermaid">graph TD
+    subgraph "Process (Java, C++) - 共享内存模型"
         M[(Shared Heap Memory)]
         T1([Thread 1]) --- M
         T2([Thread 2]) --- M
@@ -6378,7 +6379,7 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
         style M fill:#f96,stroke:#333,stroke-width:2px
     end
 
-    subgraph &quot;Process (Dart) - 隔离模型&quot;
+    subgraph "Process (Dart) - 隔离模型"
         subgraph I1 [Isolate 1]
             H1[(Heap)] --- E1([Event Loop])
         end
@@ -6389,7 +6390,7 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
         style H1 fill:#6cf,stroke:#333
         style H2 fill:#6cf,stroke:#333
     end
-</pre>
+</code></pre>
 <p>Isolate 这种设计让 Dart 能够实现 “无停顿垃圾回收”。因为每个 Isolate 的 GC 是独立的，当子 Isolate 在后台清理垃圾时，不会阻塞主 Isolate 的 UI 渲染，这正是 Flutter 保持流畅（60/120 FPS）的底层秘诀之一。</p>
 <h2 id="isolate"><a class="header" href="#isolate">Isolate</a></h2>
 <p>每一个 Isolate 到底初始化了什么？ 当你 spawn 一个新的 Isolate 时，Dart VM 实际上做了以下工作：</p>
@@ -6399,21 +6400,21 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
 <li>创建调用栈（Stack）：独立的执行上下文。</li>
 <li>独立的垃圾回收器（Private GC）：Isolate A 在进行 GC 时，不会停止 Isolate B 的运行（即没有全系统的 Stop-the-world）。</li>
 </ul>
-<pre class="mermaid">graph TD
+<pre><code class="language-mermaid">graph TD
     %% 全局容器
-    subgraph Isolate_Internal [&quot;Dart Isolate Instance&quot;]
+    subgraph Isolate_Internal ["Dart Isolate Instance"]
         direction TB
 
         %% 内存空间
-        subgraph Memory_Space [&quot;私有内存堆 (Private Heap)&quot;]
+        subgraph Memory_Space ["私有内存堆 (Private Heap)"]
             Objects([对象/实例])
             GC[垃圾回收器]
         end
 
         %% 事件驱动核心
-        subgraph Event_System [&quot;事件处理系统 (Event Loop System)&quot;]
-            MQ@{shape: das, label: &quot;微任务队列 Microtask Queue&quot; }
-            EQ@{shape: das, label: &quot;事件队列 Event Queue&quot; }
+        subgraph Event_System ["事件处理系统 (Event Loop System)"]
+            MQ@{shape: das, label: "微任务队列 Microtask Queue" }
+            EQ@{shape: das, label: "事件队列 Event Queue" }
             Loop((⚙️ 事件循环 Event Loop))
         end
 
@@ -6421,7 +6422,7 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
         Stack[[调用栈 Stack]]
 
         %% 外部接口
-        subgraph Ports [&quot;通信网关 (Communication)&quot;]
+        subgraph Ports ["通信网关 (Communication)"]
             RP[ReceivePort 接收端口]
             SP[SendPort 发送端口]
         end
@@ -6447,10 +6448,10 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
     style MQ fill:#FFF9C4,stroke:#FBC02D
     style EQ fill:#E1F5FE,stroke:#0288D1
     style Stack fill:#4CAF50,stroke:#1B5E20,color:#fff
-</pre>
+</code></pre>
 <h3 id="isolate-生命周期"><a class="header" href="#isolate-生命周期">Isolate 生命周期</a></h3>
 <p>在 Dart 中，Isolate 的生命周期是一个闭环的异步过程。由于 Isolate 之间不共享内存，其状态切换高度依赖于 <strong>事件循环（Event Loop）<strong>和</strong>通信端口（Port）</strong>。</p>
-<pre class="mermaid">stateDiagram-v2
+<pre><code class="language-mermaid">stateDiagram-v2
     [*] --&gt; Spawning: Isolate.spawn()
     
     state Spawning {
@@ -6466,7 +6467,7 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
         MicrotaskQueue --&gt; EventQueue: 处理事件/消息
         EventQueue --&gt; EventLoop: 循环往复
         
-        state &quot;Active (Listening)&quot; as Active
+        state "Active (Listening)" as Active
         EventLoop --&gt; Active: ReceivePort 开启
         Active --&gt; EventLoop: 收到消息
     }
@@ -6477,17 +6478,17 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
     
     ErrorState --&gt; Exiting: 触发 ErrorListener
     Exiting --&gt; [*]: 资源回收/内存释放
-</pre>
+</code></pre>
 <h2 id="event-loop"><a class="header" href="#event-loop">Event Loop</a></h2>
 <p>Isolate与Event Loop是密不可分的，每个Isolate都有唯一的一个Event Loop与之对应。Isolate 是物理边界，而 Event Loop 是运行逻辑。</p>
-<pre class="mermaid">graph TD
-    subgraph Core [&quot; &quot;]
+<pre><code class="language-mermaid">graph TD
+    subgraph Core [" "]
         direction TB
         EL((⚙️ Event Loop))
     end
 
-    MTQ@{shape: das, label: &quot;Microtask Queue&quot; }
-    EQ@{shape: das, label: &quot;Event Queue&quot; }
+    MTQ@{shape: das, label: "Microtask Queue" }
+    EQ@{shape: das, label: "Event Queue" }
 
     Exec[[当前执行上下文]]
 
@@ -6506,7 +6507,7 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
     style MTQ fill:#FFF9C4,stroke:#FBC02D
     style EQ fill:#E1F5FE,stroke:#0288D1
     style Core fill:none,stroke:none
-</pre>
+</code></pre>
 <p>Event Loop就像一个不停转动的时间齿轮， 同时维护着两个优先级不同的队列：</p>
 <ul>
 <li>
@@ -6539,7 +6540,7 @@ Future&lt;String&gt; task() async {
   return 'task done';
 }
 </code></pre>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
     autonumber
     participant M as main
     participant EL as ⚙️ Event Loop
@@ -6574,7 +6575,7 @@ Future&lt;String&gt; task() async {
     MTQ-&gt;&gt;Exec: print('main end')
     
     Note over Exec: 所有任务链结束
-</pre>
+</code></pre>
 <p>上述时序图中的三个关键“跳转”：</p>
 <ul>
 <li>
@@ -6654,7 +6655,7 @@ int heavyTask(int count) {
 <li><strong>ReceivePort（收信箱）</strong>：它是私有的，只有创建它的 Isolate 才能从中读取消息。本质上它是一个 Stream。当消息掉进箱子时，Event Loop 齿轮转动，触发监听（<code>listen</code>）回调。</li>
 <li><strong>SendPort（投递地址）</strong>： 它是公开的，可以被复制、传递给其他 Isolate。</li>
 </ul>
-<pre class="mermaid">graph LR
+<pre><code class="language-mermaid">graph LR
     subgraph Isolate_A [main Isolate]
         direction TB
         RP[ReceivePort]
@@ -6675,10 +6676,10 @@ int heavyTask(int count) {
     style Isolate_B fill:#f5f5f5,stroke:#333
     style RP fill:#FFF9C4,stroke:#FBC02D
     style SP fill:#E1F5FE,stroke:#0288D1
-</pre>
+</code></pre>
 <h3 id="单向通信生产-消费"><a class="header" href="#单向通信生产-消费">单向通信（“生产-消费”）</a></h3>
 <p>在单向通信（“生产-消费”）模式中，Main Isolate 充当“听众” （即数据的消费者），Worker Isolate 充当数据的“生产者”。</p>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
 	autonumber
     participant M as Main Isolate
     participant W as Worker Isolate
@@ -6688,7 +6689,7 @@ int heavyTask(int count) {
     W-&gt;&gt;W: 初始化自己的 Event Loop
     W-&gt;&gt;M: 通过传入的 SendPort 发回数据
     M-&gt;&gt;M: RP.listen 接收并处理结果
-</pre>
+</code></pre>
 <pre><code class="language-dart">// ex752.dart
 import 'dart:isolate';
 import 'dart:async';
@@ -6753,7 +6754,7 @@ void entryPoint(SendPort sendPort) async {
 <p><em>最佳实践</em>： <code>Isolate.spawn()</code> 必须指向一个顶级函数或静态方法（如此例中的 <code>entryPoint()</code>），这是为了满足跨线程（<code>Isolate</code>）序列化的要求。</p>
 <h3 id="双向通信"><a class="header" href="#双向通信">双向通信</a></h3>
 <p>我们在理解了单向通信模式之后，就不难理解双向通信模式。main isolate要想发消息给work isolate，必须通过worker的SendPort，因此我们要设法将worker的SendPort传递给main isolate。在<code>entrypoint</code> 函数中，worker调用<code>mainRP.send(...)</code>即可实现这一点（<code>mainRP</code>即main isolate的ReceivePort）。</p>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
     autonumber
     participant M as Main Isolate
     participant W as Worker Isolate
@@ -6778,7 +6779,7 @@ void entryPoint(SendPort sendPort) async {
     end
     
     M-&gt;&gt;M: 后续处理
-</pre>
+</code></pre>
 <p>如下示例由示例<code>ex752</code>改写而成，它演示了两个Isolate间的双向通信，请读者自行分析。</p>
 <pre><code class="language-dart">// ex753.dart
 import 'dart:isolate';
@@ -6945,7 +6946,7 @@ int heavyTask(int count) {
 </ul>
 <h2 id="isolateexit"><a class="header" href="#isolateexit"><code>Isolate.exit()</code></a></h2>
 <p>试想你要解析一个巨大的JSON字符串（如50MB），你启用一个Worker Isolate来解析它：Main Isolate将JSON字符串的文件路径或HTTP URL发给 Worker Isolate，后者将解析结果（<code>bigMap</code>）传回。此类应用场景正是Dart零拷贝的用武之地。我们先来看一下零拷贝方案的时序图。</p>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
 	  autonumber
     participant M as Main Isolate
     participant FS as File System / Network
@@ -6968,7 +6969,7 @@ int heavyTask(int count) {
     
     M--&gt;&gt;M: 接收 Map 对象 (内存所有权转让)
     Note over M: 后续处理（如更新UI）
-</pre>
+</code></pre>
 <p>请注意该时序图的第5步，我们使用的是 <code>Isolate.exit(resultPort, bigMap)</code> 而非 <code>resultPort.send(bigMap)</code>；虽然它们都能将数据（<code>bigMap</code>） 传回 Main Isolate，但底层的内存处理机制完全不同。</p>
 <div class="table-wrapper"><table><thead><tr><th>特性</th><th><code>SendPort.send(message)</code></th><th><code>Isolate.exit(port, message)</code></th></tr></thead><tbody>
 <tr><td>内存行为</td><td>物理拷贝 (Copying)</td><td>所有权转让 (Transfer)</td></tr>
@@ -7082,7 +7083,7 @@ void worker(SendPort mainSendPort) {
   });
 }
 </code></pre>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
     autonumber
     participant M as Main Isolate
     participant W as Worker Isolate
@@ -7107,9 +7108,9 @@ void worker(SendPort mainSendPort) {
         W-&gt;&gt;W: 得到 Uint8List bytes
     end
 
-    W-&gt;&gt;M: mainSendPort.send(&quot;Worker 收到 100 MB&quot;)
+    W-&gt;&gt;M: mainSendPort.send("Worker 收到 100 MB")
     M--&gt;&gt;M: 打印消息并关闭 ReceivePort
-</pre>
+</code></pre>
 <p>a. 握手 (Steps 2-3)： 由于 <code>Isolate.spawn()</code> 只能让主 Isolate 拿到 Worker 的句柄，反向通信需要 Worker 先通过 mainSendPort 把自己的 workerSendPort 发送回去。这是建立双向通信的标准做法。</p>
 <p>b. 内存转移 (Step 4 &amp; 6)： <code>TransferableTypedData.fromList</code> 是核心。它将数据从 Dart 的普通堆（Heap）中移出，放到一个可以被多个 Isolate 访问的底层缓冲区（通常是 C 堆）。</p>
 <ul>
@@ -7136,7 +7137,7 @@ void worker(SendPort mainSendPort) {
 <h2 id="实现方案"><a class="header" href="#实现方案">实现方案</a></h2>
 <p><code>Worer Pool</code> 需要维持一组长期存活的后台 <code>Isolate</code>，并维护它们的 <code>SendPort</code>，以便向其分发任务。当 <code>Worker Pool</code> 收到一个任务（<code>Task</code>）时，它分发给空闲的<code>Worker</code>，如果此时所有的<code>Worker</code>都忙，就将任务放入待执行队列（<code>TaskQueue</code>）。<code>Worker Pool</code>的核心指责就是尽快撮合 <code>Task</code> 与 <code>Worker</code>，一旦<code>Worker</code>空闲，它就去<code>TaskQueue</code>里取出任务交给<code>Worker</code>去执行。</p>
 <p>下面是该方案的 <em>时序图</em> 和 <em>类图</em> 。</p>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
     autonumber
     participant Client as main(Task Submitter)
     participant Pool as Worker Pool (Manager)
@@ -7163,8 +7164,8 @@ void worker(SendPort mainSendPort) {
     Pool-&gt;&gt;W: 自动派发暂存的任务 3
     W--&gt;&gt;Pool: 返回结果 3
     Pool-&gt;&gt;Client: 交付结果 3
-</pre>
-<pre class="mermaid">classDiagram
+</code></pre>
+<pre><code class="language-mermaid">classDiagram
     class TaskData {
         +Function task
         +Record data
@@ -7197,11 +7198,11 @@ void worker(SendPort mainSendPort) {
         +void workerEntryPoint(Record message)
     }
 
-    WorkerPool &quot;1&quot; *-- &quot;0..*&quot; Worker : 维护并调度
+    WorkerPool "1" *-- "0..*" Worker : 维护并调度
     WorkerPool ..&gt; TaskData : 处理任务请求（submit）
     Worker ..&gt; TaskData : 通过 SendPort 发送任务给 Worker Isolate
     Worker ..&gt; GlobalFunctions : Isolate 运行入口
-</pre>
+</code></pre>
 <p>该方案的示例代码如下。</p>
 <pre><code class="language-dart">// ex771.dart
 import 'dart:async';
@@ -7479,7 +7480,7 @@ void workerEntryPoint((int workerId, SendPort resultPort) message) {
 <p><em><code>Q2.</code></em> “执行中请求”要求我们考虑这样一个问题：在关闭 WorkerPool时，所有的Woker都必须处于空闲状态吗（即没有任务在执行中）？ 这就是 <code>WorkerPool.close()</code>方法中 <code>ensureExecutingTaskCompleted</code>参数存在的原因。</p>
 <h2 id="解决方案"><a class="header" href="#解决方案">解决方案</a></h2>
 <p>我们定义如下 <em>WorkerPool 优雅关闭协议</em>。</p>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
     autonumber
     participant M as WorkerPool (Main Isolate)
     participant W as Worker (Worker Isolate)
@@ -7506,7 +7507,7 @@ void workerEntryPoint((int workerId, SendPort resultPort) message) {
     M-&gt;&gt;M: 关闭 _resultPort
     M-&gt;&gt;W: 执行 isolate.kill()
     
-</pre>
+</code></pre>
 <h3 id="q1在途请求"><a class="header" href="#q1在途请求">Q1（在途请求）</a></h3>
 <p>在关闭 <code>_resultPort</code> 之前，先关闭所有<code>worker</code>的 <code>ReceivePort</code>，该如何实现这一点呢？<code>Worker</code>要想收到 <code>close</code> 指令，必须由 <code>WorkerPool</code> 发送给它，我们可以将这个<code>close</code>指令称为<code>shutdown</code>消息。</p>
 <p><em>首先定义<code>_shutdownSignal</code>常量，它表示 <code>shutdown</code>消息：</em></p>
@@ -7600,7 +7601,7 @@ void workerEntryPoint((int workerId, SendPort resultPort) message) {
 </ol>
 <h2 id="被动监听"><a class="header" href="#被动监听">被动监听</a></h2>
 <p>有时候崩溃发生在 EventLoop 之外（例如内存溢出或初始化错误），Worker 根本没有机会执行 <code>resultPort.send()</code>。此时需要利用 <code>Isolate.addErrorListener()</code>，在创建 Isolate 时为其安装一个监听器，这样当Isolate崩溃时 WorkerPool 就可得到通知并做相应处理（如重启Isolate）。</p>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
 	autonumber
     participant M as WorkerPool
     participant W as Worker Isolate
@@ -7616,7 +7617,7 @@ void workerEntryPoint((int workerId, SendPort resultPort) message) {
     M-&gt;&gt;W: isolate.kill()
     M-&gt;&gt;W: 重新 spawn 一个新 Isolate
     M-&gt;&gt;M: 将新Worker加入池子
-</pre>
+</code></pre>
 <h3 id="监听-isolate"><a class="header" href="#监听-isolate">监听 Isolate</a></h3>
 <p><code>Isolate.addOnExitListener()</code>往往与<code>Isolate.addOnExitListener()</code>配合使用，后者用于监听 Isolate 的终止（Terminate）。每个 Worker Isolate 都需要被监听，因此我们将重构 <code>Worker</code> 类，在其构造函数中启动监听，同时在 <code>Worker</code> 类中新增必要的字段。</p>
 <p><em>为 <code>Worker</code> 类添加如下字段:</em></p>
@@ -7747,7 +7748,7 @@ class Worker {
 }
 </code></pre>
 <p>可能有读者要问：既然 isolate 已经崩溃了，还有必要调用 <code>isolate.kill()</code> 吗？答案是很有必要。这是一种“防御性编程”，虽然在逻辑层面上 Isolate 已经“崩溃”了（触发了 errorListener），但崩溃并不总是意味着底层的内存和资源已经彻底释放（<em>崩溃不等于消亡</em>）。借助下图我们可以更好地理解这个问题。</p>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
     participant P as WorkerPool
     participant W as Old Isolate
     participant N as New Isolate
@@ -7765,10 +7766,10 @@ class Worker {
     
     P-&gt;&gt;W: isolate.kill(immediate)
     Note over W: 强制释放资源
-</pre>
+</code></pre>
 <h3 id="新的-isolate-接管旧的任务"><a class="header" href="#新的-isolate-接管旧的任务">新的 Isolate 接管旧的任务</a></h3>
 <p>下图表达了 <code>WorkerPool</code>的初始化（<code>_init()</code>方法）逻辑。</p>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
     autonumber
     participant Main as Main Isolate (WorkerPool)
     participant RP as ReceivePort (resultPort)
@@ -7806,7 +7807,7 @@ class Worker {
     RP--&gt;&gt;Main: 触发 listen 回调
     Main-&gt;&gt;Main: _handleResult(workerId, ok, result)
     end
-</pre>
+</code></pre>
 <p><code>resultPort</code> 不仅仅用于接收计算结果，它还承担了 “控制流” 的职责。在 Worker Isolate 刚启动时，它通过这个端口回传自己的 SendPort。这种“自报家门”的机制是建立双向通讯的基础。 在握手成功的一瞬间，代码立即执行了 <code>takeOverTask()</code>。这在重启场景下至关重要：新 Worker 在逻辑上“透明”地替换了崩溃的旧 Worker，并立即检查是否需要继续执行未完成的任务。只有在确认没有任务需要接管时，才会将 Worker 放入 <code>_idleWorkerController</code>，避免了 Worker 在接管任务的同时又被分配了新任务。</p>
 <p><em>具体实现如下</em>：</p>
 <pre><code class="language-dart">  Future&lt;void&gt; _init() async {
@@ -8038,8 +8039,8 @@ out54 2451ms: pool closed
 <li>组件测试 (Component Testing)：验证多个单元或 UI 组件之间的协作。</li>
 <li>集成测试 (Integration Testing)：从用户视角出发，验证整个应用在真实环境下的端到端流程。</li>
 </ul>
-<pre class="mermaid">graph TD
-    Top@{ shape: tri, label: &quot;&lt;b&gt;集成测试&lt;/b&gt; &lt;br/&gt; 链路验证&quot; }
+<pre><code class="language-mermaid">graph TD
+    Top@{ shape: tri, label: "&lt;b&gt;集成测试&lt;/b&gt; &lt;br/&gt; 链路验证" }
     Middle[/.....&lt;b&gt;组件测试&lt;/b&gt;..... &lt;br/&gt; 模块协作\]
     Bottom[/...........&lt;b&gt;单元测试&lt;/b&gt;........... &lt;br/&gt; 最小逻辑单元 \]
 
@@ -8048,7 +8049,7 @@ out54 2451ms: pool closed
     style Top fill:#f8d7da,stroke:#dc3545
     style Middle fill:#fff3cd,stroke:#ffc107
     style Bottom fill:#d4edda,stroke:#28a745
-</pre>
+</code></pre>
 <h2 id="第一个单元测试用例"><a class="header" href="#第一个单元测试用例">第一个单元测试用例</a></h2>
 <p>现代化编程语言的竞争，早已从语法层面延伸到了 <strong>工具链（Toolchain）</strong> 的完备性。而在工具链中，自动化测试框架无疑是保障工程质量的核心基石。Go 语言秉持“开箱即用”的理念，原生内置了极其强大的测试框架，不仅支持基础的单元测试，还原生支持性能基准测试（Benchmark）以及极具特色的示例测试（Example Tests）。Java拥有极为成熟的开源解决方案，从老牌的 JUnit、TestNG，到支持行为驱动开发（BDD）的 Cucumber，为企业级开发提供了极高的灵活性。Dart官方提供的 test 包（以及 Flutter 场景下的 flutter_test）深度集成在 Dart SDK 中，提供了从基础断言到异步流验证的完整解决方案。</p>
 <p>下面我们就来编写第一个Dart单元测试用例。</p>
@@ -9767,7 +9768,7 @@ class Movie {
 </code></pre>
 <h2 id="builder-类层次"><a class="header" href="#builder-类层次">Builder 类层次</a></h2>
 <p>从 Builder的类图可以看出 Builder 与 Generator 的关系。</p>
-<pre class="mermaid">classDiagram
+<pre><code class="language-mermaid">classDiagram
     class Builder {
         &lt;&lt;abstract&gt;&gt;
         +Map buildExtensions
@@ -9811,7 +9812,7 @@ class Movie {
     LibraryBuilder o-- Generator : 持有 (1)
 
     Generator &lt;|-- GeneratorForAnnotation : 继承 (基于注解触发)
-</pre>
+</code></pre>
 <h2 id="constantreader"><a class="header" href="#constantreader">ConstantReader</a></h2>
 <p>当我们写下 <code>@JsonSerializable(explicitToJson: true)</code> 时，<code>explicitToJson</code> 这个布尔值是如何传递给Generator的？这就是 <code>ConstantReader</code> 的工作，它负责将源码中的“静态常量”转换为 Generator 可以直接操作的 Dart 对象。</p>
 <p>继续之前的示例，设想我们要为 OMDb模型类自动生成一个扩展方法 <code>printFields</code>，该方法打印模型类的所有字段。我们向 <code>OMDbModelInfo</code> 注解添加一个布尔开关 <code>ext</code>，只有当开发者明确声明 <code>ext: true</code> 时，Generator 才生成 <code>printFields</code>。</p>
@@ -9956,9 +9957,7 @@ class ModelExtGenerator extends GeneratorForAnnotation&lt;OMDbModelInfo&gt; {
 
         <script>
         window.addEventListener('load', function() {
-            MathJax.Hub.Register.StartupHook('End', function() {
-                window.setTimeout(window.print, 100);
-            });
+            window.setTimeout(window.print, 100);
         });
         </script>
 

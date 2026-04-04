@@ -33,20 +33,19 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
 
-        <!-- MathJax -->
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+            const path_to_root = "../";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -56,8 +55,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -71,7 +70,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -84,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -111,7 +111,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -121,6 +121,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -169,63 +170,63 @@
 <h2 id="dart-类型系统"><a class="header" href="#dart-类型系统">Dart 类型系统</a></h2>
 <p>Dart 的 Null Safety 并不是一个孤立的功能，它本质上是对类型系统的一次重构。 在探讨 Null Safety 机制之前，我们先对 Dart <strong>健全类型系统（Sound Type System）</strong> 做一个系统性的梳理。</p>
 <p><em>类型层级图</em></p>
-<pre class="mermaid">graph TD
-    %% 顶层类型
-    Object_Q[&quot;Object? (Top Type)&quot;]
-    
-    %% 中间层与可空分支
-    Null[&quot;Null&quot;]
-    Object[&quot;Object (Non-nullable)&quot;]
-    
-    %% 基础类型
-    num[&quot;num&quot;]
-    int[&quot;int&quot;]
-    double[&quot;double&quot;]
-    String[&quot;String&quot;]
-    bool[&quot;bool&quot;]
-    List[&quot;List&amp;lt;T&amp;gt;&quot;]
-    Function[&quot;Function&quot;]
-    Other[&quot;...&quot;]
-    
-    %% 特殊类型
-    dynamic[&quot;dynamic (Static Check Bypass)&quot;]
-    void[&quot;void (No return value)&quot;]
-    Never[&quot;Never (Bottom Type)&quot;]
+<pre><code class="language-mermaid">graph TD
+   %% 顶层类型
+   Object_Q["Object? (Top Type)"]
+   
+   %% 中间层与可空分支
+   Null["Null"]
+   Object["Object (Non-nullable)"]
+   
+   %% 基础类型
+   num["num"]
+   int["int"]
+   double["double"]
+   String["String"]
+   bool["bool"]
+   List["List&amp;lt;T&amp;gt;"]
+   Function["Function"]
+   Other["..."]
+   
+   %% 特殊类型
+   dynamic["dynamic (Static Check Bypass)"]
+   void["void (No return value)"]
+   Never["Never (Bottom Type)"]
 
-    %% 关系连接：从顶层向下
-    Object_Q --- Object
-    Object_Q --- dynamic
-    Object_Q --- void
-    Object_Q --- Null
-    
-    %% Object 的直接子类
-    Object --- num
-    Object --- String
-    Object --- bool
-    Object --- List
-    Object --- Function
-    Object --- Other
-    
-    %% num 的具体实现
-    num --- int
-    num --- double
-    
-    %% Never 的关系 (作为所有类型的最底层)
-    int --- Never
-    double --- Never
-    String --- Never
-    bool --- Never
-    List --- Never
-    Function --- Never
-    Other --- Never
-    Null --- Never
+   %% 关系连接：从顶层向下
+   Object_Q --- Object
+   Object_Q --- dynamic
+   Object_Q --- void
+   Object_Q --- Null
+   
+   %% Object 的直接子类
+   Object --- num
+   Object --- String
+   Object --- bool
+   Object --- List
+   Object --- Function
+   Object --- Other
+   
+   %% num 的具体实现
+   num --- int
+   num --- double
+   
+   %% Never 的关系 (作为所有类型的最底层)
+   int --- Never
+   double --- Never
+   String --- Never
+   bool --- Never
+   List --- Never
+   Function --- Never
+   Other --- Never
+   Null --- Never
 
-    %% 样式美化
-    style Object_Q fill:#f9f,stroke:#333,stroke-width:2px
-    style Never fill:#ff9,stroke:#333,stroke-width:2px
-    style dynamic fill:#eee,stroke:#333,stroke-dasharray: 5 5
-    style Object fill:#e1f5fe,stroke:#01579b
-</pre>
+   %% 样式美化
+   style Object_Q fill:#f9f,stroke:#333,stroke-width:2px
+   style Never fill:#ff9,stroke:#333,stroke-width:2px
+   style dynamic fill:#eee,stroke:#333,stroke-dasharray: 5 5
+   style Object fill:#e1f5fe,stroke:#01579b
+</code></pre>
 <p><code>Object?</code> 位于类型层级图的顶层，<code>Never</code>位于底层，第二层是 <code>Object</code>、<code>dynamic</code>、<code>void</code> 和 <code>Null</code>。在 Dart 类型规范中，<code>Object?</code>、<code>dynamic</code> 和 <code>void</code> 通常被并列视为顶层类型（Top Types），但由于 <code>Object?</code>是所有类型的超集（包含 <code>Null</code>），将其放在最顶层作为“根节点”是非常直观且正确的理解。</p>
 <p>在 Dart 的类型系统中，<code>Never</code> 是一个非常特殊且强大的存在。它被称为底层类型 (Bottom Type)，意味着它是所有其他类型的子类，而它本身没有任何实例。 <code>Never</code> 最常见的用途是标识“永不返回”的函数:</p>
 <pre><code class="language-dart">Never fail(String message) {
@@ -234,24 +235,24 @@
 </code></pre>
 <h2 id="-可空类型的底层机制"><a class="header" href="#-可空类型的底层机制"><code>?</code>: 可空类型的底层机制</a></h2>
 <p>在 Dart 运行时，<code>int</code> 和 <code>int?</code> 实际上被视为两种不同的类型。那么<code>int?</code> 到底位于类型层级图的哪里？ 实际上 <code>int?</code> 则是 <code>int</code> 与 <code>Null</code> 类型的联合类型（Union Type），只能位于类型层级图的第二层。我们可以通过下表来展示这种“联合类型”的层级位置，你会发现，<code>int?</code> 实际上扮演了一个中转站的角色：</p>
-<pre class="mermaid">graph TD
+<pre><code class="language-mermaid">graph TD
     %% 顶层
-    Object_Q[&quot;Object?&quot;]
+    Object_Q["Object?"]
 
     %% 第二层：可空包装层 (Union Types)
     subgraph Nullable_Layer [第二层：可空联合类型]
         direction LR
-        int_Q[&quot;int? (int ∪ Null)&quot;]
-        String_Q[&quot;String? (String ∪ Null)&quot;]
-        bool_Q[&quot;bool? (bool ∪ Null)&quot;]
+        int_Q["int? (int ∪ Null)"]
+        String_Q["String? (String ∪ Null)"]
+        bool_Q["bool? (bool ∪ Null)"]
     end
 
     %% 第三层：基础不可空类型
-    Object[&quot;Object&quot;]
-    Null[&quot;Null&quot;]
-    int[&quot;int&quot;]
-    String[&quot;String&quot;]
-    bool[&quot;bool&quot;]
+    Object["Object"]
+    Null["Null"]
+    int["int"]
+    String["String"]
+    bool["bool"]
 
     %% 关系连接
     Object_Q --- int_Q
@@ -275,7 +276,7 @@
     Object --- bool
 
     %% 底部
-    Never[&quot;Never&quot;]
+    Never["Never"]
     int --- Never
     String --- Never
     bool --- Never
@@ -283,8 +284,8 @@
 
     style int_Q fill:#e1f5fe,stroke:#01579b,stroke-dasharray: 5 5
     style Nullable_Layer fill:#f9f9f9,stroke:#ccc
-</pre>
-<p>当你尝试将 <code>int?</code>类型的值 赋给 <code>int</code> 时，Dart 编译器会报错。这是因为在层级图中，你是在尝试向上转型（从联合类型转到更具体的子类型），这是不安全的。</p>
+</code></pre>
+<p>当你尝试将 <code>int?</code>类型的值 赋给 <code>int</code> 时，Dart 编译器会报错。这是因为在层级图中，你是在尝试向下转型（从联合类型转到更具体的子类型），这是不安全的。</p>
 <p>当我们声明一个非空类型变量 <code>int x</code>，我们就向编译器做出了永久性承诺。在 AOT 编译阶段，由于确定 <code>x</code> 永远不会是 <code>null</code>，编译器可以大胆地移除所有原本需要插入的 <code>if (x == null)</code> 检查指令。这种 <strong>“非空检查消减（Null Check Elimination）”</strong> 让生成的机器码更加紧凑、执行路径更加单一。这也是为什么 <em>Null Safety 能提升程序执行性能</em>。</p>
 <h2 id="-的运行时代价隐式分支检查"><a class="header" href="#-的运行时代价隐式分支检查"><code>!</code> 的运行时代价：隐式分支检查</a></h2>
 <p><code>!</code> 操作符（非空断言）实际上是静态检查的“逃生舱”，但它是有代价的。每当我们使用 <code>x!</code>，Dart 编译器会在该位置强制注入一段检查逻辑。在 CPU 执行层面，<code>!</code> 触发的是一次条件跳转（Conditional Branch），如果 <code>x</code> 恰好为 <code>null</code>，它会跳转到异常处理路径；虽然单次执行极快，但在高性能计算（如我们会学到的 WorkerPool）中频繁使用 <code>!</code> 会干扰 CPU 的分支预测。</p>
@@ -314,7 +315,7 @@
 <p>原因在于内存竞争与 Getter 不确定性:</p>
 <ul>
 <li>
-<p><strong>Isolate 并发</strong>： Dart 虽然是单线程模型，多 Isolate 之间虽然不共享内存，但在某些底层交互或 FFI(Foreign function interface) 场景下，数据的状态可能改变。</p>
+<p><strong>Isolate 并发</strong>： 虽然 Dart 是单线程模型，多个 Isolate 之间不共享内存，但在某些底层交互或 FFI(Foreign function interface) 场景下，数据的状态可能改变。</p>
 </li>
 <li>
 <p><strong>Getter 覆盖</strong>：底层 VM 无法保证 <code>obj.field</code> 是一块静态内存。它可能是一个 <code>get</code> 函数，每次调用都返回不同的值。</p>

@@ -33,20 +33,19 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
 
-        <!-- MathJax -->
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+            const path_to_root = "../";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -56,8 +55,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -71,7 +70,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -84,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -111,7 +111,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -121,6 +121,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -196,7 +197,7 @@
 </ol>
 <h2 id="被动监听"><a class="header" href="#被动监听">被动监听</a></h2>
 <p>有时候崩溃发生在 EventLoop 之外（例如内存溢出或初始化错误），Worker 根本没有机会执行 <code>resultPort.send()</code>。此时需要利用 <code>Isolate.addErrorListener()</code>，在创建 Isolate 时为其安装一个监听器，这样当Isolate崩溃时 WorkerPool 就可得到通知并做相应处理（如重启Isolate）。</p>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
 	autonumber
     participant M as WorkerPool
     participant W as Worker Isolate
@@ -212,7 +213,7 @@
     M-&gt;&gt;W: isolate.kill()
     M-&gt;&gt;W: 重新 spawn 一个新 Isolate
     M-&gt;&gt;M: 将新Worker加入池子
-</pre>
+</code></pre>
 <h3 id="监听-isolate"><a class="header" href="#监听-isolate">监听 Isolate</a></h3>
 <p><code>Isolate.addOnExitListener()</code>往往与<code>Isolate.addOnExitListener()</code>配合使用，后者用于监听 Isolate 的终止（Terminate）。每个 Worker Isolate 都需要被监听，因此我们将重构 <code>Worker</code> 类，在其构造函数中启动监听，同时在 <code>Worker</code> 类中新增必要的字段。</p>
 <p><em>为 <code>Worker</code> 类添加如下字段:</em></p>
@@ -343,7 +344,7 @@ class Worker {
 }
 </code></pre>
 <p>可能有读者要问：既然 isolate 已经崩溃了，还有必要调用 <code>isolate.kill()</code> 吗？答案是很有必要。这是一种“防御性编程”，虽然在逻辑层面上 Isolate 已经“崩溃”了（触发了 errorListener），但崩溃并不总是意味着底层的内存和资源已经彻底释放（<em>崩溃不等于消亡</em>）。借助下图我们可以更好地理解这个问题。</p>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
     participant P as WorkerPool
     participant W as Old Isolate
     participant N as New Isolate
@@ -361,10 +362,10 @@ class Worker {
     
     P-&gt;&gt;W: isolate.kill(immediate)
     Note over W: 强制释放资源
-</pre>
+</code></pre>
 <h3 id="新的-isolate-接管旧的任务"><a class="header" href="#新的-isolate-接管旧的任务">新的 Isolate 接管旧的任务</a></h3>
 <p>下图表达了 <code>WorkerPool</code>的初始化（<code>_init()</code>方法）逻辑。</p>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
     autonumber
     participant Main as Main Isolate (WorkerPool)
     participant RP as ReceivePort (resultPort)
@@ -402,7 +403,7 @@ class Worker {
     RP--&gt;&gt;Main: 触发 listen 回调
     Main-&gt;&gt;Main: _handleResult(workerId, ok, result)
     end
-</pre>
+</code></pre>
 <p><code>resultPort</code> 不仅仅用于接收计算结果，它还承担了 “控制流” 的职责。在 Worker Isolate 刚启动时，它通过这个端口回传自己的 SendPort。这种“自报家门”的机制是建立双向通讯的基础。 在握手成功的一瞬间，代码立即执行了 <code>takeOverTask()</code>。这在重启场景下至关重要：新 Worker 在逻辑上“透明”地替换了崩溃的旧 Worker，并立即检查是否需要继续执行未完成的任务。只有在确认没有任务需要接管时，才会将 Worker 放入 <code>_idleWorkerController</code>，避免了 Worker 在接管任务的同时又被分配了新任务。</p>
 <p><em>具体实现如下</em>：</p>
 <pre><code class="language-dart">  Future&lt;void&gt; _init() async {

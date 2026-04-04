@@ -33,20 +33,19 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
 
-        <!-- MathJax -->
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+            const path_to_root = "../";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -56,8 +55,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -71,7 +70,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -84,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -111,7 +111,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -121,6 +121,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -178,7 +179,7 @@
 <h2 id="实现方案"><a class="header" href="#实现方案">实现方案</a></h2>
 <p><code>Worer Pool</code> 需要维持一组长期存活的后台 <code>Isolate</code>，并维护它们的 <code>SendPort</code>，以便向其分发任务。当 <code>Worker Pool</code> 收到一个任务（<code>Task</code>）时，它分发给空闲的<code>Worker</code>，如果此时所有的<code>Worker</code>都忙，就将任务放入待执行队列（<code>TaskQueue</code>）。<code>Worker Pool</code>的核心指责就是尽快撮合 <code>Task</code> 与 <code>Worker</code>，一旦<code>Worker</code>空闲，它就去<code>TaskQueue</code>里取出任务交给<code>Worker</code>去执行。</p>
 <p>下面是该方案的 <em>时序图</em> 和 <em>类图</em> 。</p>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
     autonumber
     participant Client as main(Task Submitter)
     participant Pool as Worker Pool (Manager)
@@ -205,8 +206,8 @@
     Pool-&gt;&gt;W: 自动派发暂存的任务 3
     W--&gt;&gt;Pool: 返回结果 3
     Pool-&gt;&gt;Client: 交付结果 3
-</pre>
-<pre class="mermaid">classDiagram
+</code></pre>
+<pre><code class="language-mermaid">classDiagram
     class TaskData {
         +Function task
         +Record data
@@ -239,11 +240,11 @@
         +void workerEntryPoint(Record message)
     }
 
-    WorkerPool &quot;1&quot; *-- &quot;0..*&quot; Worker : 维护并调度
+    WorkerPool "1" *-- "0..*" Worker : 维护并调度
     WorkerPool ..&gt; TaskData : 处理任务请求（submit）
     Worker ..&gt; TaskData : 通过 SendPort 发送任务给 Worker Isolate
     Worker ..&gt; GlobalFunctions : Isolate 运行入口
-</pre>
+</code></pre>
 <p>该方案的示例代码如下。</p>
 <pre><code class="language-dart">// ex771.dart
 import 'dart:async';

@@ -33,20 +33,19 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
 
-        <!-- MathJax -->
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+            const path_to_root = "../";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -56,8 +55,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -71,7 +70,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -84,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -111,7 +111,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -121,6 +121,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -174,8 +175,8 @@
 <li>组件测试 (Component Testing)：验证多个单元或 UI 组件之间的协作。</li>
 <li>集成测试 (Integration Testing)：从用户视角出发，验证整个应用在真实环境下的端到端流程。</li>
 </ul>
-<pre class="mermaid">graph TD
-    Top@{ shape: tri, label: &quot;&lt;b&gt;集成测试&lt;/b&gt; &lt;br/&gt; 链路验证&quot; }
+<pre><code class="language-mermaid">graph TD
+    Top@{ shape: tri, label: "&lt;b&gt;集成测试&lt;/b&gt; &lt;br/&gt; 链路验证" }
     Middle[/.....&lt;b&gt;组件测试&lt;/b&gt;..... &lt;br/&gt; 模块协作\]
     Bottom[/...........&lt;b&gt;单元测试&lt;/b&gt;........... &lt;br/&gt; 最小逻辑单元 \]
 
@@ -184,7 +185,7 @@
     style Top fill:#f8d7da,stroke:#dc3545
     style Middle fill:#fff3cd,stroke:#ffc107
     style Bottom fill:#d4edda,stroke:#28a745
-</pre>
+</code></pre>
 <h2 id="第一个单元测试用例"><a class="header" href="#第一个单元测试用例">第一个单元测试用例</a></h2>
 <p>现代化编程语言的竞争，早已从语法层面延伸到了 <strong>工具链（Toolchain）</strong> 的完备性。而在工具链中，自动化测试框架无疑是保障工程质量的核心基石。Go 语言秉持“开箱即用”的理念，原生内置了极其强大的测试框架，不仅支持基础的单元测试，还原生支持性能基准测试（Benchmark）以及极具特色的示例测试（Example Tests）。Java拥有极为成熟的开源解决方案，从老牌的 JUnit、TestNG，到支持行为驱动开发（BDD）的 Cucumber，为企业级开发提供了极高的灵活性。Dart官方提供的 test 包（以及 Flutter 场景下的 flutter_test）深度集成在 Dart SDK 中，提供了从基础断言到异步流验证的完整解决方案。</p>
 <p>下面我们就来编写第一个Dart单元测试用例。</p>

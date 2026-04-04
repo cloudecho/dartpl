@@ -33,20 +33,19 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../theme/custom.css">
 
-        <!-- MathJax -->
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+            const path_to_root = "../";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -56,8 +55,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -71,7 +70,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -84,8 +84,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -111,7 +111,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -121,6 +121,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -173,7 +174,7 @@
 </ul>
 <h2 id="isolateexit"><a class="header" href="#isolateexit"><code>Isolate.exit()</code></a></h2>
 <p>试想你要解析一个巨大的JSON字符串（如50MB），你启用一个Worker Isolate来解析它：Main Isolate将JSON字符串的文件路径或HTTP URL发给 Worker Isolate，后者将解析结果（<code>bigMap</code>）传回。此类应用场景正是Dart零拷贝的用武之地。我们先来看一下零拷贝方案的时序图。</p>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
 	  autonumber
     participant M as Main Isolate
     participant FS as File System / Network
@@ -196,7 +197,7 @@
     
     M--&gt;&gt;M: 接收 Map 对象 (内存所有权转让)
     Note over M: 后续处理（如更新UI）
-</pre>
+</code></pre>
 <p>请注意该时序图的第5步，我们使用的是 <code>Isolate.exit(resultPort, bigMap)</code> 而非 <code>resultPort.send(bigMap)</code>；虽然它们都能将数据（<code>bigMap</code>） 传回 Main Isolate，但底层的内存处理机制完全不同。</p>
 <div class="table-wrapper"><table><thead><tr><th>特性</th><th><code>SendPort.send(message)</code></th><th><code>Isolate.exit(port, message)</code></th></tr></thead><tbody>
 <tr><td>内存行为</td><td>物理拷贝 (Copying)</td><td>所有权转让 (Transfer)</td></tr>
@@ -310,7 +311,7 @@ void worker(SendPort mainSendPort) {
   });
 }
 </code></pre>
-<pre class="mermaid">sequenceDiagram
+<pre><code class="language-mermaid">sequenceDiagram
     autonumber
     participant M as Main Isolate
     participant W as Worker Isolate
@@ -335,9 +336,9 @@ void worker(SendPort mainSendPort) {
         W-&gt;&gt;W: 得到 Uint8List bytes
     end
 
-    W-&gt;&gt;M: mainSendPort.send(&quot;Worker 收到 100 MB&quot;)
+    W-&gt;&gt;M: mainSendPort.send("Worker 收到 100 MB")
     M--&gt;&gt;M: 打印消息并关闭 ReceivePort
-</pre>
+</code></pre>
 <p>a. 握手 (Steps 2-3)： 由于 <code>Isolate.spawn()</code> 只能让主 Isolate 拿到 Worker 的句柄，反向通信需要 Worker 先通过 mainSendPort 把自己的 workerSendPort 发送回去。这是建立双向通信的标准做法。</p>
 <p>b. 内存转移 (Step 4 &amp; 6)： <code>TransferableTypedData.fromList</code> 是核心。它将数据从 Dart 的普通堆（Heap）中移出，放到一个可以被多个 Isolate 访问的底层缓冲区（通常是 C 堆）。</p>
 <ul>
