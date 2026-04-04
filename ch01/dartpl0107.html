@@ -47,7 +47,7 @@
             const path_to_root = "../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-cebdec1b.js";
+            window.path_to_searchindex_js = "../searchindex-63e4e6ea.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-e9dd7b2b.js"></script>
@@ -247,6 +247,10 @@
     style Never fill:#ff9,stroke:#333,stroke-width:2px
     style dynamic fill:#eee,stroke:#333,stroke-dasharray: 5 5
     style Object fill:#e1f5fe,stroke:#01579b
+
+    classDef text1 color:#555
+    class Object_Q,Never,dynamic,Object text1
+
 </pre>
 
 <p><code>Object?</code> 位于类型层级图的顶层，<code>Never</code>位于底层，第二层是 <code>Object</code>、<code>dynamic</code>、<code>void</code> 和 <code>Null</code>。在 Dart 类型规范中，<code>Object?</code>、<code>dynamic</code> 和 <code>void</code> 通常被并列视为顶层类型（Top Types），但由于 <code>Object?</code>是所有类型的超集（包含 <code>Null</code>），将其放在最顶层作为“根节点”是非常直观且正确的理解。</p>
@@ -304,7 +308,7 @@
     bool --- Never
     Null --- Never
 
-    style int_Q fill:#e1f5fe,stroke:#01579b,stroke-dasharray: 5 5
+    style int_Q fill:#e1f5fe,stroke:#01579b,stroke-dasharray: 5 5,color:#888
     style Nullable_Layer fill:#f9f9f9,stroke:#ccc
 </pre>
 
