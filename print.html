@@ -22,37 +22,50 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="theme/custom.css">
+        <link rel="stylesheet" href="theme/custom-b53ae162.css">
 
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
         <!-- Provide site root and default themes to javascript -->
         <script>
             const path_to_root = "";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-cebdec1b.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="toc-e9dd7b2b.js"></script>
     </head>
     <body>
-    <div id="body-container">
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
@@ -81,56 +94,59 @@
             html.classList.add("js");
         </script>
 
-        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             let sidebar = null;
-            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            sidebar_toggle.checked = sidebar === 'visible';
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
-        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
                 <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
             </noscript>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
             </div>
         </nav>
 
-        <div id="page-wrapper" class="page-wrapper">
+        <div id="mdbook-page-wrapper" class="page-wrapper">
 
             <div class="page">
-                                <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                            <i class="fa fa-bars"></i>
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
                         </label>
-                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                            <i class="fa fa-paint-brush"></i>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
                         </button>
-                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
                         </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
-                            <i class="fa fa-search"></i>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
                         </button>
                     </div>
 
@@ -138,45 +154,51 @@
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
-                            <i id="print-button" class="fa fa-print"></i>
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
 
                     </div>
                 </div>
 
-                <div id="search-wrapper" class="hidden">
-                    <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
                     </form>
-                    <div id="searchresults-outer" class="searchresults-outer hidden">
-                        <div id="searchresults-header" class="searchresults-header"></div>
-                        <ul id="searchresults">
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
                         </ul>
                     </div>
                 </div>
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script>
-                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
-                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
-                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
                         link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
                     });
                 </script>
 
-                <div id="content" class="content">
+                <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="前言"><a class="header" href="#前言">前言</a></h1>
 <p>如果你正在寻找一个跨平台的原生应用开发方案，你可能已经了解过 Flutter，ReactNative 等。
 Dart 是 Flutter 应用的开发语言，它专为客户端优化，支持自动内存管理和面向对象编程。
 这里的跨平台指的是一套代码，可发布成 iOS、Android、macOS、Linux、Windows 及 Web 应用。
 原生应用是指代码最终被编译为平台相关的机器码；对 web 而言，对应的是 javascript+WebAssembly。</p>
-<pre><code class="language-mermaid">mindmap
+<pre class="mermaid">mindmap
   root((Dart))
     (自动内存管理)
     (面向对象编程)
     (客户端优化)
-</code></pre>
+</pre>
+
 <p>如何你初学编程，一下子听到这么多概念，也许还没开始写一行代码就已经开始糊涂了，没有关系。
 要知道，计算机编程就像英语一样，要掌握它，除了需要兴趣之外，还需要良好的思维模式以及坚持不懈的练习。
 希望你在学习本课程时，打开代码编辑器，跟着一起练习，为以后编程打下坚实的基础。在你掌握了一门编程语言之后，再去学其他编程语言就容易多了。</p>
@@ -193,7 +215,8 @@ Dart 是 Flutter 应用的开发语言，它专为客户端优化，支持自动
 <p>附录包括 dart 命令行工具、编码准则、Dart 命令行及服务端编程，以及常用 package 介绍。</p>
 <p>本课程中的代码可免费下载，使用的 dart 版本为 3.8+。</p>
 <p>最后，希望本课程能对你的 dart 学习之旅助一臂之力，祝你学习愉快。</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="hello-dart-搭建开发环境"><a class="header" href="#hello-dart-搭建开发环境">Hello Dart: 搭建开发环境</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="hello-dart-搭建开发环境"><a class="header" href="#hello-dart-搭建开发环境">Hello Dart: 搭建开发环境</a></h1>
 <p>搭建开发环境是我们编程的起点，新手有可能卡在这一步。如果你是经验丰富的程序员，可以直接跳过。搭建开发环境需要考虑的两个主要问题是开发机的操作系统与网络环境。</p>
 <p>我们的开发电脑的操作系统可能是下列之一:</p>
 <ul>
@@ -356,7 +379,8 @@ export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
 <ul>
 <li><a href="https://docs.flutter.cn/community/china/">https://docs.flutter.cn/community/china/</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="变量与null-safety"><a class="header" href="#变量与null-safety">变量与Null Safety</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="变量与null-safety"><a class="header" href="#变量与null-safety">变量与Null Safety</a></h1>
 <h2 id="什么是变量"><a class="header" href="#什么是变量">什么是变量</a></h2>
 <p>计算机编程语言里的变量（Variable）与数学公式里的变量类似。请看下面这段Dart代码:</p>
 <pre><code class="language-dart">// ex121
@@ -542,7 +566,8 @@ void main() {
 <li><a href="https://dart.dev/effective-dart/design#types">https://dart.dev/effective-dart/design#types</a></li>
 <li><a href="https://dart.dev/null-safety">https://dart.dev/null-safety</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="final-const-及wildcard"><a class="header" href="#final-const-及wildcard"><code>final</code>、 <code>const</code> 及wildcard</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="final-const-及wildcard"><a class="header" href="#final-const-及wildcard"><code>final</code>、 <code>const</code> 及wildcard</a></h1>
 <h2 id="final"><a class="header" href="#final"><code>final</code></a></h2>
 <p>声明为final的变量，只能被赋值一次。 如果尝试修改已经赋值过的final变量，会引起编译错误。</p>
 <pre><code class="language-dart">// ex131.dart
@@ -615,8 +640,8 @@ void main() {
 <ol>
 <li>声明一个<code>final</code> 列表  <code>luckyNumbers</code>并对其初始化，包含5、6两个数字；</li>
 <li>向<code>luckyNumbers</code>添加数字8，然后打印出来，luckyNumbers 现在包含了5、6、8三个数字; 这说明了虽然<code>final</code>修饰的luckyNumbers本身（引用）不可更改，但它引用的列表是可以改变的;</li>
-<li>声明一个<code>const</code>列表<code>myFriends</code>，初始值包含"Alice和"Bob"两个字符串;</li>
-<li>向<code>myFriends</code>添加一个新元素"Charlie"，这引起了一个运行时异常，告诉我们不能向不可变列表添加新的元素，可见<code>const</code>比<code>final</code>具有更强的不可变性。</li>
+<li>声明一个<code>const</code>列表<code>myFriends</code>，初始值包含“Alice和“Bob“两个字符串;</li>
+<li>向<code>myFriends</code>添加一个新元素“Charlie“，这引起了一个运行时异常，告诉我们不能向不可变列表添加新的元素，可见<code>const</code>比<code>final</code>具有更强的不可变性。</li>
 </ol>
 <h3 id="定义const构造器"><a class="header" href="#定义const构造器">定义const构造器</a></h3>
 <p>构造器是OOP里的概念，const构造用于创建常量值。请看下面这个示例：</p>
@@ -716,18 +741,19 @@ void genericFunction&lt;_&gt;() {}
 <ul>
 <li><a href="https://dart.dev/language/variable">https://dart.dev/language/variable</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="数据类型"><a class="header" href="#数据类型">数据类型</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="数据类型"><a class="header" href="#数据类型">数据类型</a></h1>
 <p>通常计算机编程语言里的数据类型可以分为基础数据类型与复合数据类型两大类。Dart的基础数据类型包括：</p>
 <ul>
-<li><a href="ch01/dartpl0104.html#%E6%95%B0%E5%AD%97">数字（int 整数，double 浮点数）</a></li>
-<li><a href="ch01/dartpl0104.html#%E5%AD%97%E7%AC%A6%E4%B8%B2string">字符串 （String）</a></li>
-<li><a href="ch01/dartpl0104.html#%E5%B8%83%E5%B0%94bool">布尔 （bool）</a></li>
-<li><a href="ch01/dartpl0104.html#%E7%AC%A6%E6%96%87rune">符文（Rune， 通常使用 <code>characters</code> API）</a></li>
+<li><a href="#数字">数字（int 整数，double 浮点数）</a></li>
+<li><a href="#字符串string">字符串 （String）</a></li>
+<li><a href="#布尔bool">布尔 （bool）</a></li>
+<li><a href="#符文rune">符文（Rune， 通常使用 <code>characters</code> API）</a></li>
 </ul>
 <p>复合数据类型是基础数据类型的组合。Dart的复合数据类型包括：</p>
 <ul>
-<li><a href="ch01/dartpl0104.html#%E8%AE%B0%E5%BD%95record">记录 (Record)</a></li>
-<li><a href="ch01/dartpl0104.html#%E6%9E%9A%E4%B8%BEenum">枚举（Enum)</a></li>
+<li><a href="#记录record">记录 (Record)</a></li>
+<li><a href="#枚举enum">枚举（Enum)</a></li>
 <li>列表（List, 数组）</li>
 <li>集合（Set）</li>
 <li>映射（Map）</li>
@@ -736,7 +762,7 @@ void genericFunction&lt;_&gt;() {}
 <p>Dart还有如下特殊的数据类型：</p>
 <ul>
 <li>函数（Function）</li>
-<li><a href="ch01/dartpl0104.html#%E7%AC%A6%E5%8F%B7symbol">符号（Symbol)</a></li>
+<li><a href="#符号symbol">符号（Symbol)</a></li>
 <li><code>null</code> 值 （空值，Null）</li>
 </ul>
 <p>第2章将讨论函数，第4章将讨论类，第6章将讨论列表（List）、集合（Set）、映射（Map）。</p>
@@ -1003,23 +1029,29 @@ void main() {
 <li><a href="https://dart.dev/language/records">https://dart.dev/language/records</a></li>
 <li><a href="https://dart.dev/language/enums">https://dart.dev/language/enums</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="操作符"><a class="header" href="#操作符">操作符</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="操作符"><a class="header" href="#操作符">操作符</a></h1>
 <p>计算机程序的表达式由操作符和操作数构成。如<code>1+2</code>这个表达式中，<code>+</code>是操作符，数字<code>1</code>和<code>2</code>是操作数。如果表达式中只有一个操作数，它便是一元表达式；如果有两个操作数，它便是二元表达式；类似地还有三元表达式。一元表达式中的操作符为一元操作符。</p>
-<p>Dart提供了非常丰富的操作符，且支持为类（class，第4-5章内容）定义<a href="ch01/../ch04/dartpl0405.html">操作符</a>。</p>
+<p>Dart提供了非常丰富的操作符，且支持为类（class，第4-5章内容）定义<a href="#操作符实例方法">操作符</a>。</p>
 <ul>
-<li><a href="ch01/dartpl0105.html#%E7%AE%97%E6%9C%AF%E6%93%8D%E4%BD%9C%E7%AC%A6">算术操作符</a></li>
-<li><a href="ch01/dartpl0105.html#%E5%85%B3%E7%B3%BB%E6%93%8D%E4%BD%9C%E7%AC%A6">关系操作符</a></li>
-<li><a href="ch01/dartpl0105.html#%E7%B1%BB%E5%9E%8B%E6%B5%8B%E8%AF%95%E6%93%8D%E4%BD%9C%E7%AC%A6">类型测试操作符</a></li>
-<li><a href="ch01/dartpl0105.html#%E8%B5%8B%E5%80%BC%E6%93%8D%E4%BD%9C%E7%AC%A6">赋值操作符</a></li>
-<li><a href="ch01/dartpl0105.html#%E9%80%BB%E8%BE%91%E6%93%8D%E4%BD%9C%E7%AC%A6">逻辑操作符</a></li>
-<li><a href="ch01/dartpl0105.html#%E4%BD%8D%E6%93%8D%E4%BD%9C%E7%AC%A6">位操作符</a></li>
-<li><a href="ch01/dartpl0105.html#%E6%9D%A1%E4%BB%B6%E8%A1%A8%E8%BE%BE%E5%BC%8F">条件表达式</a></li>
-<li><a href="ch01/dartpl0105.html#%E7%BA%A7%E8%81%94%E7%AC%A6%E5%8F%B7">级联符号</a></li>
-<li><a href="ch01/dartpl0105.html#%E5%85%B6%E4%BB%96%E6%93%8D%E4%BD%9C%E7%AC%A6">其他操作符</a></li>
+<li><a href="#算术操作符">算术操作符</a></li>
+<li><a href="#关系操作符">关系操作符</a></li>
+<li><a href="#类型测试操作符">类型测试操作符</a></li>
+<li><a href="#赋值操作符">赋值操作符</a></li>
+<li><a href="#逻辑操作符">逻辑操作符</a></li>
+<li><a href="#位操作符">位操作符</a></li>
+<li><a href="#条件表达式">条件表达式</a></li>
+<li><a href="#级联符号">级联符号</a></li>
+<li><a href="#其他操作符">其他操作符</a></li>
 </ul>
-<p>在算数表达式中（例如 <code>2 + 3 × 5</code>），乘除法的优先级高于加减法，因此优先计算乘除法（<code> 3 × 5</code>），但可以通过圆括号来改变求值顺序（例如 <code>(2 + 3) × 5）</code>。<a href="ch01/dartpl0105.html#%E6%93%8D%E4%BD%9C%E7%AC%A6%E4%BC%98%E5%85%88%E7%BA%A7">操作符的优先级</a>，与算术中加减乘除的优先级类似。</p>
+<p>在算数表达式中（例如 <code>2 + 3 × 5</code>），乘除法的优先级高于加减法，因此优先计算乘除法（<code> 3 × 5</code>），但可以通过圆括号来改变求值顺序（例如 <code>(2 + 3) × 5）</code>。<a href="#操作符优先级">操作符的优先级</a>，与算术中加减乘除的优先级类似。</p>
 <h2 id="算术操作符"><a class="header" href="#算术操作符">算术操作符</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>操作符</th><th>含义</th><th>示例</th></tr>
+</thead>
+<tbody>
 <tr><td><code>+</code></td><td>加</td><td><code>1 + 2</code>  <span class="hljs-comment"> <em>//3</em></span></td></tr>
 <tr><td><code>-</code></td><td>减</td><td><code>4 - 3</code>  <span class="hljs-comment">  <em>//1</em></span></td></tr>
 <tr><td><code>-</code><em><code>expr</code></em></td><td>符号取反</td><td><code>-x</code></td></tr>
@@ -1027,7 +1059,8 @@ void main() {
 <tr><td><code>/</code></td><td>除，结果是一个浮点数</td><td><code>7 / 2</code>  <span class="hljs-comment">  <em>//3.5</em></span></td></tr>
 <tr><td><code>~/</code></td><td>整除，除法的整数部分，结果是一个整数</td><td><code>7 ~/ 2</code>  <span class="hljs-comment">  <em>//3</em></span></td></tr>
 <tr><td><code>%</code></td><td>模，除法的余数部分，结果是一个整数或浮点数</td><td><code>7 % 2</code>  <span class="hljs-comment">  <em>//1</em></span></td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <p>Dart支持自增（<code>++</code>）与自减（<code>--</code>）一元操作符。表达式<code>x++</code> 相当于<code>x = x+1</code>，<code>x--</code> 相当于<code>x = x-1</code>。 这两个操作符位于操作数之前或之后均可，但有区别。</p>
 <pre><code class="language-dart">// ex151.dart
@@ -1041,19 +1074,25 @@ void main() {
 我们用同样的方式去理解<code>x--</code> 与<code>--x</code>。</p>
 <h2 id="关系操作符"><a class="header" href="#关系操作符">关系操作符</a></h2>
 <p>关系操作符用于布尔表达式（其结果为<code>true</code>或<code>false</code>）。</p>
-<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>操作符</th><th>含义</th><th>示例</th></tr>
+</thead>
+<tbody>
 <tr><td><code>==</code></td><td>等于</td><td><code>5 == 5</code></td></tr>
 <tr><td><code>!=</code></td><td>不等于</td><td><code>6 != 7</code></td></tr>
 <tr><td><code>&gt;</code></td><td>大于</td><td><code>8 &gt; 7</code></td></tr>
 <tr><td><code>&lt;</code></td><td>小于</td><td><code>6 &lt; 9</code></td></tr>
 <tr><td><code>&gt;=</code></td><td>大于等于</td><td><code>4 &gt;= 3</code></td></tr>
 <tr><td><code>&lt;=</code></td><td>小于等于</td><td><code>3 &lt;= 4</code></td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <p>关于<code>==</code> 操作符：</p>
 <ol>
 <li>如果 <code>x</code> 或 <code>y</code> 为 <code>null</code>，则只有当它们都是 <code>null</code>，<code>x==y</code> 才返回 <code>true</code>；如果只有一个为 <code>null</code>，则<code>x==y</code> 返回 <code>false</code>。</li>
-<li><code>x == y</code>本质上是调用 <code>x</code>的<code>==</code> <a href="ch01/../ch04/dartpl0405.html">操作符方法</a>（以<code>y</code>作为参数），然后返回其结果， 类似于 <code>x.equals(y)</code> 。</li>
+<li><code>x == y</code>本质上是调用 <code>x</code>的<code>==</code> <a href="#操作符实例方法">操作符方法</a>（以<code>y</code>作为参数），然后返回其结果， 类似于 <code>x.equals(y)</code> 。</li>
 <li>极少情况下，你需要知道<code>x</code>和<code>y</code>是否引用了同一个对象，使用<code>identical(x,y)</code>。</li>
 </ol>
 <blockquote>
@@ -1061,33 +1100,57 @@ void main() {
 </blockquote>
 <h2 id="类型测试操作符"><a class="header" href="#类型测试操作符">类型测试操作符</a></h2>
 <p><code>as</code>、<code>is</code> 和 <code>is!</code> 操作符用于在运行时检查类型。</p>
-<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>操作符</th><th>含义</th><th>示例</th></tr>
+</thead>
+<tbody>
 <tr><td><code>as</code></td><td>类型转换（该符号也用于<code>import</code>语句中给包取别名）</td><td><code>obj as String</code></td></tr>
 <tr><td><code>is</code></td><td>如果对象具有指定类型返回<code>true</code></td><td><code>obj is double</code></td></tr>
 <tr><td><code>is!</code></td><td>如果对象不具有指定类型返回<code>true</code></td><td><code>obj is! num</code></td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <h2 id="赋值操作符"><a class="header" href="#赋值操作符">赋值操作符</a></h2>
 <p>首先来看 <code>=</code> 和 <code>??=</code> 这两个赋值操作符。</p>
-<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>操作符</th><th>含义</th><th>示例</th></tr>
+</thead>
+<tbody>
 <tr><td><code>=</code></td><td>赋值</td><td><code>x = 123;</code></td></tr>
 <tr><td><code>??=</code></td><td>仅当变量为<code>null</code>才对其赋值</td><td><code> x ??= 234;</code></td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <p>复合赋值操作符组合了一个操作和赋值，以 <code>+=</code> 为例，<code> x += y</code> 就等价于 <code> x = x + y</code>。假设  <code>op</code> 是一个操作符，那么 <code>a op= b</code> 等价于  <code> a = a op b</code>。以下是复合赋值操作符：</p>
-<div class="table-wrapper"><table><thead><tr><th></th><th></th><th></th><th></th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th></th><th></th><th></th></tr>
+</thead>
+<tbody>
 <tr><td><code>*=</code></td><td><code>%=</code></td><td><code>&gt;&gt;&gt;=</code></td><td><code>^=</code></td></tr>
 <tr><td><code>+=</code></td><td><code>/=</code></td><td><code>&lt;&lt;=</code></td><td><code>&amp;=</code></td></tr>
 <tr><td><code>|=</code></td><td><code>-=</code></td><td><code>~/=</code></td><td><code>&gt;&gt;=</code></td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <h2 id="逻辑操作符"><a class="header" href="#逻辑操作符">逻辑操作符</a></h2>
 <p>您使用逻辑运算符反转或组合布尔表达式。</p>
-<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>操作符</th><th>含义</th><th>示例</th></tr>
+</thead>
+<tbody>
 <tr><td><code>!</code><span class="hljs"><em>expr</em></span></td><td>逻辑非，逻辑取反</td><td><code>!x</code></td></tr>
 <tr><td><code>||</code></td><td>逻辑或（OR）</td><td><code>x == 3 || x ==4</code></td></tr>
 <tr><td><code>&amp;&amp;</code></td><td>逻辑与（AND）</td><td><code> x &gt;=1 &amp;&amp;  y &lt; 6</code></td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <p>下面是一个稍微复杂的例子：</p>
 <pre><code class="language-dart">if (ok &amp;&amp; (x &lt; 5 || y &gt; 6)) {
@@ -1096,7 +1159,12 @@ void main() {
 </code></pre>
 <h2 id="位操作符"><a class="header" href="#位操作符">位操作符</a></h2>
 <p>Dart可以对数字的每一比特位（bit）进行操作。</p>
-<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>操作符</th><th>含义</th><th>示例</th></tr>
+</thead>
+<tbody>
 <tr><td><code>&amp;</code></td><td>与（AND）</td><td><code> 1 &amp; 2</code> <span class="hljs-comment">  <em>// 0</em></span></td></tr>
 <tr><td><code>|</code></td><td>或（OR）</td><td><code>1 | 2</code><span class="hljs-comment">  <em>// 3</em></span></td></tr>
 <tr><td><code>^</code></td><td>异或（XOR）</td><td><code>2 ^ 3</code><span class="hljs-comment">  <em>//1</em></span></td></tr>
@@ -1104,7 +1172,8 @@ void main() {
 <tr><td><code>&lt;&lt;</code></td><td>左移位</td><td><code>1 &lt;&lt; 10</code><span class="hljs-comment">  <em>// 1024</em></span></td></tr>
 <tr><td><code>&gt;&gt;</code></td><td>右移位</td><td><code>1024 &gt;&gt; 9</code><span class="hljs-comment">  <em>// 2</em></span></td></tr>
 <tr><td><code>&gt;&gt;&gt;</code></td><td>无符号右移</td><td><code>-1 &gt;&gt;&gt; 61</code><span class="hljs-comment">  <em>// 7</em></span></td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <h2 id="条件表达式"><a class="header" href="#条件表达式">条件表达式</a></h2>
 <p>先来看下面的代码片段:</p>
@@ -1144,7 +1213,12 @@ void main() {
 <p>上面代码中的<code>sb2</code>如果是<code>null</code>，就不会执行任何的级联操作。</p>
 <h2 id="其他操作符"><a class="header" href="#其他操作符">其他操作符</a></h2>
 <p>下面的操作符已在前面章节介绍过，不再赘述。</p>
-<div class="table-wrapper"><table><thead><tr><th>操作符</th><th>含义</th><th>示例</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>操作符</th><th>含义</th><th>示例</th></tr>
+</thead>
+<tbody>
 <tr><td><code>()</code></td><td>函数调用</td><td><code>doIt()</code></td></tr>
 <tr><td><code>[]</code></td><td>下标访问</td><td><code>todoList[0]</code></td></tr>
 <tr><td><code>?[]</code></td><td>有条件下标访问</td><td><code>fruits?[0]</code></td></tr>
@@ -1153,12 +1227,18 @@ void main() {
 <tr><td><code>!</code></td><td>非空断言</td><td><code>point!</code></td></tr>
 <tr><td><code>...</code></td><td>展开一个集合（collection），插入另一个集合（collection）</td><td><code>...myList</code></td></tr>
 <tr><td><code>...?</code></td><td>与<code>...</code>类似，适用于nullable对象</td><td><code>....?anotherList</code></td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <p>注：  <code>()</code> 也用于改变表达式的运算优先级。</p>
 <h2 id="操作符优先级"><a class="header" href="#操作符优先级">操作符优先级</a></h2>
 <p>下表中的操作符按优先级从高到低排依次列，第一行中的优先级最高，第二行次之，以此类推； 同一行里的操作符具有相同的优先级。</p>
-<div class="table-wrapper"><table><thead><tr><th>描述</th><th>操作符</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>描述</th><th>操作符</th></tr>
+</thead>
+<tbody>
 <tr><td>一元后缀</td><td><em><code>expr</code></em><code>++</code>     <em><code>expr</code></em><code>--</code>     <code>()</code>      <code>[]</code>     <code>?[]</code>     <code> .</code>      <code>?.</code>     <code>!</code></td></tr>
 <tr><td>一元前缀</td><td><code>-</code><em><code>expr</code></em>     <code>!</code><em><code>expr</code></em>      <code>~</code><em><code>expr</code></em>     <code>++</code><em><code>expr</code></em>     <code>--</code><em><code>expr</code></em>        <code>await </code><em><code>expr</code></em></td></tr>
 <tr><td>乘除</td><td><code>*</code>    <code> /</code>     <code>%</code>    <code>~/</code></td></tr>
@@ -1176,19 +1256,21 @@ void main() {
 <tr><td>级联</td><td><code>..</code>     <code>?..</code></td></tr>
 <tr><td>赋值</td><td><code>=</code>     <code>*=</code>      <code>/=</code>     <code>+=</code>      <code>-=</code>      <code>&amp;=</code>     <code>^=</code>   等</td></tr>
 <tr><td>展开</td><td><code>...</code>      <code>...?</code></td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <h2 id="参考资料-4"><a class="header" href="#参考资料-4">参考资料</a></h2>
 <ul>
 <li><a href="https://dart.dev/language/operators">https://dart.dev/language/operators</a></li>
 <li><a href="https://dart.dev/language/methods#operators">https://dart.dev/language/methods#operators</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="注释"><a class="header" href="#注释">注释</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="注释"><a class="header" href="#注释">注释</a></h1>
 <p>代码中的注释帮助人们阅读代码，文档注释还用于生成API（应用编程接口）文档。Dart 支持三种注释：</p>
 <ul>
-<li><a href="ch01/dartpl0106.html#%E5%8D%95%E8%A1%8C%E6%B3%A8%E9%87%8A">单行注释</a></li>
-<li><a href="ch01/dartpl0106.html#%E5%A4%9A%E8%A1%8C%E6%B3%A8%E9%87%8A">多行注释</a></li>
-<li><a href="ch01/dartpl0106.html#%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A">文档注释</a></li>
+<li><a href="#单行注释">单行注释</a></li>
+<li><a href="#多行注释">多行注释</a></li>
+<li><a href="#文档注释">文档注释</a></li>
 </ul>
 <p>单行注释和多行注释会被编译器忽略，而文档注释可用于Dart的文档生成工具，<code>dart doc</code>。</p>
 <h2 id="单行注释"><a class="header" href="#单行注释">单行注释</a></h2>
@@ -1223,68 +1305,70 @@ class Student {
 <ul>
 <li><a href="https://dart.dev/language/comments">https://dart.dev/language/comments</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="再谈-null-safety从语法到运行时"><a class="header" href="#再谈-null-safety从语法到运行时">再谈 Null Safety：从语法到运行时</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="再谈-null-safety从语法到运行时"><a class="header" href="#再谈-null-safety从语法到运行时">再谈 Null Safety：从语法到运行时</a></h1>
 <p>在 Dart 中，?（可空性）和 !（空断言）不仅仅是语法糖，它们更是植根于 Dart 的健全类型系统（Sound Static Type System）。理解它们的底层机制，需要从编译时分析与运行时检查两个维度入手。</p>
 <h2 id="dart-类型系统"><a class="header" href="#dart-类型系统">Dart 类型系统</a></h2>
 <p>Dart 的 Null Safety 并不是一个孤立的功能，它本质上是对类型系统的一次重构。 在探讨 Null Safety 机制之前，我们先对 Dart <strong>健全类型系统（Sound Type System）</strong> 做一个系统性的梳理。</p>
 <p><em>类型层级图</em></p>
-<pre><code class="language-mermaid">graph TD
-   %% 顶层类型
-   Object_Q["Object? (Top Type)"]
-   
-   %% 中间层与可空分支
-   Null["Null"]
-   Object["Object (Non-nullable)"]
-   
-   %% 基础类型
-   num["num"]
-   int["int"]
-   double["double"]
-   String["String"]
-   bool["bool"]
-   List["List&amp;lt;T&amp;gt;"]
-   Function["Function"]
-   Other["..."]
-   
-   %% 特殊类型
-   dynamic["dynamic (Static Check Bypass)"]
-   void["void (No return value)"]
-   Never["Never (Bottom Type)"]
+<pre class="mermaid">graph TD
+    %% 顶层类型
+    Object_Q["Object? (Top Type)"]
+    
+    %% 中间层与可空分支
+    Null["Null"]
+    Object["Object (Non-nullable)"]
+    
+    %% 基础类型
+    num["num"]
+    int["int"]
+    double["double"]
+    String["String"]
+    bool["bool"]
+    List["List&amp;lt;T&amp;gt;"]
+    Function["Function"]
+    Other["..."]
+    
+    %% 特殊类型
+    dynamic["dynamic (Static Check Bypass)"]
+    void["void (No return value)"]
+    Never["Never (Bottom Type)"]
 
-   %% 关系连接：从顶层向下
-   Object_Q --- Object
-   Object_Q --- dynamic
-   Object_Q --- void
-   Object_Q --- Null
-   
-   %% Object 的直接子类
-   Object --- num
-   Object --- String
-   Object --- bool
-   Object --- List
-   Object --- Function
-   Object --- Other
-   
-   %% num 的具体实现
-   num --- int
-   num --- double
-   
-   %% Never 的关系 (作为所有类型的最底层)
-   int --- Never
-   double --- Never
-   String --- Never
-   bool --- Never
-   List --- Never
-   Function --- Never
-   Other --- Never
-   Null --- Never
+    %% 关系连接：从顶层向下
+    Object_Q --- Object
+    Object_Q --- dynamic
+    Object_Q --- void
+    Object_Q --- Null
+    
+    %% Object 的直接子类
+    Object --- num
+    Object --- String
+    Object --- bool
+    Object --- List
+    Object --- Function
+    Object --- Other
+    
+    %% num 的具体实现
+    num --- int
+    num --- double
+    
+    %% Never 的关系 (作为所有类型的最底层)
+    int --- Never
+    double --- Never
+    String --- Never
+    bool --- Never
+    List --- Never
+    Function --- Never
+    Other --- Never
+    Null --- Never
 
-   %% 样式美化
-   style Object_Q fill:#f9f,stroke:#333,stroke-width:2px
-   style Never fill:#ff9,stroke:#333,stroke-width:2px
-   style dynamic fill:#eee,stroke:#333,stroke-dasharray: 5 5
-   style Object fill:#e1f5fe,stroke:#01579b
-</code></pre>
+    %% 样式美化
+    style Object_Q fill:#f9f,stroke:#333,stroke-width:2px
+    style Never fill:#ff9,stroke:#333,stroke-width:2px
+    style dynamic fill:#eee,stroke:#333,stroke-dasharray: 5 5
+    style Object fill:#e1f5fe,stroke:#01579b
+</pre>
+
 <p><code>Object?</code> 位于类型层级图的顶层，<code>Never</code>位于底层，第二层是 <code>Object</code>、<code>dynamic</code>、<code>void</code> 和 <code>Null</code>。在 Dart 类型规范中，<code>Object?</code>、<code>dynamic</code> 和 <code>void</code> 通常被并列视为顶层类型（Top Types），但由于 <code>Object?</code>是所有类型的超集（包含 <code>Null</code>），将其放在最顶层作为“根节点”是非常直观且正确的理解。</p>
 <p>在 Dart 的类型系统中，<code>Never</code> 是一个非常特殊且强大的存在。它被称为底层类型 (Bottom Type)，意味着它是所有其他类型的子类，而它本身没有任何实例。 <code>Never</code> 最常见的用途是标识“永不返回”的函数:</p>
 <pre><code class="language-dart">Never fail(String message) {
@@ -1293,7 +1377,7 @@ class Student {
 </code></pre>
 <h2 id="-可空类型的底层机制"><a class="header" href="#-可空类型的底层机制"><code>?</code>: 可空类型的底层机制</a></h2>
 <p>在 Dart 运行时，<code>int</code> 和 <code>int?</code> 实际上被视为两种不同的类型。那么<code>int?</code> 到底位于类型层级图的哪里？ 实际上 <code>int?</code> 则是 <code>int</code> 与 <code>Null</code> 类型的联合类型（Union Type），只能位于类型层级图的第二层。我们可以通过下表来展示这种“联合类型”的层级位置，你会发现，<code>int?</code> 实际上扮演了一个中转站的角色：</p>
-<pre><code class="language-mermaid">graph TD
+<pre class="mermaid">graph TD
     %% 顶层
     Object_Q["Object?"]
 
@@ -1342,7 +1426,8 @@ class Student {
 
     style int_Q fill:#e1f5fe,stroke:#01579b,stroke-dasharray: 5 5
     style Nullable_Layer fill:#f9f9f9,stroke:#ccc
-</code></pre>
+</pre>
+
 <p>当你尝试将 <code>int?</code>类型的值 赋给 <code>int</code> 时，Dart 编译器会报错。这是因为在层级图中，你是在尝试向下转型（从联合类型转到更具体的子类型），这是不安全的。</p>
 <p>当我们声明一个非空类型变量 <code>int x</code>，我们就向编译器做出了永久性承诺。在 AOT 编译阶段，由于确定 <code>x</code> 永远不会是 <code>null</code>，编译器可以大胆地移除所有原本需要插入的 <code>if (x == null)</code> 检查指令。这种 <strong>“非空检查消减（Null Check Elimination）”</strong> 让生成的机器码更加紧凑、执行路径更加单一。这也是为什么 <em>Null Safety 能提升程序执行性能</em>。</p>
 <h2 id="-的运行时代价隐式分支检查"><a class="header" href="#-的运行时代价隐式分支检查"><code>!</code> 的运行时代价：隐式分支检查</a></h2>
@@ -1394,7 +1479,8 @@ class Student {
 <p><a href="https://dart.dev/language/type-system">https://dart.dev/language/type-system</a></p>
 </li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="if-与-switch-语句"><a class="header" href="#if-与-switch-语句">if 与 switch 语句</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="if-与-switch-语句"><a class="header" href="#if-与-switch-语句">if 与 switch 语句</a></h1>
 <p>程序的控制结构包括：</p>
 <ul>
 <li>顺序（顺序执行）</li>
@@ -1415,11 +1501,12 @@ void main() {
   }
 }  
 </code></pre>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     B{条件}--&gt;|true| C(代码块)
     C --&gt; E([End])
     B --&gt;|false| E
-</code></pre>
+</pre>
+
 <p><code>if</code> 有一个可选的<code>else</code>分支。</p>
 <pre><code class="language-dart">  if (isSunny) {
     print("Let's go to the park");
@@ -1427,12 +1514,13 @@ void main() {
     print("It's not sunny");
   }
 </code></pre>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     B{条件}--&gt;|true| C(主分支)
     C --&gt; E([End])
     B --&gt;|false| D(else分支)
     D --&gt; E
-</code></pre>
+</pre>
+
 <p>还可以使用 <code>else if</code>，像下面这样。</p>
 <pre><code class="language-dart">  if (isSunny) {
     print("Let's go to the park");
@@ -1467,7 +1555,7 @@ void main() {
 </ol>
 <h2 id="switch"><a class="header" href="#switch"><code>switch</code></a></h2>
 <p>如果需要匹配多个case，应使用<code>switch</code> 语句，而非一个又一个的<code>else if</code>。</p>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     A{switch}--&gt;|case1| B(case1)
     A --&gt; |case2| C(case2)
     A --&gt; |case...| D(case...)
@@ -1476,7 +1564,8 @@ void main() {
     C --&gt; Z
     D --&gt; Z
     E --&gt; Z
-</code></pre>
+</pre>
+
 <pre><code class="language-dart">// ex213.dart
 void main() {
   var status = 'done';
@@ -1593,7 +1682,7 @@ void main() {
   //                       ^
 }
 </code></pre>
-<p>对于一个 <code>boo?</code>类型的变量，它的值是穷举的，即 <code>true</code>、<code>false</code>和 <code>null</code>，Dart编译器将对这类可穷举类型的变量进行详尽性检查。上例的编译错误告诉我们缺少了对 <code>null</code> case 的处理。常见的可穷举类型还有<code>bool</code>、枚举（Enum）和<a href="ch02/../ch05/dartpl0504.html#sealed">密封类（sealed class）</a>。</p>
+<p>对于一个 <code>boo?</code>类型的变量，它的值是穷举的，即 <code>true</code>、<code>false</code>和 <code>null</code>，Dart编译器将对这类可穷举类型的变量进行详尽性检查。上例的编译错误告诉我们缺少了对 <code>null</code> case 的处理。常见的可穷举类型还有<code>bool</code>、枚举（Enum）和<a href="#sealed">密封类（sealed class）</a>。</p>
 <p>下例演示了针对枚举的详尽性检查。</p>
 <pre><code class="language-dart">// ex218.dart
 void main() {
@@ -1612,7 +1701,7 @@ void main() {
 
 enum Op { plus, minus }
 </code></pre>
-<p>下例演示了针对密封类的详尽性检查。<a href="ch02/../ch05/dartpl0504.html#sealed">密封类</a>的子类数量是有限的，编译器将对其进行<code>switch</code>详尽性检查。</p>
+<p>下例演示了针对密封类的详尽性检查。<a href="#sealed">密封类</a>的子类数量是有限的，编译器将对其进行<code>switch</code>详尽性检查。</p>
 <pre><code class="language-dart">// ex219.dart
 void main() {
   Op op = Plus(1.0, 2.0);
@@ -1668,7 +1757,8 @@ void main() {
 <ul>
 <li><a href="https://dart.dev/language/branches">https://dart.dev/language/branches</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="for-与-while-循环"><a class="header" href="#for-与-while-循环">for 与 while 循环</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="for-与-while-循环"><a class="header" href="#for-与-while-循环">for 与 while 循环</a></h1>
 <p>控制结构里的循环指的是重复执行一段代码，直到循环条件不再满足，或使用<code>break</code>关键字跳出循环。Dart控制结构里的循环包括：</p>
 <ul>
 <li>经典 <code>for</code> 循环</li>
@@ -1690,14 +1780,15 @@ void main() {
     循环体
   }
 </code></pre>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     A([初始化列表]) --&gt; B{循环条件}
     B --&gt;|true| C(循环体)
     C --&gt;|continue| D(后置操作)
     D --&gt; B
     B ----&gt;|false| E([End])
     C ----&gt;|break| E
-</code></pre>
+</pre>
+
 <p>后置操作即执行完循环体之后的操作。初始化列表、 循环条件、后置操作，这三部分用分号（<code>;</code>）分割，且每一部分都可以省略（但必须保留分号）。如果循环体只有一条语句，包围循环体的那对花括号（<code>{}</code>） 可以省略，但不建议这么做。</p>
 <p>下面这段代码将打印九九乘法表：</p>
 <pre><code class="language-dart">// ex222.dart
@@ -1764,20 +1855,22 @@ void main() {
 <h2 id="while-和-do-while"><a class="header" href="#while-和-do-while"><code>while</code> 和 <code>do-while</code></a></h2>
 <p><code>while</code> 循环在循环体之前检查循环条件，而<code>do-while</code>则是在循环提之后检查。</p>
 <p><strong><em>while</em></strong> 循环：</p>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     B{循环条件}--&gt;|true| C(循环体)
     C --&gt;|continue| B
     C --&gt;|break|E
     B ----&gt;|false| E([End])
-</code></pre>
+</pre>
+
 <p><strong><em>do-while</em></strong> 循环：</p>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     C(循环体) --&gt;|continue| B{循环条件}
     B --&gt;|true| C
     C --&gt;|break|E
     B ----&gt;|false| E([End])
 
-</code></pre>
+</pre>
+
 <p>下面这段代码先打印数字0到9，再打印数字10到1（递减）。</p>
 <pre><code class="language-dart">//ex127.dart
 void main() {
@@ -1827,7 +1920,8 @@ void main() {
 <li>分别使用 <code>while</code> 和<code>do-while</code> 改写 <code>ex228.dart</code>。</li>
 <li>示例 <code>ex229</code> 中，如果将  <code>continue outerLoop;</code> 改为  <code>break outerLoop;</code> 程序的输出是什么？</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="断言"><a class="header" href="#断言">断言</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="断言"><a class="header" href="#断言">断言</a></h1>
 <p>斷言（Assertion）是一个很有用的开发工具。下面的代码在调试模式（debug mode）下运行，将产生一个断言错误（AssertionError）。</p>
 <pre><code class="language-dart">// ex231.dart
 void main() {
@@ -1840,12 +1934,14 @@ void main() {
 <p>断言仅在调试模式（debug mode）下起作用。对于发布模式（release mode），除非在编译时显示启用了断言， 所有的<code>assert</code> 语句都将被忽略，从而不会干预程序的执行流程。在Dart的相关命令中（例如 <code>dart run</code>、<code>dart compile exe</code>），通过<code>--enable-asserts</code> 参数启用断言，如</p>
 <pre><code class="language-sh">dart run --enable-asserts bin/ch02/ex231.dart
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="函数-function"><a class="header" href="#函数-function">函数 （Function）</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="函数-function"><a class="header" href="#函数-function">函数 （Function）</a></h1>
 <p>本章节将介绍函数的基本概念，位置参数、命名参数、函数类型、匿名函数等内容，将在后续章节陆续介绍。我们已经多次见过<code>main</code>函数，它是程序的入口。抽象地说，函数对输入数据（输入参数列表）进行处理，然后输出其处理结果（返回值）。</p>
-<pre><code class="language-mermaid">flowchart LR
+<pre class="mermaid">flowchart LR
    a(( )) --&gt;|输入参数| B(处理（函数体）)
    B --&gt; |返回值|c(( ))
-</code></pre>
+</pre>
+
 <p>先来看一个示例程序，计算平面上两点之间的欧式距离:</p>
 <p>\( \sqrt{(x_1-x_2)^2 + (y_1-y_2)^2} \)</p>
 <pre><code class="language-dart">//ex241.dart
@@ -2011,8 +2107,9 @@ dart
 <li><a href="https://dart.dev/language/functions">https://dart.dev/language/functions</a></li>
 <li><a href="https://api.flutter.dev/flutter/dart-core/Function-class.html">https://api.flutter.dev/flutter/dart-core/Function-class.html</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="函数参数"><a class="header" href="#函数参数">函数参数</a></h1>
-<p>函数参数有<a href="ch02/dartpl0205.html#%E4%BD%8D%E7%BD%AE%E5%8F%82%E6%95%B0">位置参数</a>和<a href="ch02/dartpl0205.html#%E5%91%BD%E5%90%8D%E5%8F%82%E6%95%B0">命名参数</a>之分，另外还有<a href="ch02/dartpl0205.html#%E5%8F%AF%E9%80%89%E5%8F%82%E6%95%B0">可选参数</a>。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="函数参数"><a class="header" href="#函数参数">函数参数</a></h1>
+<p>函数参数有<a href="#位置参数">位置参数</a>和<a href="#命名参数">命名参数</a>之分，另外还有<a href="#可选参数">可选参数</a>。</p>
 <h2 id="位置参数"><a class="header" href="#位置参数">位置参数</a></h2>
 <p>上一节中的示例函数，只使用了位置参数，这些参数在参数列表中的顺序至关重要。</p>
 <pre><code class="language-dart">// ex251.dart
@@ -2081,8 +2178,9 @@ int descrease(int value, [int? decrement]) =&gt; value - (decrement ?? 1);
 <li>位置参数必须在参数列表的开头（即先定义位置参数）;</li>
 <li>此时不能定义可选的位置参数。</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="函数类型匿名函数与闭包"><a class="header" href="#函数类型匿名函数与闭包">函数类型、匿名函数与闭包</a></h1>
-<p>在Dart里，函数像普通变量一样，可作为参数传递，或从一个函数返回，这便是所谓的函数乃一等公民（first-class object）。在Dart里可以定义<a href="ch02/dartpl0206.html##%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0">匿名函数</a> ，也就是没有名称的函数，这在实际应用中极为方便。<a href="ch02/dartpl0206.html#%E9%97%AD%E5%8C%85closure">闭包（Closure）</a>是与之相关的另一个重要的概念，详见后文。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="函数类型匿名函数与闭包"><a class="header" href="#函数类型匿名函数与闭包">函数类型、匿名函数与闭包</a></h1>
+<p>在Dart里，函数像普通变量一样，可作为参数传递，或从一个函数返回，这便是所谓的函数乃一等公民（first-class object）。在Dart里可以定义<a href="##匿名函数">匿名函数</a> ，也就是没有名称的函数，这在实际应用中极为方便。<a href="#闭包closure">闭包（Closure）</a>是与之相关的另一个重要的概念，详见后文。</p>
 <h2 id="函数类型"><a class="header" href="#函数类型">函数类型</a></h2>
 <p>首先通过一个示例，来看一看什么是函数类型（funtion type）。</p>
 <pre><code class="language-dart">// ex261.dart
@@ -2113,7 +2211,7 @@ var addFunc3 = add; // 2b
 <li>声明变量<code>increaseFunc</code> 并赋值为<code>increase</code>;</li>
 <li>打印<code>addFunc</code>与<code>increaseFunc</code>，注意观察其输出。</li>
 </ol>
-<p><code>increase</code> 函数定义在<code>main</code>函数的内部，这便是嵌套函数的概念。<code>Closure: (int, int) =&gt; int from Function 'add': static.</code>，这表明<code>addFunc</code>的值是一个<a href="ch02/dartpl0206.html#%E9%97%AD%E5%8C%85closure">闭包（Closure）</a>，并且它来自全局（<code>static</code>）的<code>add</code>函数。这里的全局讲的是作用域（Lexical Scope）。</p>
+<p><code>increase</code> 函数定义在<code>main</code>函数的内部，这便是嵌套函数的概念。<code>Closure: (int, int) =&gt; int from Function 'add': static.</code>，这表明<code>addFunc</code>的值是一个<a href="#闭包closure">闭包（Closure）</a>，并且它来自全局（<code>static</code>）的<code>add</code>函数。这里的全局讲的是作用域（Lexical Scope）。</p>
 <h2 id="使用-typedef"><a class="header" href="#使用-typedef">使用 <code>typedef</code></a></h2>
 <p>使用 <code>typedef</code> 关键字给函数类型取一个别名：</p>
 <pre><code class="language-dart">typedef AddFunction = int Function(int a, int b);
@@ -2280,7 +2378,8 @@ void main() {
 <p>如果 <code>huge</code> 对象很大，且 <code>await</code> 之后只需要它的一个 <code>id</code>，请先提取 <code>id</code>，然后让 <code>huge</code> 脱离作用域或设为 <code>null</code>。</p>
 <h2 id="练习-1"><a class="header" href="#练习-1">练习</a></h2>
 <p>修改示例程序<code>ex263</code>，将统计结果按单词的长度降序排序。提示：使用<code>List.sort</code>方法。</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="递归"><a class="header" href="#递归">递归</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="递归"><a class="header" href="#递归">递归</a></h1>
 <p>如果一个函数直接或间接调用它自己，我们便称之为递归函数。之所以讨论它，是因为递归是一种解决问题的有效方法，也是一种分治的思想，它针对特定的问题，这类问题在结构上可以进一步分解为相似的子问题。例如阶乘函数：</p>
 <p>\( n! = (n-1)!*n \)</p>
 <p>下面的代码计算斐波那契（Fibonacci）数列：</p>
@@ -2337,7 +2436,8 @@ int gcd2(int a, int b) {
 }
 </code></pre>
 <p><code>gcd2</code>与<code>gcd</code>函数的功能一样，只不过使用了循环而非递归来实现。</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="异常处理"><a class="header" href="#异常处理">异常处理</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="异常处理"><a class="header" href="#异常处理">异常处理</a></h1>
 <p>Dart代码可以抛出（<code>throw</code>）和捕获（<code>catch</code>）异常（<code>Exception</code>）。异常代表了程序的某种错误，也就是一些意想不到的事情。引发异常的代码分支及其上下文，即测试中的负向路径。</p>
 <p>Dart的函数或方法不会声明它将抛出哪些异常; Dart也不强制要求捕获异常。如果异常发生了却不被处理，抛出异常的 isolate 将被挂起，且通常会被终止。第7章将详细讨论 isolate，这里将其视为一种内存独立的线程（如 <code>main</code> 函数所在的 main isolate）即可。</p>
 <h2 id="抛出异常-throw"><a class="header" href="#抛出异常-throw">抛出异常 （<code>throw</code>）</a></h2>
@@ -2483,8 +2583,9 @@ void main() {
 <ul>
 <li><a href="https://dart.dev/language/error-handling">https://dart.dev/language/error-handling</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="模式"><a class="header" href="#模式">模式</a></h1>
-<p>Dart 3.0引入了一个非常强大的功能，模式（Pattern）。一般来说，依据模式的形状及其上下文， 模式可以<a href="ch03/dartpl0301.html#%E5%8C%B9%E9%85%8D">匹配（match）</a>或<a href="ch03/dartpl0301.html#%E8%A7%A3%E6%9E%84">解构（destructure)</a>一个值，匹配与解构可同时进行。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="模式"><a class="header" href="#模式">模式</a></h1>
+<p>Dart 3.0引入了一个非常强大的功能，模式（Pattern）。一般来说，依据模式的形状及其上下文， 模式可以<a href="#匹配">匹配（match）</a>或<a href="#解构">解构（destructure)</a>一个值，匹配与解构可同时进行。</p>
 <h2 id="匹配"><a class="header" href="#匹配">匹配</a></h2>
 <p>模式匹配可以检查一个值是否：</p>
 <ul>
@@ -2593,13 +2694,14 @@ class Rectangle {
 <ul>
 <li><a href="https://dart.dev/language/patterns">https://dart.dev/language/patterns</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="模式的使用场景"><a class="header" href="#模式的使用场景">模式的使用场景</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="模式的使用场景"><a class="header" href="#模式的使用场景">模式的使用场景</a></h1>
 <p>模式可用于下列地方：</p>
 <ul>
-<li><a href="ch03/dartpl0302.html#%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E5%A3%B0%E6%98%8E%E5%92%8C%E8%B5%8B%E5%80%BC">局部变量声明和赋值</a></li>
-<li><a href="ch03/dartpl0302.html#if-case-%E5%92%8C-switch-case">if-case 和 switch-case</a></li>
-<li><a href="ch03/dartpl0302.html#for-%E5%92%8C-for-in-%E5%BE%AA%E7%8E%AF">for 和 for-in 循环</a></li>
-<li><a href="ch03/dartpl0302.html#%E9%9B%86%E5%90%88%E5%AD%97%E9%9D%A2%E9%87%8Fcollection-literals%E4%B8%AD%E7%9A%84%E6%8E%A7%E5%88%B6%E6%B5%81">集合字面量（collection literals）中的控制流(if、for)</a></li>
+<li><a href="#局部变量声明和赋值">局部变量声明和赋值</a></li>
+<li><a href="#if-case-和-switch-case">if-case 和 switch-case</a></li>
+<li><a href="#for-和-for-in-循环">for 和 for-in 循环</a></li>
+<li><a href="#集合字面量collection-literals中的控制流">集合字面量（collection literals）中的控制流(if、for)</a></li>
 </ul>
 <h2 id="局部变量声明和赋值"><a class="header" href="#局部变量声明和赋值">局部变量声明和赋值</a></h2>
 <pre><code class="language-dart">// ex321.dart
@@ -2686,14 +2788,15 @@ void main() {
   print(points2);
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="模式类型"><a class="header" href="#模式类型">模式类型</a></h1>
-<p>类似于<a href="ch03/../ch01/dartpl0105.html#%E6%93%8D%E4%BD%9C%E7%AC%A6%E4%BC%98%E5%85%88%E7%BA%A7">操作符优先级</a>，模式也有优先级，也可以通过圆括号（最高优先级）来改变求值顺序。模式优先级由低到高依次为：</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="模式类型"><a class="header" href="#模式类型">模式类型</a></h1>
+<p>类似于<a href="#操作符优先级">操作符优先级</a>，模式也有优先级，也可以通过圆括号（最高优先级）来改变求值顺序。模式优先级由低到高依次为：</p>
 <ul>
-<li><a href="ch03/dartpl0303.html#%E9%80%BB%E8%BE%91%E6%88%96%E6%A8%A1%E5%BC%8F">“逻辑或”模式</a></li>
-<li><a href="ch03/dartpl0303.html#%E9%80%BB%E8%BE%91%E4%B8%8E%E6%A8%A1%E5%BC%8F">“逻辑与”模式</a></li>
-<li><a href="ch03/dartpl0303.html#%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%BC%8F">关系模式</a></li>
-<li><a href="ch03/dartpl0303.html#%E4%B8%80%E5%85%83%E5%90%8E%E7%BC%80%E6%A8%A1%E5%BC%8F">一元后缀模式</a></li>
-<li><a href="ch03/dartpl0303.html#%E5%85%B6%E5%AE%83%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%BC%8F">其它主要模式</a></li>
+<li><a href="#逻辑或模式">“逻辑或”模式</a></li>
+<li><a href="#逻辑与模式">“逻辑与”模式</a></li>
+<li><a href="#关系模式">关系模式</a></li>
+<li><a href="#一元后缀模式">一元后缀模式</a></li>
+<li><a href="#其它主要模式">其它主要模式</a></li>
 </ul>
 <p>集合型（记录 record、列表 List、映射map）与对象模式包含了其他数据，作为外部模式优先求值。</p>
 <h2 id="逻辑或模式"><a class="header" href="#逻辑或模式">“逻辑或”模式</a></h2>
@@ -2859,7 +2962,7 @@ void main() {
 </code></pre>
 <p>此例中的<code>...rest</code> 表示剩余元素形成的List，称之为rest元素（Rest element）。List模式至多包含一个rest元素，这不难理解，因为如果有2个rest元素，就无法确定其部件（parts）的边界。</p>
 <h3 id="record记录模式"><a class="header" href="#record记录模式">Record（记录）模式</a></h3>
-<p>我们已经多次见过Record模式（见 <a href="ch03/../ch01/dartpl0104.html#%E8%AE%B0%E5%BD%95%E7%B1%BB%E5%9E%8B">记录类型</a> 一节），在仅举一例，不过多描述。</p>
+<p>我们已经多次见过Record模式（见 <a href="#记录类型">记录类型</a> 一节），在仅举一例，不过多描述。</p>
 <pre><code class="language-dart">// ex337.dart
 void main() {
   const point = ('A', x: 1, y: 2, z: 3);
@@ -2915,7 +3018,8 @@ class Color {
 <ul>
 <li><a href="https://dart.dev/language/pattern-types">https://dart.dev/language/pattern-types</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="模式应用案例"><a class="header" href="#模式应用案例">模式应用案例</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="模式应用案例"><a class="header" href="#模式应用案例">模式应用案例</a></h1>
 <p>本文以示例的方式，介绍模式的几个经典应用案例。</p>
 <h2 id="交换两个变量的值"><a class="header" href="#交换两个变量的值">交换两个变量的值</a></h2>
 <pre><code class="language-dart">//ex341.dart
@@ -2952,7 +3056,7 @@ void main() {
 }
 </code></pre>
 <h2 id="解构类实例"><a class="header" href="#解构类实例">解构类实例</a></h2>
-<p>见 <a href="ch03/../ch03/dartpl0303.html#object%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%BC%8F">Object（对象）模式</a>。</p>
+<p>见 <a href="#object对象模式">Object（对象）模式</a>。</p>
 <h2 id="代数algebraic数据类型"><a class="header" href="#代数algebraic数据类型">代数（Algebraic）数据类型</a></h2>
 <p>当满足如下条件时，可使用代数数据类型这一风格去写代码：</p>
 <ul>
@@ -3015,7 +3119,8 @@ void main() {
 </ol>
 <h2 id="参考资料-11"><a class="header" href="#参考资料-11">参考资料</a></h2>
 <p><a href="https://dart.dev/language/patterns#use-cases-for-patterns">https://dart.dev/language/patterns#use-cases-for-patterns</a></p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="封装与可见性"><a class="header" href="#封装与可见性">封装与可见性</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="封装与可见性"><a class="header" href="#封装与可见性">封装与可见性</a></h1>
 <p>封装、继承与多态是面向对象编程（Object-oritented programming, OOP）的三大特性，而封装是其中最为基础与关键的特性。Go语言向我们证明了继承对于OOP是可选的，而多态通过接口来实现。这些基本概念将在后续章节陆续介绍，本章节重点说明封装。</p>
 <h2 id="封装"><a class="header" href="#封装">封装</a></h2>
 <p>很多时候我们想要隐藏代码的实现细节，而对外暴露的只是API（应用编程接口），这便是针对接口（而非实现）编程，要实现这一点就要用到封装。接口用于定义API，而类就像一个容器主要用于封装。那么类究竟封装了什么？</p>
@@ -3093,7 +3198,7 @@ void main(List&lt;String&gt; arguments) {
 <blockquote>
 <p><strong><em>NOTE</em></strong>:</p>
 <ol>
-<li>第2行<code>import</code>一句中的 <code>package:hellodart</code> 表示 <code>hellodart</code>这个package（包），package的名称与 <em><code>pubspec.yaml</code></em> 文件中 <code>name: hellodart</code> 是一致的；回想一下，我们在第1章<a href="ch04/../ch01/dartpl0101.html#hello-dart">Hello Dart: 搭建开发环境</a>一节中创建了<code>helloword</code> 这个package。</li>
+<li>第2行<code>import</code>一句中的 <code>package:hellodart</code> 表示 <code>hellodart</code>这个package（包），package的名称与 <em><code>pubspec.yaml</code></em> 文件中 <code>name: hellodart</code> 是一致的；回想一下，我们在第1章<a href="#hello-dart">Hello Dart: 搭建开发环境</a>一节中创建了<code>helloword</code> 这个package。</li>
 <li>如果第2行代码不使用 as 关键字给 <code>hellodart.dart</code> 取名，表示将此libary导入全局命名空间，就直接使用<code>calculate()</code>来调用该函数。</li>
 </ol>
 </blockquote>
@@ -3105,26 +3210,27 @@ void main(List&lt;String&gt; arguments) {
   print('Hello world: ${hellodart._calculate()}!'); // 3
                                   ^^^^^^^^^^
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="构造函数"><a class="header" href="#构造函数">构造函数</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="构造函数"><a class="header" href="#构造函数">构造函数</a></h1>
 <p>构造函数（或构造器，Constructor），是用来创建类实例（对象）的特殊函数。如上一节中</p>
 <pre><code class="language-dart">var dog = Dog('Spots', 6);
 </code></pre>
 <p>通过调用<code>Dog</code>类的构造函数，得到<code>Dog</code>类的一个实例 <code>dog</code>。</p>
 <p>Dart 实现了多种类型的构造函数：</p>
 <ul>
-<li><a href="ch04/dartpl0402.html#%E7%94%9F%E6%88%90%E5%BC%8F%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">生成式构造函数</a>
+<li><a href="#生成式构造函数">生成式构造函数</a>
 <ul>
-<li><a href="ch04/dartpl0402.html#%E9%BB%98%E8%AE%A4%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">默认构造函数 </a></li>
-<li><a href="ch04/dartpl0402.html#%E5%91%BD%E5%90%8D%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">命名构造函数 </a></li>
-<li><a href="ch04/dartpl0402.html#%E5%B8%B8%E9%87%8F%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">常量构造函数 </a></li>
-<li><a href="ch04/dartpl0402.html#%E9%87%8D%E5%AE%9A%E5%90%91%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">重定向构造函数</a></li>
+<li><a href="#默认构造函数">默认构造函数 </a></li>
+<li><a href="#命名构造函数">命名构造函数 </a></li>
+<li><a href="#常量构造函数">常量构造函数 </a></li>
+<li><a href="#重定向构造函数">重定向构造函数</a></li>
 </ul>
 </li>
-<li><a href="ch04/dartpl0402.html#%E5%B7%A5%E5%8E%82%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">工厂构造函数 </a></li>
+<li><a href="#工厂构造函数">工厂构造函数 </a></li>
 </ul>
 <p>这些函数总体上可以分为 生成式构造函数 与 工厂构造函数 两大类。它们在书写形式上无需指定返回类型，因为它们返回的一定是类的实例。</p>
-<p>在本文的最后还将讨论<a href="ch04/dartpl0402.html#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%E5%87%BD%E6%95%B0%E4%BD%93">构造函数的函数体</a>。</p>
-<p>在讨论具体的构造函数之前，先来看一下<a href="ch04/dartpl0402.html#%E5%AE%9E%E4%BE%8B%E5%8F%98%E9%87%8F%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96">实例变量的初始化</a>。</p>
+<p>在本文的最后还将讨论<a href="#构造函数的函数体">构造函数的函数体</a>。</p>
+<p>在讨论具体的构造函数之前，先来看一下<a href="#实例变量的初始化">实例变量的初始化</a>。</p>
 <h2 id="实例变量的初始化"><a class="header" href="#实例变量的初始化">实例变量的初始化</a></h2>
 <h3 id="在声明时初始化"><a class="header" href="#在声明时初始化">在声明时初始化</a></h3>
 <p>在声明类的实例变量时，可对其进行初始化。例如</p>
@@ -3392,7 +3498,8 @@ class Cat {
 <ul>
 <li><a href="https://dart.dev/language/constructors">https://dart.dev/language/constructors</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="延迟初始化再谈late"><a class="header" href="#延迟初始化再谈late">延迟初始化（再谈<code>late</code>）</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="延迟初始化再谈late"><a class="header" href="#延迟初始化再谈late">延迟初始化（再谈<code>late</code>）</a></h1>
 <p><code>late</code> 关键字的本意是延迟变量的初始化。</p>
 <pre><code class="language-dart">// ex431.dart
 
@@ -3513,17 +3620,25 @@ class RandAvg {
 <p>过度使用 <code>late</code> 的风险包括代码<strong>运行风险</strong>与<strong>代码膨胀</strong>。一方面，<code>late</code>可能将本该在编译期发现的错误推迟到了运行期（抛出 Error），此即运行风险。另一方面，
 <code>late</code> 是用微小的运行时开销换取了开发的灵活性，每一处 <code>late</code> 访问在汇编后的代码中都会多出一层逻辑判断（代码膨胀）。在绝大多数业务逻辑中，这种开销是无感的；但在每秒数百万次的计算中（高性能场景），它确不可被忽视。在高性能要求的场景下，如果能通过构造函数初始化列表（Initializer List）解决的问题，优先使用普通非空变量。</p>
 <h3 id="性能与安全的权衡"><a class="header" href="#性能与安全的权衡">性能与安全的权衡</a></h3>
-<div class="table-wrapper"><table><thead><tr><th>使用方式</th><th>性能影响</th><th>建议场景</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>使用方式</th><th>性能影响</th><th>建议场景</th></tr>
+</thead>
+<tbody>
 <tr><td><code>late T v = ...</code></td><td>节省启动开销，首访微量开销</td><td>昂贵的资源加载、单例模式</td></tr>
 <tr><td><code>late T v;</code></td><td>每次访问微量检查开销</td><td>必须在 <code>initState</code> 或构造函数体赋值的非空变量</td></tr>
 <tr><td>普通 <code>final</code></td><td>性能最优（编译器优化空间最大）</td><td>能在声明处或构造函数初始化列表确定的值</td></tr>
-</tbody></table>
-</div><div style="break-before: page; page-break-before: always;"></div><h1 id="方法method"><a class="header" href="#方法method">方法（Method）</a></h1>
-<p>方法即类中定义的函数，有实例方法与静态方法之分，这在<a href="ch04/./dartpl0401.html#%E7%B1%BB%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E4%B8%8E%E6%88%90%E5%91%98">类的实例化与成员</a>一节中已介绍过。
-本文将介绍 <a href="ch04/dartpl0404.html#getter-%E4%B8%8E-setter-%E6%96%B9%E6%B3%95">Getter 与 Setter 方法</a> 和 <a href="ch04/dartpl0404.html#%E6%8A%BD%E8%B1%A1%E6%96%B9%E6%B3%95">抽象方法</a>。
-另外有一种特殊的方法是<a href="ch04/./dartpl0405.html">操作符</a>，将在下一节中介绍。</p>
+</tbody>
+</table>
+</div>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="方法method"><a class="header" href="#方法method">方法（Method）</a></h1>
+<p>方法即类中定义的函数，有实例方法与静态方法之分，这在<a href="#类的实例化与成员">类的实例化与成员</a>一节中已介绍过。
+本文将介绍 <a href="#getter-与-setter-方法">Getter 与 Setter 方法</a> 和 <a href="#抽象方法">抽象方法</a>。
+另外有一种特殊的方法是<a href="#操作符实例方法">操作符</a>，将在下一节中介绍。</p>
 <h2 id="getter-与-setter-方法"><a class="header" href="#getter-与-setter-方法">Getter 与 Setter 方法</a></h2>
-<p>第2章讨论过 <a href="ch04/../ch02/dartpl0204.html#getter-%E4%B8%8E-setter">getter与 setter函数</a>，getter 与 setter 方法与之类似，只不过方法定义在类中。</p>
+<p>第2章讨论过 <a href="#getter-与-setter">getter与 setter函数</a>，getter 与 setter 方法与之类似，只不过方法定义在类中。</p>
 <pre><code class="language-dart">// ex411.dart
 class Foo {
   Foo(this._bar);
@@ -3664,8 +3779,9 @@ abstract class Mammal {
 <li>抽象基类提供某个算法的骨架实现，子类只需实现抽象方法或覆盖某些方法即可，即实现设计模式里的<a href="https://refactoring.guru/design-patterns/template-method">模板方法</a>。</li>
 </ul>
 <p>下一章将更详细地讨论抽象类、抽象方法和接口等。</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="操作符实例方法"><a class="header" href="#操作符实例方法">操作符（实例方法）</a></h1>
-<p>第1章已详细讨论过<a href="ch04/../ch01/dartpl0105.html">操作符</a>，本文将从方法的角度再次讨论它。Dart多数的操作符，是拥有特殊名称的实例方法，这些名称是：</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="操作符实例方法"><a class="header" href="#操作符实例方法">操作符（实例方法）</a></h1>
+<p>第1章已详细讨论过<a href="#操作符">操作符</a>，本文将从方法的角度再次讨论它。Dart多数的操作符，是拥有特殊名称的实例方法，这些名称是：</p>
 <pre><code class="language-dart">&lt;	&gt;	&lt;=	&gt;=	==	~
 -	+	/	~/	*	%
 |	ˆ	&amp;	&lt;&lt;	&gt;&gt;&gt;	&gt;&gt;
@@ -3767,7 +3883,8 @@ abstract final class String implements Comparable&lt;String&gt;, Pattern {
 <ul>
 <li><a href="https://dart.dev/language/methods#operators">https://dart.dev/language/methods#operators</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="callable-类"><a class="header" href="#callable-类">callable 类</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="callable-类"><a class="header" href="#callable-类">callable 类</a></h1>
 <p>Dart的callable类的实例， 可以像函数一样被调用。听起来有点神秘，但一个示例即可揭开它的面纱。</p>
 <pre><code class="language-dart">// ex461.dart
 class Greeter {
@@ -3848,7 +3965,7 @@ void main() {
 </code></pre>
 <ol>
 <li><code>Button</code>类表示图形界面上的按钮，当按钮被点击时，执行回调函数 <code>onClick</code>；</li>
-<li><code>click</code> 方法用来模拟按钮被按下，注意这里是如何调用 <code>onClick</code> 函数的（见<a href="ch04/../ch02/dartpl0204.html#call-%E6%96%B9%E6%B3%95"><code>call</code>方法</a>）；</li>
+<li><code>click</code> 方法用来模拟按钮被按下，注意这里是如何调用 <code>onClick</code> 函数的（见<a href="#call-方法"><code>call</code>方法</a>）；</li>
 <li><code>Callback</code>是一个callable类，代表回调函数，它有内部状态<code>_context</code>；</li>
 <li>这是<code>Callback</code>的构造函数；</li>
 <li><code>call()</code>方法即回调函数的具体实现。</li>
@@ -3856,7 +3973,7 @@ void main() {
 <h2 id="策略模式"><a class="header" href="#策略模式">策略模式</a></h2>
 <p>callable类可用来实现设计模式里的<a href="https://refactoring.guru/design-patterns/strategy">策略模式</a>。</p>
 <p>比如商场对不同等级的客户有不同的折扣。</p>
-<pre><code class="language-mermaid">classDiagram
+<pre class="mermaid">classDiagram
   ShoppingCart o--&gt; DiscountStrategy 
 
   DiscountStrategy &lt;|-- VipDiscount
@@ -3873,7 +3990,8 @@ void main() {
     + double call(double originalPrice)
   }
 
-</code></pre>
+</pre>
+
 <pre><code class="language-dart">// ex465.dart
 abstract interface class DiscountStrategy {
   double call(double originalPrice); // 1
@@ -3927,8 +4045,9 @@ void main() {
 <li><code>ShoppingCart</code>代表购物车，它聚合了一个 <code>DiscountStrategy</code> ;</li>
 <li><code>calculatePrice</code>方法负责计算最终的价格（<code>原价 - 折扣</code>）;</li>
 </ol>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="枚举"><a class="header" href="#枚举">枚举</a></h1>
-<p>枚举（Enum）是一种用于表示固定数量的常量值的特殊类（class），在第1章<a href="ch04/../ch01/dartpl0104.html">数据类型</a>一节中已经简单介绍过，文本将更详细地讨论它。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="枚举"><a class="header" href="#枚举">枚举</a></h1>
+<p>枚举（Enum）是一种用于表示固定数量的常量值的特殊类（class），在第1章<a href="#数据类型">数据类型</a>一节中已经简单介绍过，文本将更详细地讨论它。</p>
 <h2 id="简单枚举"><a class="header" href="#简单枚举">简单枚举</a></h2>
 <p>使用关键字<code>enum</code>声明一个简单枚举如下：</p>
 <pre><code class="language-dart">// ex14d.dart
@@ -4035,10 +4154,10 @@ void main() {
 </ol>
 <p>增强型枚举与普通类有着类似的语法，但有如下限制：</p>
 <ul>
-<li>实例变量必须是 <code>final</code> 的，包括通过 <a href="ch04/../ch05/dartpl0504.html">mixin</a> 添加的变量;</li>
+<li>实例变量必须是 <code>final</code> 的，包括通过 <a href="#类修饰符">mixin</a> 添加的变量;</li>
 <li>所有的生成构造函数必须是常量构造器，即用 <code>const</code> 进行修饰;</li>
 <li>不能继承其它类，因为它自动继承了 <a href="https://api.dart.dev/dart-core/Enum-class.html"><code>Enum</code>类</a>；</li>
-<li>不能重写 <code>index</code>、<a href="ch04/../ch06/dartpl0602.html"><code>hashCode</code>和 运算符 <code>==</code></a>;</li>
+<li>不能重写 <code>index</code>、<a href="#集合概述"><code>hashCode</code>和 运算符 <code>==</code></a>;</li>
 <li>不能声明名为 <code>values</code> 的成员，因为它会与自动生成的<code>values</code> getter 冲突；</li>
 <li>枚举的所有实例都必须在开头声明，并且至少得声明一个实例。</li>
 </ul>
@@ -4047,8 +4166,9 @@ void main() {
 <ul>
 <li><a href="https://dart.dev/language/enums">https://dart.dev/language/enums</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="元数据"><a class="header" href="#元数据">元数据</a></h1>
-<p>本章节将讨论Dart的<a href="ch04/dartpl0408.html#%E6%B3%A8%E8%A7%A3">元数据注解</a>及其<a href="ch04/dartpl0408.html#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3">自定义</a>，以及<a href="ch04/dartpl0408.html#%E4%BD%BF%E7%94%A8-mirrors">使用 mirors 包</a>获取元数据等信息。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="元数据"><a class="header" href="#元数据">元数据</a></h1>
+<p>本章节将讨论Dart的<a href="#注解">元数据注解</a>及其<a href="#自定义注解">自定义</a>，以及<a href="#使用-mirrors">使用 mirors 包</a>获取元数据等信息。</p>
 <h2 id="注解"><a class="header" href="#注解">注解</a></h2>
 <p>元数据（metadata）用于给代码添加额外的信息，元数据注解（annotation，以下简称注解）以 <code>@</code> 字符开头，后接一个常量值。我们在之前的代码中已多次见过 <code>@override</code>，它表示实例成员的重写，通常是一个类重写/实现了某个方法。</p>
 <pre><code class="language-dart">// ex412.dart
@@ -4191,8 +4311,9 @@ void main() {
 <ul>
 <li><a href="https://dart.dev/language/metadata">https://dart.dev/language/metadata</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="继承"><a class="header" href="#继承">继承</a></h1>
-<p>本章节重点介绍类继承的基本概念，包括<a href="ch05/dartpl0501.html#%E5%A3%B0%E6%98%8E%E4%B8%80%E4%B8%AA%E5%AD%90%E7%B1%BB">子类的声明</a>、<a href="ch05/dartpl0501.html#%E5%8D%95%E7%BB%A7%E6%89%BF">单继承</a>、<a href="ch05/dartpl0501.html#%E6%96%B9%E6%B3%95%E9%87%8D%E5%86%99">方法重写</a>、<a href="ch05/dartpl0501.html#nosuchmethod"><code>noSuchMethod()</code></a>等。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="继承"><a class="header" href="#继承">继承</a></h1>
+<p>本章节重点介绍类继承的基本概念，包括<a href="#声明一个子类">子类的声明</a>、<a href="#单继承">单继承</a>、<a href="#方法重写">方法重写</a>、<a href="#nosuchmethod"><code>noSuchMethod()</code></a>等。</p>
 <h2 id="声明一个子类"><a class="header" href="#声明一个子类">声明一个子类</a></h2>
 <p>子类继承父类，意味着子类继承了父类的实例成员，包括实例字段和实例方法。使用<code>extend</code>关键字创建一个子类。</p>
 <pre><code class="language-dart">// ex511.dart
@@ -4293,7 +4414,7 @@ void main() {
 <li>A的返回类型必须与B的相同（或为其子类型）；</li>
 <li>A的参数类型必须与B的相同（或为其超类型）；</li>
 <li>如果B接受 n 个位置参数，则A也必须接受 n 个位置参数；</li>
-<li>泛型方法不能重写非泛型方法，反之亦然（<a href="ch05/../ch06/dartpl0601.html">泛型</a>乃第6章内容）。</li>
+<li>泛型方法不能重写非泛型方法，反之亦然（<a href="#泛型">泛型</a>乃第6章内容）。</li>
 </ul>
 <pre><code class="language-dart">// ex515.dart
 import 'ex511.dart';
@@ -4335,7 +4456,7 @@ void main() {
   // Tried calling: sing()
 }
 </code></pre>
-<p>此程序调用一个不存在的方法 'f.sing()'， 引起运行时异常: <code>NoSuchMethodError: Class 'Fox' has no instance method 'sing'</code>，这是<code>Object</code> 类中的 <code>noSuchMethod</code> 方法的默认行为，可以重写它进而实现一些特殊的功能。</p>
+<p>此程序调用一个不存在的方法 ‘f.sing()’， 引起运行时异常: <code>NoSuchMethodError: Class 'Fox' has no instance method 'sing'</code>，这是<code>Object</code> 类中的 <code>noSuchMethod</code> 方法的默认行为，可以重写它进而实现一些特殊的功能。</p>
 <pre><code class="language-dart">// ex517.dart
 class Gorilla {
   @override
@@ -4361,8 +4482,9 @@ void main() {
 <ul>
 <li><a href="https://dart.dev/language/extend">https://dart.dev/language/extend</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="接口"><a class="header" href="#接口">接口</a></h1>
-<p>接口（interface）即代码之间的契约。 本章节将结合示例讨论Dart中的<a href="ch05/dartpl0502.html#%E9%9A%90%E5%BC%8F%E6%8E%A5%E5%8F%A3">隐式接口</a>、<a href="ch05/dartpl0502.html#%E6%8E%A5%E5%8F%A3%E7%B1%BB">接口类</a>、<a href="ch05/dartpl0502.html#%E7%BA%AF%E6%8E%A5%E5%8F%A3">纯接口</a>等概念。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="接口"><a class="header" href="#接口">接口</a></h1>
+<p>接口（interface）即代码之间的契约。 本章节将结合示例讨论Dart中的<a href="#隐式接口">隐式接口</a>、<a href="#接口类">接口类</a>、<a href="#纯接口">纯接口</a>等概念。</p>
 <h2 id="隐式接口"><a class="header" href="#隐式接口">隐式接口</a></h2>
 <p>广义上一个library暴露一些成员（函数、类、字段、方法等）给另一个library使用，这些暴露的成员便组成了接口。Dart的普通类隐式地定义了一个接口。</p>
 <pre><code class="language-dart">// ex521.dart
@@ -4384,7 +4506,7 @@ class Car implements Vehicle {
   void moveForward(double meters);
 }
 </code></pre>
-<p><code>abstract interface class</code> 表示<a href="ch05/dartpl0502.html#%E7%BA%AF%E6%8E%A5%E5%8F%A3">纯接口</a>，概念上与Java中的<code>interface</code>对应。</p>
+<p><code>abstract interface class</code> 表示<a href="#纯接口">纯接口</a>，概念上与Java中的<code>interface</code>对应。</p>
 <h2 id="接口类"><a class="header" href="#接口类">接口类</a></h2>
 <p>使用 <code>interface class</code> 创建一个接口类（或简称接口）。</p>
 <pre><code class="language-dart">// ex522.dart
@@ -4428,8 +4550,9 @@ abstract interface class Vehicle {
   }
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="mixin"><a class="header" href="#mixin">Mixin</a></h1>
-<p>Mixin 是一种代码复用技术，旨在为类添加新成员。简单地说，mixin 是可复用的代码片段。 本章节将介绍<a href="ch05/dartpl0503.html#mixin-%E5%9F%BA%E7%A1%80">mixin基础</a>、<a href="ch05/dartpl0503.html#mixin-%E7%B1%BB">mixin类</a>，以及解决<a href="ch05/dartpl0503.html#mixin-%E6%88%90%E5%91%98%E4%BE%9D%E8%B5%96">mixin成员依赖</a>问题的3种策略。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="mixin"><a class="header" href="#mixin">Mixin</a></h1>
+<p>Mixin 是一种代码复用技术，旨在为类添加新成员。简单地说，mixin 是可复用的代码片段。 本章节将介绍<a href="#mixin-基础">mixin基础</a>、<a href="#mixin-类">mixin类</a>，以及解决<a href="#mixin-成员依赖">mixin成员依赖</a>问题的3种策略。</p>
 <h2 id="mixin-基础"><a class="header" href="#mixin-基础">Mixin 基础</a></h2>
 <p>使用 <code>mixin</code> 关键字声明 mixin。</p>
 <pre><code class="language-dart">// ex531.dart
@@ -4559,16 +4682,17 @@ class AddCounter extends Counter with Adder {} // 3
 <ul>
 <li><a href="https://dart.dev/language/mixins">https://dart.dev/language/mixins</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="类修饰符"><a class="header" href="#类修饰符">类修饰符</a></h1>
-<p>上一章节讨论了<a href="ch05/./dartpl0503.html">Mixin</a> 和 <a href="ch05/./dartpl0503.html#mixin-%E7%B1%BB">Mixin 类</a>。
-本章节将重点讨论类的修饰符及其<a href="ch05/dartpl0504.html#%E4%BF%AE%E9%A5%B0%E7%AC%A6%E7%9A%84%E7%BB%84%E5%90%88">组合</a>：</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="类修饰符"><a class="header" href="#类修饰符">类修饰符</a></h1>
+<p>上一章节讨论了<a href="#mixin">Mixin</a> 和 <a href="#mixin-类">Mixin 类</a>。
+本章节将重点讨论类的修饰符及其<a href="#修饰符的组合">组合</a>：</p>
 <ul>
-<li><a href="ch05/dartpl0504.html#abstract"><code>abstract</code></a></li>
-<li><a href="ch05/dartpl0504.html#interface"><code>interface</code></a></li>
-<li><a href="ch05/dartpl0504.html#base"><code>base</code></a></li>
-<li><a href="ch05/dartpl0504.html#sealed"><code>sealed</code></a></li>
-<li><a href="ch05/dartpl0504.html#final"><code>final</code></a></li>
-<li><a href="ch05/./dartpl0503.html"><code>mixin</code></a></li>
+<li><a href="#abstract"><code>abstract</code></a></li>
+<li><a href="#interface"><code>interface</code></a></li>
+<li><a href="#base"><code>base</code></a></li>
+<li><a href="#sealed"><code>sealed</code></a></li>
+<li><a href="#final-1"><code>final</code></a></li>
+<li><a href="#mixin"><code>mixin</code></a></li>
 </ul>
 <h2 id="abstract"><a class="header" href="#abstract">abstract</a></h2>
 <p><code>abstract class</code> 用于声明抽象类，抽象类可包含抽象方法（即只有签名没有具体实现的方法），且不能被实例化。</p>
@@ -4578,7 +4702,7 @@ abstract class Mammal {
 }
 </code></pre>
 <h2 id="interface"><a class="header" href="#interface">interface</a></h2>
-<p>使用 <code>interface class</code> 创建一个接口类（或简称接口），详见<a href="ch05/./dartpl0502.html#%E6%8E%A5%E5%8F%A3%E7%B1%BB">接口</a>一节。</p>
+<p>使用 <code>interface class</code> 创建一个接口类（或简称接口），详见<a href="#%E6%8E%A5%E5%8F%A3%E7%B1%BB">接口</a>一节。</p>
 <h2 id="base"><a class="header" href="#base">base</a></h2>
 <p>每个类（<code>class</code>）都隐式地定义了一个接口（<code>interface</code>），因而可以实现（<code>implements</code>）一个类（即实现类中的方法）。<code>base</code> 类为继承而生，在定义它的library之外，只能被继承，而不能被实现。</p>
 <p><em><code>ex541.dart</code></em>:</p>
@@ -4632,7 +4756,7 @@ base class Train implements Vehicle { // 5
 </ol>
 <p><code>base</code> 类有如下特点：</p>
 <ul>
-<li><code>base</code>类的子类/实现类必须使用<code>base</code>或<a href="ch05/dartpl0504.html#final"><code>final</code></a>或<a href="ch05/dartpl0504.html#sealed"><code>sealed</code></a>修饰，这是为了确保<code>base</code>的语义；</li>
+<li><code>base</code>类的子类/实现类必须使用<code>base</code>或<a href="#final-1"><code>final</code></a>或<a href="#sealed"><code>sealed</code></a>修饰，这是为了确保<code>base</code>的语义；</li>
 <li><code>base</code>类的子类自动继承了其可见的成员（字段/方法），因此为<code>base</code>类添加新的成员不会破坏子类，除非新成员与子类发生冲突;</li>
 <li>实例化<code>base</code>类的子类，必然导致<code>base</code>类的构造函数被调用。</li>
 </ul>
@@ -4697,7 +4821,12 @@ final class Corgi implements Pet {}
 </ul>
 <h2 id="修饰符的组合"><a class="header" href="#修饰符的组合">修饰符的组合</a></h2>
 <p>下表列出了有效的修饰符的组合及其特性。</p>
-<div class="table-wrapper"><table><thead><tr><th>声明</th><th>可实例化?</th><th>可继承?</th><th>可实现?</th><th>Mixin?</th><th>可穷举?</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>声明</th><th>可实例化?</th><th>可继承?</th><th>可实现?</th><th>Mixin?</th><th>可穷举?</th></tr>
+</thead>
+<tbody>
 <tr><td><code>class</code></td><td>✔️</td><td>✔️</td><td>✔️</td><td></td><td></td></tr>
 <tr><td><code>base class</code></td><td>✔️</td><td>✔️</td><td></td><td></td><td></td></tr>
 <tr><td><code>interface class</code></td><td>✔️</td><td></td><td>✔️</td><td></td><td></td></tr>
@@ -4713,13 +4842,15 @@ final class Corgi implements Pet {}
 <tr><td><code>abstract base mixin class</code></td><td></td><td>✔️</td><td></td><td>✔️</td><td></td></tr>
 <tr><td><code>mixin</code></td><td></td><td></td><td>✔️</td><td>✔️</td><td></td></tr>
 <tr><td><code>base mixin</code></td><td></td><td></td><td></td><td>✔️</td><td></td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <h2 id="参考资料-18"><a class="header" href="#参考资料-18">参考资料</a></h2>
 <ul>
 <li><a href="https://dart.dev/language/class-modifiers">https://dart.dev/language/class-modifiers</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="扩展方法"><a class="header" href="#扩展方法">扩展方法</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="扩展方法"><a class="header" href="#扩展方法">扩展方法</a></h1>
 <p>想给一个三方的libray添加一些新功能，比如像下面这样，将一个字符串转换为整数:</p>
 <pre><code class="language-dart">  "1".toInt()
 </code></pre>
@@ -4803,7 +4934,8 @@ void main() {
 <ul>
 <li><a href="https://dart.dev/language/extension-methods">https://dart.dev/language/extension-methods</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="扩展类型"><a class="header" href="#扩展类型">扩展类型</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="扩展类型"><a class="header" href="#扩展类型">扩展类型</a></h1>
 <p>扩展类型（Extension types）是一种编译时抽象（仅存在编译时期），是对现有类型的一种静态包装。它们是静态 JS 互操作（<a href="https://dart.dev/interop/js-interop">static JS interop</a>）的重要组件，因为它们可以轻松修改现有类型的接口，而无需产生包装类的成本。</p>
 <p>扩展类型对底层类型（称为<em>表示类型</em>，representation type）对象可用的操作集（或接口）强制进行约束。定义扩展类型时，可以复用表示类型的某些成员、省略/替换其它成员、以及添加新功能，这有点类似于设计模式里的<a href="https://refactoring.guru/design-patterns/facade">外观模式</a>。</p>
 <h2 id="声明"><a class="header" href="#声明">声明</a></h2>
@@ -4895,9 +5027,9 @@ void main() {
 <h2 id="实现接口"><a class="header" href="#实现接口">实现接口</a></h2>
 <p>扩展类型只可实现：</p>
 <ul>
-<li><a href="ch05/dartpl0506.html#%E5%AE%9E%E7%8E%B0%E8%A1%A8%E7%A4%BA%E7%B1%BB%E5%9E%8B">它的表示类型</a></li>
-<li><a href="ch05/dartpl0506.html#%E5%AE%9E%E7%8E%B0%E8%A1%A8%E7%A4%BA%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%B6%85%E7%B1%BB">它的表示类型的超类</a></li>
-<li><a href="ch05/dartpl0506.html#%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E5%90%8C%E4%B8%80%E8%A1%A8%E7%A4%BA%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%85%B6%E5%AE%83%E6%89%A9%E5%B1%95%E7%B1%BB%E5%9E%8B"><em>基于同一表示类型的</em>其它扩展类型</a></li>
+<li><a href="#实现表示类型">它的表示类型</a></li>
+<li><a href="#实现表示类型的超类">它的表示类型的超类</a></li>
+<li><a href="#实现基于同一表示类型的其它扩展类型"><em>基于同一表示类型的</em>其它扩展类型</a></li>
 </ul>
 <h3 id="实现表示类型"><a class="header" href="#实现表示类型">实现表示类型</a></h3>
 <p>一个扩展类型实现它的表示类型时，它便自动拥有了表示类型的所有的成员。</p>
@@ -4981,7 +5113,8 @@ void main() {
 <ul>
 <li><a href="https://dart.dev/language/extension-types">https://dart.dev/language/extension-types</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="泛型"><a class="header" href="#泛型">泛型</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="泛型"><a class="header" href="#泛型">泛型</a></h1>
 <p>泛型即参数化类型，它是一个既常见又重要的编程语言特性。本文将举例说明泛型的优势和具体使用方法。</p>
 <h2 id="类型安全"><a class="header" href="#类型安全">类型安全</a></h2>
 <p>泛型的优势之一是<em>类型安全</em>。</p>
@@ -5073,9 +5206,10 @@ void main() {
 <ul>
 <li><a href="https://dart.dev/language/generics">https://dart.dev/language/generics</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="集合概述"><a class="header" href="#集合概述">集合概述</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="集合概述"><a class="header" href="#集合概述">集合概述</a></h1>
 <p>Dart 中的集合数据类型（Collection）包括 List、Set、Map 和 Queue。</p>
-<pre><code class="language-mermaid">classDiagram
+<pre class="mermaid">classDiagram
   Iterable~E~ &lt;|.. List~E~
   Iterable~E~ &lt;|.. Set~E~
   Iterable~E~ &lt;|.. Queue~E~
@@ -5104,9 +5238,10 @@ void main() {
     + Iterable~V~ get values
   }
 
-</code></pre>
+</pre>
+
 <h2 id="iterable"><a class="header" href="#iterable">Iterable</a></h2>
-<p>Iterable（可迭代对象）是一个抽象类，它是所有集合类（如 List 和 Set）的基石。<a href="ch06//ch07/dartpl0703.html#iterable-%E7%94%9F%E6%88%90%E5%99%A8-sync-yield-">点击这里查看 Iterable生成器</a>。</p>
+<p>Iterable（可迭代对象）是一个抽象类，它是所有集合类（如 List 和 Set）的基石。<a href="/ch07/dartpl0703.html#iterable-生成器-sync-yield-">点击这里查看 Iterable生成器</a>。</p>
 <p>Iterable 的大多数方法（如 <code>map</code> 和 <code>where</code>）都是惰性的。这意味着当你调用这些方法时，它们并不会立即遍历集合。只有当你最终调用 <code>toList()</code>、<code>toSet()</code> 或在 <code>for-in</code> 循环中使用它时，计算才会真正发生。这种机制在处理大数据集时非常高效，因为它能避免不必要的中间计算。</p>
 <p><strong>核心属性</strong></p>
 <ul>
@@ -5305,7 +5440,8 @@ void main() {
   print(numbers); // Output: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="list列表"><a class="header" href="#list列表">List（列表）</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="list列表"><a class="header" href="#list列表">List（列表）</a></h1>
 <p>数组（array）是一组有序的对象（元素）的集合，意味着可以通过下标（从 0 开始的整数）访问数组内对应位置的元素。Dart 的数组即 List，在之前的章节已经多次出现过。</p>
 <p>List 有各种不同类型的实现子类，最常见的两类是：</p>
 <ul>
@@ -5473,7 +5609,8 @@ void main() {
 <li><code>clear()</code>清空 List。</li>
 </ol>
 <p>关于 List 的更多细节，请参考官网文档<a href="https://api.dart.dev/dart-core/List-class.html">https://api.dart.dev/dart-core/List-class.html</a></p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="set集"><a class="header" href="#set集">Set（集）</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="set集"><a class="header" href="#set集">Set（集）</a></h1>
 <p>Set 是不重复元素的无序集，它主要关注元素是否在 Set 中，并具有两个特征：</p>
 <ul>
 <li>唯一性：其元素在 Set 内 是唯一的</li>
@@ -5485,7 +5622,7 @@ void main() {
 <li><code>LinkedHashSet</code> 按元素的写入顺序遍历</li>
 <li>有序 Set（如<code>SplayTreeSet</code>），按排序顺序进行遍历</li>
 </ul>
-<pre><code class="language-mermaid">classDiagram
+<pre class="mermaid">classDiagram
   Set~E~ &lt;|.. HashSet
   Set~E~ &lt;|.. LinkedHashSet
   Set~E~ &lt;|.. SetMixin~E~
@@ -5496,7 +5633,8 @@ void main() {
   &lt;&lt;final&gt;&gt; HashSet
   &lt;&lt;final&gt;&gt; SplayTreeSet
   &lt;&lt;mixin&gt;&gt; SetMixin
-</code></pre>
+</pre>
+
 <h2 id="set-示例"><a class="header" href="#set-示例">Set 示例</a></h2>
 <p>先看一个简单的例子。</p>
 <pre><code class="language-dart">// ex641.dart
@@ -5517,7 +5655,7 @@ void main() {
 
 </code></pre>
 <ol>
-<li>使用字面量声明一个类型为Set<String> 的变量 <code>fruites</code> ，它包含两个初始成员 'Apple' 和 'Banana'；</li>
+<li>使用字面量声明一个类型为Set<string> 的变量 <code>fruites</code> ，它包含两个初始成员 ‘Apple’ 和 ‘Banana’；</string></li>
 <li>给<code>fruites</code>添加一个成员<code>Apple</code>，由于<code>Apple</code>本来就已经在<code>fruites</code> Set中，因此这行代码执行后<code>fruites</code>的成员依旧只有原来的那两个；</li>
 <li>向<code>fruites</code>追加一个新的成员<code>Cherry</code>，这样代码执行后，<code>fruites</code>一共包含了3个成员；</li>
 <li><code>fruites.length</code>表示<code>fruites</code>的成员个数。</li>
@@ -5564,7 +5702,7 @@ void main() {
 }
 </code></pre>
 <h2 id="set特色方法"><a class="header" href="#set特色方法">Set特色方法</a></h2>
-<p>与<code>List</code>一样，<code>Set</code>也实现了<code>Iterable</code>接口，即实现了<code>Iterable</code>接口定义的方法。由于在List章节中，我们已经对List的<a href="ch06/./dartpl0603.html#%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95">常用方法</a>（包括<code>Iterable</code>接口中定义的方法）做了介绍，这里仅举例说明Set类型特有的方法。</p>
+<p>与<code>List</code>一样，<code>Set</code>也实现了<code>Iterable</code>接口，即实现了<code>Iterable</code>接口定义的方法。由于在List章节中，我们已经对List的<a href="#常用方法">常用方法</a>（包括<code>Iterable</code>接口中定义的方法）做了介绍，这里仅举例说明Set类型特有的方法。</p>
 <pre><code class="language-dart">// ex643.dart
 void main() {
   var set1 = {1, 2, 3};
@@ -5596,10 +5734,11 @@ void main() {
 <li><code>lookup(Object? object)</code>：如果Set中的某个成员与给定的对象<code>object</code>相等，就返回该成员，否则返回<code>null</code>。</li>
 </ol>
 <p>关于Set的更多方法，请查阅<a href="https://api.dart.dev/dart-core/Set-class.html">官方文档</a>。</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="map映射"><a class="header" href="#map映射">Map（映射）</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="map映射"><a class="header" href="#map映射">Map（映射）</a></h1>
 <p>Map中的成员以“键值对”（key-value pair）的形式存在，Map也就是“键值对”的集合。同一个Map中
 中的key不会重复，但不同的key可以关联到同一个value；通过key可以快速找到对应的value。理论上，Map的读写操作（查找、插入、删除）的平均时间复杂度都是O(1)，即Map可以在一个常量时间内完成某个读或写操作，这个时间几乎不受Map内成员个数的影响。</p>
-<pre><code class="language-mermaid">flowchart TB
+<pre class="mermaid">flowchart TB
   subgraph abc [Map]
     subgraph ... 
     direction LR
@@ -5616,7 +5755,8 @@ void main() {
     A(key1) --&gt; B(value1) 
     end
   end
-</code></pre>
+</pre>
+
 <p>key与value的数据类型乃参数化类型（泛型）。</p>
 <pre><code class="language-dart">abstract interface class Map&lt;K, V&gt; { 
   // ...
@@ -5648,7 +5788,7 @@ void main() {
 }
 </code></pre>
 <ol>
-<li>在<a href="ch06/./dartpl0602.html">集合概述</a>一节中已经提到，一个Map有3个Iterable对象（getter），即<code>entries</code>,<code>keys</code> 以及 <code>values</code>；</li>
+<li>在<a href="#集合概述">集合概述</a>一节中已经提到，一个Map有3个Iterable对象（getter），即<code>entries</code>,<code>keys</code> 以及 <code>values</code>；</li>
 <li>类似于通过下标（从0开始的整数）获取List（数组）的成员，通过key来获取Map中与key对应的value（获取失败将返回<code>null</code>），这里的获取操作本即<code>[]</code>操作符方法；</li>
 <li>与List类似，可通过<code>[]=</code>操作符方法，更新与key对应的value（若key不存在，则插入对应的key-value pair）；</li>
 <li><code>putIfAbsent</code>只有当key不存在时才更新对应的value；</li>
@@ -5668,14 +5808,16 @@ void main() {
 </ul>
 <h2 id="练习-3"><a class="header" href="#练习-3">练习</a></h2>
 <p>创建一个类型为<code>Map&lt;String,int&gt;</code>的Map，并准备100万（key-value pair）的测试数据，然后将测试数据逐个写入Map；在Map的长度由1万增长至100万的过程中，记录每插入100个pair的耗时；最后观察并分析这些耗时。</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="hashcode-与-操作符"><a class="header" href="#hashcode-与-操作符">hashCode 与 <code>==</code>操作符</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="hashcode-与-操作符"><a class="header" href="#hashcode-与-操作符">hashCode 与 <code>==</code>操作符</a></h1>
 <p>Set 和 Map 通常依托哈希表实现。 逻辑上，哈希表可以抽象为一个两列的表格：一列是由 <code>Object.hashCode</code>生成的哈希码（即散列码），另一列则是对应的 entry（key-value pair）。物理存储上，程序先将 key 映射为哈希码，再将哈希码转换为数组索引，该索引决定了 Entry 在哈希表中的物理位置。通过这种方式，Set 和 Map 实现了极其高效的元素存取。有趣的是，在很多底层实现中，Set 其实就是一个“值为空”的 Map；例如 Go 语言并未提供内置的 Set 类型，而是建议开发者直接使用 Map。</p>
-<pre><code class="language-mermaid">flowchart LR
+<pre class="mermaid">flowchart LR
    A(( entry )) --&gt;|key.hashCode| B(( 哈希码 ))
    B --&gt; C(( 索引 ))
    C --&gt;|构建| D[( 哈希表 )]
    D --&gt;|查找| A
-</code></pre>
+</pre>
+
 <p>Set或Map通常基于<code>Object.==</code> 进行相等性测试。<code>Object.hashCode</code> 与 <code>Object.==</code> （equals）的默认实现仅体现了对象的标识符。为了保持Set或Map语义正确：</p>
 <ul>
 <li>两个相等的对象，其哈希值也必须相等；</li>
@@ -5748,7 +5890,8 @@ class Point2 {
 <li>由于 <code>c==d</code> 成立， <code>set1</code> 只有3个元素；</li>
 <li>同理 <code>map1</code>只有3个entries，<code>map1</code>内部将<code>c</code>和<code>d</code>视为同样的key（即<code>Point2(1, 2)</code>），与其对应的value是最新的那个值<code>'d'</code>。</li>
 </ol>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="异步编程概述"><a class="header" href="#异步编程概述">异步编程概述</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="异步编程概述"><a class="header" href="#异步编程概述">异步编程概述</a></h1>
 <p>异步编程之于 Dart，正如多线程之于 Java。在 Java 世界中，多线程是处理并发任务的核心；而在 Dart 的世界里，异步编程承担着同样的角色；它是程序在处理耗时操作（如网络请求、数据库操作、文件读写）时，界面依然能够灵敏响应、不卡顿的基石。</p>
 <p>下面的示例模拟了用户在登录时，程序让用户无助等待了 5 秒的场景。</p>
 <pre><code class="language-dart">// ex711.dart
@@ -5788,19 +5931,20 @@ bool login(String userId, String passwd) {
 <li>Isolate： 类似于轻量级进程。它拥有独立的内存空间，Isolate 之间互不共享内存，仅靠消息通信。它通常用于处理最吃性能的 CPU 密集型计算任务。</li>
 </ul>
 <p>本章将带你由浅入深，先掌握最常用的 Future 与 Stream，随后揭开 Event Loop 与 Isolate 的底层面纱。在本章的最后，我们将通过对工业级 WorkerPool 技术的深度剖析，帮助你构建起对 Dart 异步并发体系的完整认知。</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="future"><a class="header" href="#future">Future</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="future"><a class="header" href="#future">Future</a></h1>
 <p>Future 代表了一个“在未来某个时间点”才会完成的操作结果。
 Future 的生命周期可分为两个阶段：</p>
 <ul>
 <li>未完成 (Uncompleted)：异步操作正在进行中，结果尚未产生；</li>
 <li>已完成 (Completed)：操作结束，会有两种可能的结果：
 <ul>
-<li>成功 (Value)：操作顺利完成，返回具体的数据（如 Future<String> 返回字符串）；</li>
+<li>成功 (Value)：操作顺利完成，返回具体的数据（如 Future<string> 返回字符串）；</string></li>
 <li>失败 (Error)：操作中途出错，返回一个异常。</li>
 </ul>
 </li>
 </ul>
-<pre><code class="language-mermaid">stateDiagram
+<pre class="mermaid">stateDiagram
     [*] --&gt; Uncompleted : Create Future
    
     Uncompleted --&gt; Success : Value
@@ -5808,7 +5952,8 @@ Future 的生命周期可分为两个阶段：</p>
 
     Success --&gt; [*] : .then / await
     Failure --&gt; [*] : .catchError / try-catch
-</code></pre>
+</pre>
+
 <h2 id="示例-2"><a class="header" href="#示例-2">示例</a></h2>
 <p>先通过一个例子来看同步函数与异步函数及其使用上的区别：</p>
 <pre><code class="language-dart">// ex721.dart
@@ -5863,12 +6008,18 @@ Future&lt;int&gt; computeAsync(int a, int b) {
 <li>给<code>futureResult.then</code>提供一个callback（回调）函数，当<code>computeAsync</code>内部计算完成时，callback将被调用（<code>out5</code>）。</li>
 </ol>
 <p>同步 vs 异步：</p>
-<div class="table-wrapper"><table><thead><tr><th>特性</th><th>同步函数 (compute)</th><th>异步函数 (computeAsync)</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>特性</th><th>同步函数 (compute)</th><th>异步函数 (computeAsync)</th></tr>
+</thead>
+<tbody>
 <tr><td>定义方式</td><td><code>int compute(...)</code></td><td><code>Future&lt;int&gt; computeAsync(...)</code></td></tr>
 <tr><td>返回值</td><td>直接返回结果</td><td>返回一个“凭证” Future，承诺以后给结果</td></tr>
 <tr><td>执行表现</td><td>调用时程序会“停”在这一行直到算完</td><td>调用后程序可以立即去做别的事</td></tr>
 <tr><td>调用方式</td><td><code>var res = compute(3, 4);</code></td><td><code>computeAsync(3, 4).then(...);</code></td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <h2 id="asyncwait"><a class="header" href="#asyncwait">async/wait</a></h2>
 <p>上述示例中的<code>computeAsync</code>可以用<code>asyc/wait</code>改写，这是更现代、更具可读性的风格，让异步代码看起来像同步代码。</p>
@@ -6060,20 +6211,28 @@ Future&lt;String&gt; fetchData() async {
 <ul>
 <li><a href="https://api.dart.dev/dart-async/Future-class.html">https://api.dart.dev/dart-async/Future-class.html</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="stream流"><a class="header" href="#stream流">Stream（流）</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="stream流"><a class="header" href="#stream流">Stream（流）</a></h1>
 <p>如果说 Future 是“一次性买卖”，那么 Stream 就是“订阅服务”。Stream 是一系列异步事件的序列。它会随着时间的推移发出多个值，直到任务完成或发生错误。</p>
-<pre><code class="language-mermaid">graph LR
+<pre class="mermaid">graph LR
     A((生成数据)) --&gt; B@{ shape: das, label: "Stream" }
     B --&gt;|数据事件 Data| C([监听器 Listener])
     B --&gt;|错误事件 Error| C
     B --&gt;|完成事件 Done| C
     C --&gt; D{处理数据}
-</code></pre>
+</pre>
+
 <p>Stream 是异步版的Iterable，借助下表我们可以快速掌握其核心差异。</p>
-<div class="table-wrapper"><table><thead><tr><th></th><th>单个数据</th><th>多个数据</th></tr></thead><tbody>
-<tr><td>同步</td><td>T (普通变量)</td><td><a href="ch07/../ch06/dartpl0602.html#iterable">Iterable&lt;T&gt;</a></td></tr>
-<tr><td>异步</td><td><a href="ch07/./dartpl0702.html">Future&lt;T&gt;</a></td><td>Stream&lt;T&gt;</td></tr>
-</tbody></table>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>单个数据</th><th>多个数据</th></tr>
+</thead>
+<tbody>
+<tr><td>同步</td><td>T (普通变量)</td><td><a href="#iterable">Iterable&lt;T&gt;</a></td></tr>
+<tr><td>异步</td><td><a href="#future">Future&lt;T&gt;</a></td><td>Stream&lt;T&gt;</td></tr>
+</tbody>
+</table>
 </div>
 <p>Iterable 与 Stream 的对称性：</p>
 <ul>
@@ -6129,7 +6288,7 @@ Stream&lt;int&gt; randomStream(int max) {
 <li>调用 <code>Stream.listen(onData,{...})</code>方法监听Stream并消费（处理）数据。</li>
 </ol>
 <h2 id="iterable-生成器-sync-yield-"><a class="header" href="#iterable-生成器-sync-yield-">Iterable 生成器（ <code>sync*-yield</code> ）</a></h2>
-<p>在介绍异步生成器 <code>async*-yield</code> 之前，先来看下Iterable生成器（使用 <code>sync*-yield</code> 创建 <a href="ch07/../ch06/dartpl0602.html#iterable">Iterable</a> 对象），请对两者进行对比。</p>
+<p>在介绍异步生成器 <code>async*-yield</code> 之前，先来看下Iterable生成器（使用 <code>sync*-yield</code> 创建 <a href="#iterable">Iterable</a> 对象），请对两者进行对比。</p>
 <pre><code class="language-dart">// ex732.dart
 void main() {
   print(countList(5)); // 1 Output: (1, 2, 3, 4, 5)
@@ -6179,11 +6338,17 @@ Stream&lt;int&gt; randomStream(int max) async* {
 </ol>
 <h2 id="广播-broadcast"><a class="header" href="#广播-broadcast">广播 (Broadcast)</a></h2>
 <p>以上介绍的是 Stream 的“单订阅”（Single-subscription） 模式。然而，Stream 还有另一种更为灵活的形态，即广播模式（Broadcast）。我们先来看下两种模式的区别。</p>
-<div class="table-wrapper"><table><thead><tr><th>特性</th><th>单订阅</th><th>广播</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>特性</th><th>单订阅</th><th>广播</th></tr>
+</thead>
+<tbody>
 <tr><td>监听数量</td><td>只能被 listen 一次，第二次报错</td><td>可以有无限个监听者同时监听</td></tr>
 <tr><td>缓存机制</td><td>监听前的事件可能会在缓冲区等待</td><td>事件是即时的，错过监听时间点就拿不到旧数据</td></tr>
 <tr><td>典型用途</td><td>文件读取、网络请求（端对端数据流）</td><td>状态管理、传感器数据、UI 事件通知</td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <p>请看下面的示例：</p>
 <pre><code class="language-dart">// ex734.dart
@@ -6353,11 +6518,17 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
 <p>如果不用 <code>yield*</code>，就必须使用 <code>await for</code> 循环去解包子流，代码会变得冗长且难以维护。
 在处理树形结构的数据时，<code>yield*</code> 是实现异步递归的唯一标准方式。</p>
 <h3 id="yield-与-yield-对比"><a class="header" href="#yield-与-yield-对比"><code>yield</code> 与 <code>yield*</code> 对比</a></h3>
-<div class="table-wrapper"><table><thead><tr><th>特性</th><th><code>yield</code></th><th><code>yield*</code></th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>特性</th><th><code>yield</code></th><th><code>yield*</code></th></tr>
+</thead>
+<tbody>
 <tr><td>右侧对象</td><td>单个数据（如 <code>int</code>, <code>String</code>）</td><td>一个 <code>Stream</code>&lt;<code>T</code>&gt;</td></tr>
 <tr><td>行为</td><td>产出一个值后继续</td><td>代理另一个Stream，直到其结束才继续</td></tr>
 <tr><td>性能</td><td>逐个处理</td><td>更加高效（Dart 引擎对其有内部优化）</td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <h3 id="关键特性与陷阱"><a class="header" href="#关键特性与陷阱">关键特性与陷阱</a></h3>
 <p><strong>执行顺序</strong></p>
@@ -6366,11 +6537,12 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
 <p>如果 <code>yield*</code> 监听的Stream抛出了异常，这个异常会直接传递到当前Stream中，除非你在外层用了 <code>try-catch</code>。</p>
 <p><strong>广播流</strong></p>
 <p>如果 <code>yield*</code> 后面是一个广播流，那么它只会转发从“订阅那一刻”开始的数据。</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="isolate-与-event-loop"><a class="header" href="#isolate-与-event-loop">Isolate 与 Event Loop</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="isolate-与-event-loop"><a class="header" href="#isolate-与-event-loop">Isolate 与 Event Loop</a></h1>
 <p>本节将简单介绍 Isolate 与 Event Loop。下一节将详细介绍如何使用 Isolate。</p>
 <h2 id="并发模型"><a class="header" href="#并发模型">并发模型</a></h2>
 <p>不同于 Java 基于共享内存的多线程并发，Dart 采用了名为 Isolate 的隔离并发模型，其运行机制类似于轻量级进程。Isolate 之间采用“无共享”（Shared-Nothing）架构，通信完全依赖于异步消息传递。这种天然的隔离机制从根本上消除了数据竞争（Data Race），无需引入复杂的锁机制（Locks）即可确保运行时的内存安全。</p>
-<pre><code class="language-mermaid">graph TD
+<pre class="mermaid">graph TD
     subgraph "Process (Java, C++) - 共享内存模型"
         M[(Shared Heap Memory)]
         T1([Thread 1]) --- M
@@ -6390,7 +6562,8 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
         style H1 fill:#6cf,stroke:#333
         style H2 fill:#6cf,stroke:#333
     end
-</code></pre>
+</pre>
+
 <p>Isolate 这种设计让 Dart 能够实现 “无停顿垃圾回收”。因为每个 Isolate 的 GC 是独立的，当子 Isolate 在后台清理垃圾时，不会阻塞主 Isolate 的 UI 渲染，这正是 Flutter 保持流畅（60/120 FPS）的底层秘诀之一。</p>
 <h2 id="isolate"><a class="header" href="#isolate">Isolate</a></h2>
 <p>每一个 Isolate 到底初始化了什么？ 当你 spawn 一个新的 Isolate 时，Dart VM 实际上做了以下工作：</p>
@@ -6400,7 +6573,7 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
 <li>创建调用栈（Stack）：独立的执行上下文。</li>
 <li>独立的垃圾回收器（Private GC）：Isolate A 在进行 GC 时，不会停止 Isolate B 的运行（即没有全系统的 Stop-the-world）。</li>
 </ul>
-<pre><code class="language-mermaid">graph TD
+<pre class="mermaid">graph TD
     %% 全局容器
     subgraph Isolate_Internal ["Dart Isolate Instance"]
         direction TB
@@ -6448,10 +6621,11 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
     style MQ fill:#FFF9C4,stroke:#FBC02D
     style EQ fill:#E1F5FE,stroke:#0288D1
     style Stack fill:#4CAF50,stroke:#1B5E20,color:#fff
-</code></pre>
+</pre>
+
 <h3 id="isolate-生命周期"><a class="header" href="#isolate-生命周期">Isolate 生命周期</a></h3>
 <p>在 Dart 中，Isolate 的生命周期是一个闭环的异步过程。由于 Isolate 之间不共享内存，其状态切换高度依赖于 <strong>事件循环（Event Loop）<strong>和</strong>通信端口（Port）</strong>。</p>
-<pre><code class="language-mermaid">stateDiagram-v2
+<pre class="mermaid">stateDiagram-v2
     [*] --&gt; Spawning: Isolate.spawn()
     
     state Spawning {
@@ -6478,10 +6652,11 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
     
     ErrorState --&gt; Exiting: 触发 ErrorListener
     Exiting --&gt; [*]: 资源回收/内存释放
-</code></pre>
+</pre>
+
 <h2 id="event-loop"><a class="header" href="#event-loop">Event Loop</a></h2>
 <p>Isolate与Event Loop是密不可分的，每个Isolate都有唯一的一个Event Loop与之对应。Isolate 是物理边界，而 Event Loop 是运行逻辑。</p>
-<pre><code class="language-mermaid">graph TD
+<pre class="mermaid">graph TD
     subgraph Core [" "]
         direction TB
         EL((⚙️ Event Loop))
@@ -6507,7 +6682,8 @@ Stream&lt;File&gt; traversal(Directory dir) async* {
     style MTQ fill:#FFF9C4,stroke:#FBC02D
     style EQ fill:#E1F5FE,stroke:#0288D1
     style Core fill:none,stroke:none
-</code></pre>
+</pre>
+
 <p>Event Loop就像一个不停转动的时间齿轮， 同时维护着两个优先级不同的队列：</p>
 <ul>
 <li>
@@ -6540,7 +6716,7 @@ Future&lt;String&gt; task() async {
   return 'task done';
 }
 </code></pre>
-<pre><code class="language-mermaid">sequenceDiagram
+<pre class="mermaid">sequenceDiagram
     autonumber
     participant M as main
     participant EL as ⚙️ Event Loop
@@ -6575,7 +6751,8 @@ Future&lt;String&gt; task() async {
     MTQ-&gt;&gt;Exec: print('main end')
     
     Note over Exec: 所有任务链结束
-</code></pre>
+</pre>
+
 <p>上述时序图中的三个关键“跳转”：</p>
 <ul>
 <li>
@@ -6597,22 +6774,34 @@ Future&lt;String&gt; task() async {
 <li>执行区立即变空，Event Loop 齿轮可以自由转动，去处理屏幕刷新、点击等其他队列任务。</li>
 <li>时间一到，计时器把“恢复执行”的任务丢进 Event Queue，等齿轮下一轮转过来时执行。</li>
 </ul>
-<div class="table-wrapper"><table><thead><tr><th>特性</th><th><code>sleep(...)</code></th><th><code>await Future.delayed(...)</code></th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>特性</th><th><code>sleep(...)</code></th><th><code>await Future.delayed(...)</code></th></tr>
+</thead>
+<tbody>
 <tr><td>执行性质</td><td>同步、阻塞</td><td>异步、挂起（非阻塞）</td></tr>
 <tr><td>对EventLoop齿轮影响</td><td>停止转动</td><td>正常转动</td></tr>
 <tr><td>队列任务</td><td>被饿死（Starvation）</td><td>正常调度</td></tr>
 <tr><td>用户体验</td><td>应用卡死，无法操作</td><td>应用流畅，后台等待</td></tr>
 <tr><td>底层实现</td><td>操作系统线程休眠</td><td>计时器事件注册 + 任务回流</td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <h2 id="async-还是-isolate-"><a class="header" href="#async-还是-isolate-">Async 还是 Isolate ?</a></h2>
 <p>虽然 async/await 能处理异步，但它本质上还是在同一个线程的 Event Loop 里“排队”。如果你需要处理 CPU 密集型任务（如大图片滤镜、复杂加解密、解析 100MB 的 JSON），主线程依然会卡顿，这时就需要启动一个新的 Isolate 进行并行处理。</p>
-<div class="table-wrapper"><table><thead><tr><th>场景</th><th>推荐方案</th><th>底层逻辑</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>场景</th><th>推荐方案</th><th>底层逻辑</th></tr>
+</thead>
+<tbody>
 <tr><td>网络请求 (HTTP)</td><td>async/await</td><td>线程在等待 IO 响应，不需要额外 CPU 计算。</td></tr>
 <tr><td>文件读写 (I/O)</td><td>async/await</td><td>由操作系统异步处理，返回后在 Event Loop 排队。</td></tr>
 <tr><td>JSON 解析 (巨大)</td><td>Isolate</td><td>解析需要消耗大量 CPU 时间，会阻塞 UI 渲染。</td></tr>
 <tr><td>图像/视频处理</td><td>Isolate</td><td>属于高强度计算，必须移出 Main Isolate。</td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <h2 id="reference-2"><a class="header" href="#reference-2">Reference</a></h2>
 <ul>
@@ -6623,7 +6812,8 @@ Future&lt;String&gt; task() async {
 <p>https://api.dart.dev/dart-isolate/Isolate-class.html</p>
 </li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="isolate-基础应用篇"><a class="header" href="#isolate-基础应用篇">Isolate 基础应用篇</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="isolate-基础应用篇"><a class="header" href="#isolate-基础应用篇">Isolate 基础应用篇</a></h1>
 <p>按使用场景（是简单的计算还是长期的后台任务）的不同，Isolate有三种主流的创建方式：</p>
 <ul>
 <li><code>Isolate.run()</code>（单次轻量）：Dart会自动处理 Isolate 的创建、参数传递、结果返回以及最后的销毁</li>
@@ -6655,7 +6845,7 @@ int heavyTask(int count) {
 <li><strong>ReceivePort（收信箱）</strong>：它是私有的，只有创建它的 Isolate 才能从中读取消息。本质上它是一个 Stream。当消息掉进箱子时，Event Loop 齿轮转动，触发监听（<code>listen</code>）回调。</li>
 <li><strong>SendPort（投递地址）</strong>： 它是公开的，可以被复制、传递给其他 Isolate。</li>
 </ul>
-<pre><code class="language-mermaid">graph LR
+<pre class="mermaid">graph LR
     subgraph Isolate_A [main Isolate]
         direction TB
         RP[ReceivePort]
@@ -6676,10 +6866,11 @@ int heavyTask(int count) {
     style Isolate_B fill:#f5f5f5,stroke:#333
     style RP fill:#FFF9C4,stroke:#FBC02D
     style SP fill:#E1F5FE,stroke:#0288D1
-</code></pre>
+</pre>
+
 <h3 id="单向通信生产-消费"><a class="header" href="#单向通信生产-消费">单向通信（“生产-消费”）</a></h3>
 <p>在单向通信（“生产-消费”）模式中，Main Isolate 充当“听众” （即数据的消费者），Worker Isolate 充当数据的“生产者”。</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<pre class="mermaid">sequenceDiagram
 	autonumber
     participant M as Main Isolate
     participant W as Worker Isolate
@@ -6689,7 +6880,8 @@ int heavyTask(int count) {
     W-&gt;&gt;W: 初始化自己的 Event Loop
     W-&gt;&gt;M: 通过传入的 SendPort 发回数据
     M-&gt;&gt;M: RP.listen 接收并处理结果
-</code></pre>
+</pre>
+
 <pre><code class="language-dart">// ex752.dart
 import 'dart:isolate';
 import 'dart:async';
@@ -6754,7 +6946,7 @@ void entryPoint(SendPort sendPort) async {
 <p><em>最佳实践</em>： <code>Isolate.spawn()</code> 必须指向一个顶级函数或静态方法（如此例中的 <code>entryPoint()</code>），这是为了满足跨线程（<code>Isolate</code>）序列化的要求。</p>
 <h3 id="双向通信"><a class="header" href="#双向通信">双向通信</a></h3>
 <p>我们在理解了单向通信模式之后，就不难理解双向通信模式。main isolate要想发消息给work isolate，必须通过worker的SendPort，因此我们要设法将worker的SendPort传递给main isolate。在<code>entrypoint</code> 函数中，worker调用<code>mainRP.send(...)</code>即可实现这一点（<code>mainRP</code>即main isolate的ReceivePort）。</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<pre class="mermaid">sequenceDiagram
     autonumber
     participant M as Main Isolate
     participant W as Worker Isolate
@@ -6779,7 +6971,8 @@ void entryPoint(SendPort sendPort) async {
     end
     
     M-&gt;&gt;M: 后续处理
-</code></pre>
+</pre>
+
 <p>如下示例由示例<code>ex752</code>改写而成，它演示了两个Isolate间的双向通信，请读者自行分析。</p>
 <pre><code class="language-dart">// ex753.dart
 import 'dart:isolate';
@@ -6890,13 +7083,19 @@ void main() async {
 <li>安全性：虽然 Isolate 之间是隔离的，但在加载外部脚本时仍需确保来源可靠。</li>
 </ul>
 <p><em><code>Isolate.spawn()</code> VS <code>Isolate.spawnUri()</code></em></p>
-<div class="table-wrapper"><table><thead><tr><th>特性</th><th><code>Isolate.spawn()</code></th><th><code>Isolate.spawnUri()</code></th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>特性</th><th><code>Isolate.spawn()</code></th><th><code>Isolate.spawnUri()</code></th></tr>
+</thead>
+<tbody>
 <tr><td>代码来源</td><td>当前程序中的函数（共享现有代码）</td><td>外部 URI 指向的文件（独立代码）</td></tr>
 <tr><td>启动速度</td><td>较快（不需要重新解析代码）</td><td>较慢（需要加载、解析并运行新脚本）</td></tr>
 <tr><td>参数限制</td><td>可以传递大部分不可变对象</td><td>参数必须是简单的类型（如字符串、列表、SendPort）</td></tr>
 <tr><td>内存开销</td><td>相对较小</td><td>较大（整个脚本环境需要重新初始化）</td></tr>
 <tr><td>典型用途</td><td>处理当前应用的密集计算</td><td>动态插件系统、运行不受信任的外部脚本</td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <h2 id="flutter-特色compute"><a class="header" href="#flutter-特色compute"><code>Flutter 特色：compute()</code></a></h2>
 <p>Flutter 的 <code>compute()</code> 函数在用法上与 <code>Isolate.run()</code> 有些类似。下面是示例 <code>ex751</code>的Flutter/compute 版本。</p>
@@ -6920,7 +7119,12 @@ int heavyTask(int count) {
 <h2 id="跨-isolate-传递数据"><a class="header" href="#跨-isolate-传递数据">跨 Isolate 传递数据</a></h2>
 <p>在 Dart 中，跨 Isolate 传递数据的机制被称为消息传递（Message Passing）。为了保证内存隔离的安全，Dart 限制了可以通过 SendPort 发送的对象类型。</p>
 <p>以下是根据 Dart 官方文档整理的跨 Isolate 传递数据类型表：</p>
-<div class="table-wrapper"><table><thead><tr><th style="text-align: left">类别</th><th style="text-align: left">具体数据类型</th><th style="text-align: left">说明</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th style="text-align: left">类别</th><th style="text-align: left">具体数据类型</th><th style="text-align: left">说明</th></tr>
+</thead>
+<tbody>
 <tr><td style="text-align: left"><strong>基础类型</strong></td><td style="text-align: left"><code>Null</code>, <code>bool</code>, <code>int</code>, <code>double</code>, <code>String</code></td><td style="text-align: left">最常用的基础数据，直接支持。</td></tr>
 <tr><td style="text-align: left"><strong>集合类型</strong></td><td style="text-align: left"><code>List</code>, <code>Map</code>, <code>Set</code></td><td style="text-align: left">容器内的元素也必须是此表中的可传递类型。</td></tr>
 <tr><td style="text-align: left"><strong>二进制数据</strong></td><td style="text-align: left"><code>TypedData</code> (如 <code>Uint8List</code> 等)</td><td style="text-align: left">效率极高，支持通过内存移交（Transfer）机制处理。</td></tr>
@@ -6928,7 +7132,8 @@ int heavyTask(int count) {
 <tr><td style="text-align: left"><strong>函数</strong></td><td style="text-align: left"><strong>顶级函数</strong> 或 <strong>静态方法</strong></td><td style="text-align: left">必须是全局可见的，不能是捕获了上下文的闭包或实例方法。</td></tr>
 <tr><td style="text-align: left"><strong>系统对象</strong></td><td style="text-align: left"><code>Capability</code>, <code>RegExp</code>, <code>StackTrace</code></td><td style="text-align: left">Dart 内部定义的特殊支持对象。</td></tr>
 <tr><td style="text-align: left"><strong>自定义对象</strong></td><td style="text-align: left"><strong>仅限 <code>Isolate.exit()</code> 场景</strong></td><td style="text-align: left">在普通 <code>send</code> 中不支持，但在退出 Isolate 时可移交内存所有权。</td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <p><strong>注意</strong>： 当你发送一个集合（如 List）时，Dart 实际上是在目标 Isolate 中创建了一个深拷贝。这意味着在子 Isolate 中修改该 List，不会影响主 Isolate 中的原始数据。唯一的例外是使用 <code>Isolate.exit()</code> 。</p>
 <h2 id="reference-3"><a class="header" href="#reference-3">Reference</a></h2>
@@ -6937,7 +7142,8 @@ int heavyTask(int count) {
 <li>https://dart.dev/language/isolates</li>
 <li>https://api.dart.dev/dart-isolate/Isolate-class.html</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="零拷贝"><a class="header" href="#零拷贝">零拷贝</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="零拷贝"><a class="header" href="#零拷贝">零拷贝</a></h1>
 <p>Dart的零拷贝与Java的零拷贝指向的是完全不同的应用场景。熟悉Java的朋友知道Java 的零拷贝主要解决内核态（Kernel Space）与用户态（User Space）之间反复的数据拷贝开销。而Dart 的零拷贝是为了省去 Isolate 之间内存绝对隔离带来的通信开销。</p>
 <p>Dart提供两种方式的零拷贝：</p>
 <ul>
@@ -6946,7 +7152,7 @@ int heavyTask(int count) {
 </ul>
 <h2 id="isolateexit"><a class="header" href="#isolateexit"><code>Isolate.exit()</code></a></h2>
 <p>试想你要解析一个巨大的JSON字符串（如50MB），你启用一个Worker Isolate来解析它：Main Isolate将JSON字符串的文件路径或HTTP URL发给 Worker Isolate，后者将解析结果（<code>bigMap</code>）传回。此类应用场景正是Dart零拷贝的用武之地。我们先来看一下零拷贝方案的时序图。</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<pre class="mermaid">sequenceDiagram
 	  autonumber
     participant M as Main Isolate
     participant FS as File System / Network
@@ -6969,14 +7175,21 @@ int heavyTask(int count) {
     
     M--&gt;&gt;M: 接收 Map 对象 (内存所有权转让)
     Note over M: 后续处理（如更新UI）
-</code></pre>
+</pre>
+
 <p>请注意该时序图的第5步，我们使用的是 <code>Isolate.exit(resultPort, bigMap)</code> 而非 <code>resultPort.send(bigMap)</code>；虽然它们都能将数据（<code>bigMap</code>） 传回 Main Isolate，但底层的内存处理机制完全不同。</p>
-<div class="table-wrapper"><table><thead><tr><th>特性</th><th><code>SendPort.send(message)</code></th><th><code>Isolate.exit(port, message)</code></th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>特性</th><th><code>SendPort.send(message)</code></th><th><code>Isolate.exit(port, message)</code></th></tr>
+</thead>
+<tbody>
 <tr><td>内存行为</td><td>物理拷贝 (Copying)</td><td>所有权转让 (Transfer)</td></tr>
 <tr><td>时间复杂度</td><td>O(n)（与数据量成正比）</td><td>O(1)（瞬间完成）</td></tr>
 <tr><td>Worker 状态</td><td>继续运行，除非手动 kill</td><td>立即终止 (Terminate)</td></tr>
 <tr><td>内存峰值</td><td>高（主从 Isolate 同时持有副本）</td><td>极低（内存块所有权转移）</td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <p>虽然 <code>Isolate.exit()</code> 极快，但它有一个硬性限制：它是该 Isolate 发布的“遗言”。如果你需要 Worker Isolate 持续运行（例如一个长期驻留的 WebSocket 监听器），你必须使用 <code>send()</code>，因为 <code>exit()</code> 会直接杀掉当前 Isolate。</p>
 <p><em>示例</em></p>
@@ -7083,7 +7296,7 @@ void worker(SendPort mainSendPort) {
   });
 }
 </code></pre>
-<pre><code class="language-mermaid">sequenceDiagram
+<pre class="mermaid">sequenceDiagram
     autonumber
     participant M as Main Isolate
     participant W as Worker Isolate
@@ -7110,7 +7323,8 @@ void worker(SendPort mainSendPort) {
 
     W-&gt;&gt;M: mainSendPort.send("Worker 收到 100 MB")
     M--&gt;&gt;M: 打印消息并关闭 ReceivePort
-</code></pre>
+</pre>
+
 <p>a. 握手 (Steps 2-3)： 由于 <code>Isolate.spawn()</code> 只能让主 Isolate 拿到 Worker 的句柄，反向通信需要 Worker 先通过 mainSendPort 把自己的 workerSendPort 发送回去。这是建立双向通信的标准做法。</p>
 <p>b. 内存转移 (Step 4 &amp; 6)： <code>TransferableTypedData.fromList</code> 是核心。它将数据从 Dart 的普通堆（Heap）中移出，放到一个可以被多个 Isolate 访问的底层缓冲区（通常是 C 堆）。</p>
 <ul>
@@ -7123,7 +7337,8 @@ void worker(SendPort mainSendPort) {
 <li>https://dart.dev/language/isolates</li>
 <li>https://api.dart.dev/dart-isolate/Isolate-class.html</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="worker-pool-isolate-池"><a class="header" href="#worker-pool-isolate-池">Worker Pool （Isolate 池）</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="worker-pool-isolate-池"><a class="header" href="#worker-pool-isolate-池">Worker Pool （Isolate 池）</a></h1>
 <p>Dart Worker Pool （Isolate 池）类似于Java中的线程池。在 Dart 中，Spawn 一个 Isolate 比创建线程更贵（因为它要初始化独立的堆内存）。使用Worker Pool可以 <em>避免冷启动开销</em> 和 <em>控制内存配额</em>。</p>
 <ul>
 <li>
@@ -7137,7 +7352,7 @@ void worker(SendPort mainSendPort) {
 <h2 id="实现方案"><a class="header" href="#实现方案">实现方案</a></h2>
 <p><code>Worer Pool</code> 需要维持一组长期存活的后台 <code>Isolate</code>，并维护它们的 <code>SendPort</code>，以便向其分发任务。当 <code>Worker Pool</code> 收到一个任务（<code>Task</code>）时，它分发给空闲的<code>Worker</code>，如果此时所有的<code>Worker</code>都忙，就将任务放入待执行队列（<code>TaskQueue</code>）。<code>Worker Pool</code>的核心指责就是尽快撮合 <code>Task</code> 与 <code>Worker</code>，一旦<code>Worker</code>空闲，它就去<code>TaskQueue</code>里取出任务交给<code>Worker</code>去执行。</p>
 <p>下面是该方案的 <em>时序图</em> 和 <em>类图</em> 。</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<pre class="mermaid">sequenceDiagram
     autonumber
     participant Client as main(Task Submitter)
     participant Pool as Worker Pool (Manager)
@@ -7164,8 +7379,9 @@ void worker(SendPort mainSendPort) {
     Pool-&gt;&gt;W: 自动派发暂存的任务 3
     W--&gt;&gt;Pool: 返回结果 3
     Pool-&gt;&gt;Client: 交付结果 3
-</code></pre>
-<pre><code class="language-mermaid">classDiagram
+</pre>
+
+<pre class="mermaid">classDiagram
     class TaskData {
         +Function task
         +Record data
@@ -7202,7 +7418,8 @@ void worker(SendPort mainSendPort) {
     WorkerPool ..&gt; TaskData : 处理任务请求（submit）
     Worker ..&gt; TaskData : 通过 SendPort 发送任务给 Worker Isolate
     Worker ..&gt; GlobalFunctions : Isolate 运行入口
-</code></pre>
+</pre>
+
 <p>该方案的示例代码如下。</p>
 <pre><code class="language-dart">// ex771.dart
 import 'dart:async';
@@ -7467,8 +7684,9 @@ void workerEntryPoint((int workerId, SendPort resultPort) message) {
 <li>https://dart.dev/language/isolates</li>
 <li>https://api.dart.dev/dart-isolate/Isolate-class.html</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="worker-pool续1残余请求问题"><a class="header" href="#worker-pool续1残余请求问题">Worker Pool（续1）：残余请求问题</a></h1>
-<p>本节及 <a href="ch07/./dartpl0709.html">下一节</a> 是 <a href="ch07/./dartpl0707.html">上一节 Worker Pool （Isolate 池）</a> 的深度延伸。本节我们将探讨并发编程中一个棘手的边缘场景：残余请求——即那些在系统关闭瞬间仍处于传输或执行状态的残留任务。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="worker-pool续1残余请求问题"><a class="header" href="#worker-pool续1残余请求问题">Worker Pool（续1）：残余请求问题</a></h1>
+<p>本节及 <a href="#worker-pool续2重启意外崩溃的-isolate">下一节</a> 是 <a href="#worker-pool-isolate-池">上一节 Worker Pool （Isolate 池）</a> 的深度延伸。本节我们将探讨并发编程中一个棘手的边缘场景：残余请求——即那些在系统关闭瞬间仍处于传输或执行状态的残留任务。</p>
 <h2 id="残余请求问题"><a class="header" href="#残余请求问题">残余请求问题</a></h2>
 <p>在 WorkerPool 关闭时，残余请求通常以两种形式存在：</p>
 <ul>
@@ -7480,7 +7698,7 @@ void workerEntryPoint((int workerId, SendPort resultPort) message) {
 <p><em><code>Q2.</code></em> “执行中请求”要求我们考虑这样一个问题：在关闭 WorkerPool时，所有的Woker都必须处于空闲状态吗（即没有任务在执行中）？ 这就是 <code>WorkerPool.close()</code>方法中 <code>ensureExecutingTaskCompleted</code>参数存在的原因。</p>
 <h2 id="解决方案"><a class="header" href="#解决方案">解决方案</a></h2>
 <p>我们定义如下 <em>WorkerPool 优雅关闭协议</em>。</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<pre class="mermaid">sequenceDiagram
     autonumber
     participant M as WorkerPool (Main Isolate)
     participant W as Worker (Worker Isolate)
@@ -7507,7 +7725,8 @@ void workerEntryPoint((int workerId, SendPort resultPort) message) {
     M-&gt;&gt;M: 关闭 _resultPort
     M-&gt;&gt;W: 执行 isolate.kill()
     
-</code></pre>
+</pre>
+
 <h3 id="q1在途请求"><a class="header" href="#q1在途请求">Q1（在途请求）</a></h3>
 <p>在关闭 <code>_resultPort</code> 之前，先关闭所有<code>worker</code>的 <code>ReceivePort</code>，该如何实现这一点呢？<code>Worker</code>要想收到 <code>close</code> 指令，必须由 <code>WorkerPool</code> 发送给它，我们可以将这个<code>close</code>指令称为<code>shutdown</code>消息。</p>
 <p><em>首先定义<code>_shutdownSignal</code>常量，它表示 <code>shutdown</code>消息：</em></p>
@@ -7569,7 +7788,8 @@ void workerEntryPoint((int workerId, SendPort resultPort) message) {
 </code></pre>
 <h2 id="结束语"><a class="header" href="#结束语">结束语</a></h2>
 <p>本节讨论了Dart并发编程中的残余请求问题及解决方案（含代码示例），下一节将讨论 WorkerPool的最后一块拼图 ——  重启意外崩溃的 Isolate。</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="worker-pool续2重启意外崩溃的-isolate"><a class="header" href="#worker-pool续2重启意外崩溃的-isolate">Worker Pool（续2）：重启意外崩溃的 Isolate</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="worker-pool续2重启意外崩溃的-isolate"><a class="header" href="#worker-pool续2重启意外崩溃的-isolate">Worker Pool（续2）：重启意外崩溃的 Isolate</a></h1>
 <p>由于 Isolate 拥有独立的内存堆，一个子 Isolate 的崩溃默认不会直接导致主 Isolate 崩溃，但会导致主 Isolate 永远等不到结果。处理崩溃需要结合使用 <em>主动拦截（内部捕获）</em> 和 <em>被动监听（外部监控）</em>。</p>
 <h2 id="主动拦截"><a class="header" href="#主动拦截">主动拦截</a></h2>
 <p>在多 Isolate 环境中，异常不是自动共享的。如果子 Isolate 发生崩溃而没有被主动捕获，主 Isolate 只能感知到端口关闭（甚至没有任何提示），这会造成极难排查的“静默失败”。通过在 <code>entryPoint</code> 中对业务逻辑进行 <code>try-catch</code>，确保任何异常都能转换为一条“错误消息”发回给主 Isolate。</p>
@@ -7601,7 +7821,7 @@ void workerEntryPoint((int workerId, SendPort resultPort) message) {
 </ol>
 <h2 id="被动监听"><a class="header" href="#被动监听">被动监听</a></h2>
 <p>有时候崩溃发生在 EventLoop 之外（例如内存溢出或初始化错误），Worker 根本没有机会执行 <code>resultPort.send()</code>。此时需要利用 <code>Isolate.addErrorListener()</code>，在创建 Isolate 时为其安装一个监听器，这样当Isolate崩溃时 WorkerPool 就可得到通知并做相应处理（如重启Isolate）。</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<pre class="mermaid">sequenceDiagram
 	autonumber
     participant M as WorkerPool
     participant W as Worker Isolate
@@ -7617,7 +7837,8 @@ void workerEntryPoint((int workerId, SendPort resultPort) message) {
     M-&gt;&gt;W: isolate.kill()
     M-&gt;&gt;W: 重新 spawn 一个新 Isolate
     M-&gt;&gt;M: 将新Worker加入池子
-</code></pre>
+</pre>
+
 <h3 id="监听-isolate"><a class="header" href="#监听-isolate">监听 Isolate</a></h3>
 <p><code>Isolate.addOnExitListener()</code>往往与<code>Isolate.addOnExitListener()</code>配合使用，后者用于监听 Isolate 的终止（Terminate）。每个 Worker Isolate 都需要被监听，因此我们将重构 <code>Worker</code> 类，在其构造函数中启动监听，同时在 <code>Worker</code> 类中新增必要的字段。</p>
 <p><em>为 <code>Worker</code> 类添加如下字段:</em></p>
@@ -7748,7 +7969,7 @@ class Worker {
 }
 </code></pre>
 <p>可能有读者要问：既然 isolate 已经崩溃了，还有必要调用 <code>isolate.kill()</code> 吗？答案是很有必要。这是一种“防御性编程”，虽然在逻辑层面上 Isolate 已经“崩溃”了（触发了 errorListener），但崩溃并不总是意味着底层的内存和资源已经彻底释放（<em>崩溃不等于消亡</em>）。借助下图我们可以更好地理解这个问题。</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<pre class="mermaid">sequenceDiagram
     participant P as WorkerPool
     participant W as Old Isolate
     participant N as New Isolate
@@ -7766,10 +7987,11 @@ class Worker {
     
     P-&gt;&gt;W: isolate.kill(immediate)
     Note over W: 强制释放资源
-</code></pre>
+</pre>
+
 <h3 id="新的-isolate-接管旧的任务"><a class="header" href="#新的-isolate-接管旧的任务">新的 Isolate 接管旧的任务</a></h3>
 <p>下图表达了 <code>WorkerPool</code>的初始化（<code>_init()</code>方法）逻辑。</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<pre class="mermaid">sequenceDiagram
     autonumber
     participant Main as Main Isolate (WorkerPool)
     participant RP as ReceivePort (resultPort)
@@ -7807,7 +8029,8 @@ class Worker {
     RP--&gt;&gt;Main: 触发 listen 回调
     Main-&gt;&gt;Main: _handleResult(workerId, ok, result)
     end
-</code></pre>
+</pre>
+
 <p><code>resultPort</code> 不仅仅用于接收计算结果，它还承担了 “控制流” 的职责。在 Worker Isolate 刚启动时，它通过这个端口回传自己的 SendPort。这种“自报家门”的机制是建立双向通讯的基础。 在握手成功的一瞬间，代码立即执行了 <code>takeOverTask()</code>。这在重启场景下至关重要：新 Worker 在逻辑上“透明”地替换了崩溃的旧 Worker，并立即检查是否需要继续执行未完成的任务。只有在确认没有任务需要接管时，才会将 Worker 放入 <code>_idleWorkerController</code>，避免了 Worker 在接管任务的同时又被分配了新任务。</p>
 <p><em>具体实现如下</em>：</p>
 <pre><code class="language-dart">  Future&lt;void&gt; _init() async {
@@ -8029,7 +8252,8 @@ out54 2451ms: pool closed
 <ul>
 <li><a href="https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/">Exponential Backoff And Jitter</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="第一个自动化测试用例"><a class="header" href="#第一个自动化测试用例">第一个自动化测试用例</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="第一个自动化测试用例"><a class="header" href="#第一个自动化测试用例">第一个自动化测试用例</a></h1>
 <p>编写代码只是开发的一半，另一半则是确保这些代码在复杂的生产环境中能够持续稳定地运行。本节先简要介绍一下自动化测试，然后聚焦到单元测试，开始我们的Dart测试之旅。</p>
 <h2 id="自动化测试"><a class="header" href="#自动化测试">自动化测试</a></h2>
 <p>在前面的章节中，我们编写了很多示例。让我们思考这样一问题：我如何确保代码在重构或升级后依然能正常工作？答案就是自动化测试。它不仅是质量的底线，更是开发者重构代码时的“安全网”。</p>
@@ -8039,7 +8263,7 @@ out54 2451ms: pool closed
 <li>组件测试 (Component Testing)：验证多个单元或 UI 组件之间的协作。</li>
 <li>集成测试 (Integration Testing)：从用户视角出发，验证整个应用在真实环境下的端到端流程。</li>
 </ul>
-<pre><code class="language-mermaid">graph TD
+<pre class="mermaid">graph TD
     Top@{ shape: tri, label: "&lt;b&gt;集成测试&lt;/b&gt; &lt;br/&gt; 链路验证" }
     Middle[/.....&lt;b&gt;组件测试&lt;/b&gt;..... &lt;br/&gt; 模块协作\]
     Bottom[/...........&lt;b&gt;单元测试&lt;/b&gt;........... &lt;br/&gt; 最小逻辑单元 \]
@@ -8049,7 +8273,8 @@ out54 2451ms: pool closed
     style Top fill:#f8d7da,stroke:#dc3545
     style Middle fill:#fff3cd,stroke:#ffc107
     style Bottom fill:#d4edda,stroke:#28a745
-</code></pre>
+</pre>
+
 <h2 id="第一个单元测试用例"><a class="header" href="#第一个单元测试用例">第一个单元测试用例</a></h2>
 <p>现代化编程语言的竞争，早已从语法层面延伸到了 <strong>工具链（Toolchain）</strong> 的完备性。而在工具链中，自动化测试框架无疑是保障工程质量的核心基石。Go 语言秉持“开箱即用”的理念，原生内置了极其强大的测试框架，不仅支持基础的单元测试，还原生支持性能基准测试（Benchmark）以及极具特色的示例测试（Example Tests）。Java拥有极为成熟的开源解决方案，从老牌的 JUnit、TestNG，到支持行为驱动开发（BDD）的 Cucumber，为企业级开发提供了极高的灵活性。Dart官方提供的 test 包（以及 Flutter 场景下的 flutter_test）深度集成在 Dart SDK 中，提供了从基础断言到异步流验证的完整解决方案。</p>
 <p>下面我们就来编写第一个Dart单元测试用例。</p>
@@ -8256,22 +8481,23 @@ class Fraction {
 <li><a href="https://pub.dev/packages/test">https://pub.dev/packages/test</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Euclidean_algorithm">Euclidean algorithm</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="断言assertion与匹配器-matchers"><a class="header" href="#断言assertion与匹配器-matchers">断言（Assertion）与匹配器 (Matchers)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="断言assertion与匹配器-matchers"><a class="header" href="#断言assertion与匹配器-matchers">断言（Assertion）与匹配器 (Matchers)</a></h1>
 <p>Dart 测试的核心围绕断言（Assertion）展开。 我们通常使用 expect 函数来执行校验，其基本语法如下：</p>
 <pre><code class="language-dart">  expect(dynamic actual, dynamic matcher)
 </code></pre>
 <p>以之前的 <code>expect(f.num, 1)</code> 为例：该语句断言变量 <code>f.num</code>（实际值 <code>actual</code>）等于 <code>1</code>（期望值 <code>matcher</code>）。</p>
 <p>其中，<code>matcher</code>（匹配器）是断言机制中最灵活、最强大的部分。它不仅能进行简单的值比较，还能处理复杂的逻辑校验。本文将结合示例简要介绍下常用的各类匹配器：</p>
 <ul>
-<li><a href="ch08/dartpl0802.html#%E5%9F%BA%E7%A1%80%E5%8C%B9%E9%85%8D%E5%99%A8-basic-matchers">基础匹配器 (Basic Matchers)</a></li>
-<li><a href="ch08/dartpl0802.html#%E6%95%B0%E5%80%BC%E5%8C%B9%E9%85%8D%E5%99%A8-numeric-matchers">数值匹配器 (Numeric Matchers)</a></li>
-<li><a href="ch08/dartpl0802.html#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D%E5%99%A8string-matchers">字符串匹配器（String Matchers）</a></li>
-<li><a href="ch08/dartpl0802.html#%E9%9B%86%E5%90%88%E5%8C%B9%E9%85%8D%E5%99%A8-collection-matchers">集合匹配器 (Collection Matchers)</a></li>
-<li><a href="ch08/dartpl0802.html#%E7%B1%BB%E5%9E%8B%E5%8C%B9%E9%85%8D%E5%99%A8-type-matchers">类型匹配起 (Type Matchers)</a></li>
-<li><a href="ch08/dartpl0802.html#%E5%BC%82%E5%B8%B8%E5%8C%B9%E9%85%8D%E5%99%A8-error-matchers">异常匹配器 (Error Matchers)</a></li>
-<li><a href="ch08/dartpl0802.html#%E9%80%BB%E8%BE%91%E7%BB%84%E5%90%88-logical-combinators">逻辑组合</a></li>
+<li><a href="#基础匹配器-basic-matchers">基础匹配器 (Basic Matchers)</a></li>
+<li><a href="#数值匹配器-numeric-matchers">数值匹配器 (Numeric Matchers)</a></li>
+<li><a href="#字符串匹配器string-matchers">字符串匹配器（String Matchers）</a></li>
+<li><a href="#集合匹配器-collection-matchers">集合匹配器 (Collection Matchers)</a></li>
+<li><a href="#类型匹配器-type-matchers">类型匹配起 (Type Matchers)</a></li>
+<li><a href="#异常匹配器-error-matchers">异常匹配器 (Error Matchers)</a></li>
+<li><a href="#逻辑组合-logical-combinators">逻辑组合</a></li>
 </ul>
-<p>本文最后还将介绍如何<a href="ch08/dartpl0802.html#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8C%B9%E9%85%8D%E5%99%A8">自定义匹配器</a>。</p>
+<p>本文最后还将介绍如何<a href="#自定义匹配器">自定义匹配器</a>。</p>
 <h2 id="基础匹配器-basic-matchers"><a class="header" href="#基础匹配器-basic-matchers">基础匹配器 (Basic Matchers)</a></h2>
 <ul>
 <li><code>equals(v)</code>:	检查值是否相等（通常直接写值即可，如 <code>expect(a, 10)</code>）</li>
@@ -8576,12 +8802,18 @@ class User {
 }
 </code></pre>
 <p>为了方便使用，test 库提供了一些预定义的类型匹配器。</p>
-<div class="table-wrapper"><table><thead><tr><th>匹配器</th><th>等效于</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>匹配器</th><th>等效于</th></tr>
+</thead>
+<tbody>
 <tr><td><code>isList</code></td><td><code>isA&lt;List&gt;()</code></td></tr>
 <tr><td><code>isMap</code></td><td><code>isA&lt;Map&gt;()</code></td></tr>
 <tr><td><code>isArgumentError</code></td><td><code>isA&lt;ArgumentError&gt;()</code></td></tr>
 <tr><td><code>isException</code></td><td><code>isA&lt;Exception&gt;()</code></td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <h2 id="异常匹配器-error-matchers"><a class="header" href="#异常匹配器-error-matchers">异常匹配器 (Error Matchers)</a></h2>
 <p>检查代码是否会抛出异常是健壮性测试的重要组成部分。为了测试异常，<code>expect</code>函数的第一个参数必须是一个闭包（匿名函数），这样测试框架才能捕获执行过程中抛出的错误。</p>
@@ -8784,7 +9016,8 @@ class User {
 <li><a href="https://pub.dev/documentation/matcher/latest/matcher/">https://pub.dev/documentation/matcher/latest/matcher/</a></li>
 <li><a href="https://pub.dev/documentation/matcher/latest/matcher/CustomMatcher-class.html">CustomMatcher</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="测试生命周期与分组"><a class="header" href="#测试生命周期与分组">测试生命周期与分组</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="测试生命周期与分组"><a class="header" href="#测试生命周期与分组">测试生命周期与分组</a></h1>
 <p>在 Dart 测试中，合理地组织测试用例并管理它们的生命周期（初始化与销毁）是保持测试代码整洁、高效的关键。我们通过 <code>group</code> 来分类，通过 <code>setUp</code> 和 <code>tearDown</code> 来控制环境。</p>
 <ul>
 <li><code>group</code>: 将相关的测试组织在一起。组内可以嵌套组，形成树状结构。</li>
@@ -8862,7 +9095,8 @@ void main() {
 <ul>
 <li><a href="https://pub.dev/packages/test">https://pub.dev/packages/test</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="异步代码测试"><a class="header" href="#异步代码测试">异步代码测试</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="异步代码测试"><a class="header" href="#异步代码测试">异步代码测试</a></h1>
 <p>在 Dart 中测试异步代码主要处理两种模式：Future（单次异步回调）和 Stream（持续的数据流）。
 Dart 的 <code>test</code> 库提供了 <code>expectLater</code> 和专门的异步匹配器（如 <code>completion</code> 和 <code>emits</code>），让异步断言像同步代码一样自然。</p>
 <h2 id="测试-future"><a class="header" href="#测试-future">测试 Future</a></h2>
@@ -8936,13 +9170,19 @@ Stream&lt;int&gt; countStream(int max) async* {
 }
 </code></pre>
 <h2 id="异步匹配器一览"><a class="header" href="#异步匹配器一览">异步匹配器一览</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>匹配器</th><th>用途</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>匹配器</th><th>用途</th></tr>
+</thead>
+<tbody>
 <tr><td><code>completion(m)</code></td><td>等待 <code>Future</code> 完成，并对结果应用匹配器 <code>m</code></td></tr>
 <tr><td><code>emits(v)</code>	断言 <code>Stream</code></td><td>发出的下一个值是 <code>v</code></td></tr>
 <tr><td><code>emitsInOrder([...])</code></td><td>按顺序断言 <code>Stream</code> 发出的一系列值</td></tr>
 <tr><td><code>emitsDone</code></td><td>断言 <code>Stream</code> 已经结束，没有更多事件</td></tr>
 <tr><td><code>emitsError(m)</code></td><td>断言 <code>Stream</code> 会发出一个符合 <code>m</code> 的错误事件</td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <h2 id="fakeasync"><a class="header" href="#fakeasync">FakeAsync</a></h2>
 <p>FakeAsync 允许你通过“虚构时间”来瞬间完成原本需要等待数秒甚至数小时的任务（如 <code>Future.delayed</code> 或 <code>Timer</code>）。
@@ -8981,7 +9221,8 @@ void main() {
 <ul>
 <li><a href="https://pub.dev/packages/test">https://pub.dev/packages/test</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="依赖模拟-mock"><a class="header" href="#依赖模拟-mock">依赖模拟 (Mock)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="依赖模拟-mock"><a class="header" href="#依赖模拟-mock">依赖模拟 (Mock)</a></h1>
 <p>真实的系统充满了各种“麻烦”的依赖（如数据库、网络请求、文件系统、传感器等）。为了保证单元测试的速度、稳定（不因断言时没网而失败）和纯粹（只测当前函数逻辑），我们需要使用 Mock（模拟对象）。</p>
 <h2 id="什么是-mock"><a class="header" href="#什么是-mock">什么是 Mock</a></h2>
 <p>Mock 对象就像是真实依赖的一个“替身”。我们可以通过它：</p>
@@ -8995,14 +9236,20 @@ void main() {
 <pre><code class="language-bash">dart pub add dev:mocktail
 </code></pre>
 <p><em>常用函数</em></p>
-<div class="table-wrapper"><table><thead><tr><th>语法</th><th>说明</th></tr></thead><tbody>
-<tr><td>when(...).thenReturn(val)</td><td>针对同步方法，设定返回固定值</td></tr>
-<tr><td>when(...).thenAnswer((_) async =&gt; val)</td><td>针对异步方法，设定返回 Future 或 Stream</td></tr>
-<tr><td>when(...).thenThrow(error)</td><td>模拟抛出异常（测试错误处理逻辑）</td></tr>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>语法</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td>when(…).thenReturn(val)</td><td>针对同步方法，设定返回固定值</td></tr>
+<tr><td>when(…).thenAnswer((_) async =&gt; val)</td><td>针对异步方法，设定返回 Future 或 Stream</td></tr>
+<tr><td>when(…).thenThrow(error)</td><td>模拟抛出异常（测试错误处理逻辑）</td></tr>
 <tr><td>any()</td><td>匹配器，表示接收任何参数</td></tr>
-<tr><td>verify(...).called(n)</td><td>检查该方法是否被调用了 n 次</td></tr>
-<tr><td>verifyNever(...)</td><td>确保该方法在测试中从未被调用</td></tr>
-</tbody></table>
+<tr><td>verify(…).called(n)</td><td>检查该方法是否被调用了 n 次</td></tr>
+<tr><td>verifyNever(…)</td><td>确保该方法在测试中从未被调用</td></tr>
+</tbody>
+</table>
 </div>
 <h2 id="mock-实战1-模拟数据库服务"><a class="header" href="#mock-实战1-模拟数据库服务">Mock 实战1： 模拟数据库服务</a></h2>
 <p>假设我们有一个 <code>User</code> 模型和一个负责逻辑处理的 <code>UserService</code>。</p>
@@ -9190,13 +9437,14 @@ void main() {
 <li><a href="https://pub.dev/documentation/mocktail/latest/mocktail/registerFallbackValue.html">registerFallbackValue function</a></li>
 <li><a href="https://martinfowler.com/bliki/TestDouble.html">Test Double (by Martin Fowler)</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="测试质量度量"><a class="header" href="#测试质量度量">测试质量度量</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="测试质量度量"><a class="header" href="#测试质量度量">测试质量度量</a></h1>
 <p>评估一个测试套件的“含金量”，我们通常关注如下四个维度：</p>
 <ul>
-<li><a href="ch08/dartpl0806.html#%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87">代码覆盖率 (Code Coverage)</a>：通过行覆盖和分支覆盖，识别未经测试的“逻辑盲区”。</li>
-<li><a href="ch08/dartpl0806.html#%E6%B5%8B%E8%AF%95%E6%9C%89%E6%95%88%E6%80%A7">测试有效性 (Test Effectiveness)</a>：引入变异测试（Mutation Testing），确保断言（Expectations）具有捕获缺陷的能力。</li>
-<li><a href="ch08/dartpl0806.html#%E6%B5%8B%E8%AF%95%E8%BF%90%E8%A1%8C%E6%80%A7%E8%83%BD">测试运行性能 (Performance)</a>：监控测试执行时长，避免缓慢的测试套件拖累持续集成（CI）效率。</li>
-<li><a href="ch08/./dartpl0807.html">静态代码分析 (Static Analysis)</a>：利用 <code>dart analyze</code> 确保测试代码的严谨性与一致性。</li>
+<li><a href="#代码覆盖率">代码覆盖率 (Code Coverage)</a>：通过行覆盖和分支覆盖，识别未经测试的“逻辑盲区”。</li>
+<li><a href="#测试有效性">测试有效性 (Test Effectiveness)</a>：引入变异测试（Mutation Testing），确保断言（Expectations）具有捕获缺陷的能力。</li>
+<li><a href="#测试运行性能">测试运行性能 (Performance)</a>：监控测试执行时长，避免缓慢的测试套件拖累持续集成（CI）效率。</li>
+<li><a href="#静态代码分析">静态代码分析 (Static Analysis)</a>：利用 <code>dart analyze</code> 确保测试代码的严谨性与一致性。</li>
 </ul>
 <p>本节将讨论前三个维度，而将最后一个维度留在下一节讨论。</p>
 <h2 id="代码覆盖率"><a class="header" href="#代码覆盖率">代码覆盖率</a></h2>
@@ -9244,11 +9492,17 @@ else
 fi
 </code></pre>
 <p>理想的测试覆盖率应遵循金字塔结构。</p>
-<div class="table-wrapper"><table><thead><tr><th>测试类型</th><th>参考比例</th><th>度量重点</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>测试类型</th><th>参考比例</th><th>度量重点</th></tr>
+</thead>
+<tbody>
 <tr><td>Integration/E2E Tests (集成测试)</td><td>5-10%</td><td>跨层级流转、真实数据库/网络请求。速度慢，维护成本高。</td></tr>
 <tr><td>Widget/Component Tests (组件测试)</td><td>15-20%</td><td>UI 交互、组件渲染逻辑。</td></tr>
 <tr><td>Unit Tests (单元测试)</td><td>70-80%</td><td>核心逻辑、算法、纯 Dart 代码。速度极快。</td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <p>具体的测试覆盖率分配参考：</p>
 <ul>
@@ -9388,7 +9642,8 @@ dart pub global run mutation_test \
 <li><a href="https://pub.dev/packages/coverage">https://pub.dev/packages/coverage</a></li>
 <li><a href="https://pub.dev/packages/mutation_test">https://pub.dev/packages/mutation_test</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="静态代码分析"><a class="header" href="#静态代码分析">静态代码分析</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="静态代码分析"><a class="header" href="#静态代码分析">静态代码分析</a></h1>
 <p>在 Dart 开发中，静态代码分析（Static Analysis）是成本最低、收益最高的质量保障手段，它用于在代码运行之前，消灭绝大部分低级错误。</p>
 <h2 id="分析工具"><a class="header" href="#分析工具">分析工具</a></h2>
 <p>命令 <code>dart analyze</code> 是Dart SDK自带的利器，它通过解析抽象语法树（AST）来发现潜在问题 —— 类型不匹配、未使用的变量、可能的空指针异常、不规范的命名等。使用方法是在 Project 根目录下执行该命令即可。</p>
@@ -9460,10 +9715,11 @@ Dart Analyze.........................................(no files to check)Skipped
 <li><a href="https://pre-commit.com/">https://pre-commit.com/</a></li>
 <li><a href="https://typicode.github.io/husky/get-started.html">https://typicode.github.io/husky/get-started.html</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="build_runner"><a class="header" href="#build_runner"><code>build_runner</code></a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="build_runner"><a class="header" href="#build_runner"><code>build_runner</code></a></h1>
 <p><code>build_runner</code> 是Dart 生态中处理代码生成任务的标准执行引擎。</p>
 <h2 id="引子"><a class="header" href="#引子">引子</a></h2>
-<p>设想我们正在使用 OMDb API的 "Search By Title" （通过标题查找电影），访问 <code>https://www.omdbapi.com/?apikey=&lt;APIKEY&gt;&amp;t=tiger</code> 得到一个JSON字符串：</p>
+<p>设想我们正在使用 OMDb API的 “Search By Title” （通过标题查找电影），访问 <code>https://www.omdbapi.com/?apikey=&lt;APIKEY&gt;&amp;t=tiger</code> 得到一个JSON字符串：</p>
 <pre><code class="language-json">{
   "Title": "Tiger",
   "Year": "2021",
@@ -9642,7 +9898,12 @@ dart run build_runner build --config debug
 </code></pre>
 <h3 id="结束语-3"><a class="header" href="#结束语-3">结束语</a></h3>
 <p><a href="https://pub.dev/packages/build_runner"><code>build_runner</code> 官网</a>上列出了许多开箱即用的常用 Builder，足以应对绝大多数的代码生成场景。我们应该优先从这些成熟的 Builder 中选用。</p>
-<div class="table-wrapper"><table><thead><tr><th>Builder</th><th>Adds capabilities</th><th>Notes</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Builder</th><th>Adds capabilities</th><th>Notes</th></tr>
+</thead>
+<tbody>
 <tr><td><a href="https://pub.dev/packages/auto_route">auto_route_generator</a></td><td>Flutter navigation</td><td></td></tr>
 <tr><td><a href="https://pub.dev/packages/built_value">built_value_generator</a></td><td>data classes with JSON serialization</td><td><a href="https://docs.flutter.dev/packages-and-plugins/favorites">Flutter Favourite</a> by Google</td></tr>
 <tr><td><a href="https://pub.dev/packages/chopper">chopper_generator</a></td><td>REST HTTP client</td><td><a href="https://docs.flutter.dev/packages-and-plugins/favorites">Flutter Favourite</a></td></tr>
@@ -9663,7 +9924,8 @@ dart run build_runner build --config debug
 <tr><td><a href="https://pub.dev/packages/swagger_dart_code_generator">swagger_dart_code_generator</a></td><td>dart types from Swagger/OpenAPI schemas</td><td></td></tr>
 <tr><td><a href="https://pub.dev/packages/theme_tailor">theme_tailor</a></td><td>Flutter themes and extensions</td><td></td></tr>
 <tr><td><a href="https://pub.dev/packages/webdev">webdev</a></td><td>compilation to javascript</td><td>by Google</td></tr>
-</tbody></table>
+</tbody>
+</table>
 </div>
 <p>但当我们面对一些极其特殊、甚至需要改变代码结构的生成逻辑时，现成的工具或许难以应对。此时我们可以自定义 Builder 或 Generator —— 这正是下一节将要讨论的内容。</p>
 <h2 id="reference-14"><a class="header" href="#reference-14">Reference</a></h2>
@@ -9675,7 +9937,8 @@ dart run build_runner build --config debug
 <li><a href="https://pub.dev/packages/json_serializable">https://pub.dev/packages/json_serializable</a></li>
 <li><a href="https://pub.dev/packages/freezed">https://pub.dev/packages/freezed</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="自定义生成器-generator"><a class="header" href="#自定义生成器-generator">自定义生成器 (Generator)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="自定义生成器-generator"><a class="header" href="#自定义生成器-generator">自定义生成器 (Generator)</a></h1>
 <p>Builder 负责文件系统的操作（读取 <code>.dart</code> 文件，创建 <code>.g.dart</code> 文件），其逻辑比较底层，写起来稍显繁琐。Generator 封装了 Builder，让我们只需关注“输入一个类，输出一段字符串”的逻辑。绝大多数场景下，我们只需自定义 Generator。</p>
 <h2 id="示例-4"><a class="header" href="#示例-4">示例</a></h2>
 <p>假设我们要为 OMDb 模型类（如 <code>Movie </code>类）自动生成一个字段清单字符串。</p>
@@ -9768,7 +10031,7 @@ class Movie {
 </code></pre>
 <h2 id="builder-类层次"><a class="header" href="#builder-类层次">Builder 类层次</a></h2>
 <p>从 Builder的类图可以看出 Builder 与 Generator 的关系。</p>
-<pre><code class="language-mermaid">classDiagram
+<pre class="mermaid">classDiagram
     class Builder {
         &lt;&lt;abstract&gt;&gt;
         +Map buildExtensions
@@ -9812,7 +10075,8 @@ class Movie {
     LibraryBuilder o-- Generator : 持有 (1)
 
     Generator &lt;|-- GeneratorForAnnotation : 继承 (基于注解触发)
-</code></pre>
+</pre>
+
 <h2 id="constantreader"><a class="header" href="#constantreader">ConstantReader</a></h2>
 <p>当我们写下 <code>@JsonSerializable(explicitToJson: true)</code> 时，<code>explicitToJson</code> 这个布尔值是如何传递给Generator的？这就是 <code>ConstantReader</code> 的工作，它负责将源码中的“静态常量”转换为 Generator 可以直接操作的 Dart 对象。</p>
 <p>继续之前的示例，设想我们要为 OMDb模型类自动生成一个扩展方法 <code>printFields</code>，该方法打印模型类的所有字段。我们向 <code>OMDbModelInfo</code> 注解添加一个布尔开关 <code>ext</code>，只有当开发者明确声明 <code>ext: true</code> 时，Generator 才生成 <code>printFields</code>。</p>
@@ -9909,14 +10173,22 @@ class ModelExtGenerator extends GeneratorForAnnotation&lt;OMDbModelInfo&gt; {
 <li><a href="https://pub.dev/packages/code_builder">https://pub.dev/packages/code_builder</a></li>
 <li><a href="https://pub.dev/packages/analyzer">https://pub.dev/packages/analyzer</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="模版编程"><a class="header" href="#模版编程">模版编程</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="代码脚手架"><a class="header" href="#代码脚手架">代码脚手架</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="dart命令行工具"><a class="header" href="#dart命令行工具">dart命令行工具</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="solid编码准则"><a class="header" href="#solid编码准则">SOLID编码准则</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="编写dart命令行程序"><a class="header" href="#编写dart命令行程序">编写Dart命令行程序</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="dart-服务端与云原生"><a class="header" href="#dart-服务端与云原生">Dart 服务端与云原生</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="dart-常用-package"><a class="header" href="#dart-常用-package">Dart 常用 Package</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="dart-ffi"><a class="header" href="#dart-ffi">Dart FFI</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="模版编程"><a class="header" href="#模版编程">模版编程</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="代码脚手架"><a class="header" href="#代码脚手架">代码脚手架</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="dart命令行工具"><a class="header" href="#dart命令行工具">dart命令行工具</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="solid编码准则"><a class="header" href="#solid编码准则">SOLID编码准则</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="编写dart命令行程序"><a class="header" href="#编写dart命令行程序">编写Dart命令行程序</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="dart-服务端与云原生"><a class="header" href="#dart-服务端与云原生">Dart 服务端与云原生</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="dart-常用-package"><a class="header" href="#dart-常用-package">Dart 常用 Package</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="dart-ffi"><a class="header" href="#dart-ffi">Dart FFI</a></h1>
 
                     </main>
 
@@ -9935,6 +10207,11 @@ class ModelExtGenerator extends GeneratorForAnnotation&lt;OMDbModelInfo&gt; {
 
         </div>
 
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
 
 
 
@@ -9943,23 +10220,26 @@ class ModelExtGenerator extends GeneratorForAnnotation&lt;OMDbModelInfo&gt; {
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-b0be6be0.js"></script>
+        <script src="book-a0b12cfe.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="theme/mermaid.min.js"></script>
-        <script src="theme/mermaid-init.js"></script>
+        <script src="theme/mermaid-eefea253.min.js"></script>
+        <script src="theme/mermaid-init-ccf746f1.js"></script>
 
         <script>
         window.addEventListener('load', function() {
-            window.setTimeout(window.print, 100);
+            MathJax.Hub.Register.StartupHook('End', function() {
+                window.setTimeout(window.print, 100);
+            });
         });
         </script>
+
 
     </div>
     </body>
