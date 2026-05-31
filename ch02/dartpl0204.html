@@ -47,7 +47,7 @@
             const path_to_root = "../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-63e4e6ea.js";
+            window.path_to_searchindex_js = "../searchindex-ec9c44c9.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-e9dd7b2b.js"></script>
@@ -193,7 +193,7 @@
    B --&gt; |返回值|c(( ))
 </pre>
 
-<p>先来看一个示例程序，计算平面上两点之间的欧式距离:</p>
+<p>先来看一个示例程序，计算平面上两点之间的欧氏距离:</p>
 <p>\( \sqrt{(x_1-x_2)^2 + (y_1-y_2)^2} \)</p>
 <pre><code class="language-dart">//ex241.dart
 import 'dart:math';
@@ -216,11 +216,11 @@ void main() {
 <ol>
 <li>使用<code>typedef</code>创建一个类型别名<code>Point</code>，它代表了二维平面里的一个点;</li>
 <li>声明并初始化2个<code>Point</code>，<code>a</code> 和 <code>b</code>;</li>
-<li>计算<code>a</code>、<code>b</code>间的欧式距离，随后打印 (3a)；</li>
+<li>计算<code>a</code>、<code>b</code>间的欧氏距离，随后打印 (3a)；</li>
 <li>声明并初始化<code>Point c</code>;</li>
-<li>计算<code>a</code>、<code>c</code>间的欧式距离，随后打印 (5a)；</li>
+<li>计算<code>a</code>、<code>c</code>间的欧氏距离，随后打印 (5a)；</li>
 </ol>
-<p>将计算欧式距离的代码，抽取成一个函数 <code>distance</code>，然后改写上例：</p>
+<p>将计算欧氏距离的代码，抽取成一个函数 <code>distance</code>，然后改写上例：</p>
 <pre><code class="language-dart">//ex242.dart
 import 'dart:math';
 
@@ -241,11 +241,11 @@ double distance(Point a, Point b) { // 1
 }
 </code></pre>
 <ol>
-<li>定义函数<code>distance</code>，它计算平面上两点间的欧式距离;</li>
-<li>调用<code>distance</code>计算<code>a</code>、<code>b</code>间的欧式距离;</li>
-<li>调用<code>distance</code>计算<code>a</code>、<code>c</code>间的欧式距离。</li>
+<li>定义函数<code>distance</code>，它计算平面上两点间的欧氏距离;</li>
+<li>调用<code>distance</code>计算<code>a</code>、<code>b</code>间的欧氏距离;</li>
+<li>调用<code>distance</code>计算<code>a</code>、<code>c</code>间的欧氏距离。</li>
 </ol>
-<p>重构（改写）后的程序，功能不变，但更为简洁易读，消除了重复代码（计算欧式距离），并可对该代码块（<code>distance</code> 函数）进行单元测试（第8章内容）。</p>
+<p>重构（改写）后的程序，功能不变，但更为简洁易读，消除了重复代码（计算欧氏距离），并可对该代码块（<code>distance</code> 函数）进行单元测试（第8章内容）。</p>
 <h2 id="命名函数"><a class="header" href="#命名函数">命名函数</a></h2>
 <p>通常，创建一个命名函数的语法为:</p>
 <pre><code class="language-dart">返回值的类型 函数名称(输入参数列表){
